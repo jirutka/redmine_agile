@@ -14,6 +14,7 @@
     },
 
     successSortable: function($oldColumn, $column) {
+      clearErrorMessage();
       var r = new RegExp(/\d+/)
       var ids = [];
 
@@ -56,7 +57,7 @@
       }
 
       if (alertMessage) {
-        alert(alertMessage);
+        setErrorMessage(alertMessage);
       };
     },
 
@@ -75,7 +76,7 @@
           var sender = ui.sender;
           var $column = $item.parents('.issue-version-col');
           var issue_id = $item.data('id');
-          var version_id = $column.data("id");
+          var version_id = $column.attr("data-id");
           var order = $column.sortable('serialize');
           var positions = {};
           var oldId = $item.attr('oldColumnId');
@@ -126,6 +127,7 @@
     },
 
     successSortable: function(oldStatusId, newStatusId, oldSwimLaneId, newSwimLaneId) {
+      clearErrorMessage();
       decHtmlNumber('th[data-column-id="' + oldStatusId + '"] span.count');
       incHtmlNumber('th[data-column-id="' + newStatusId + '"] span.count');
       decHtmlNumber('tr.group.swimlane[data-id="' + oldSwimLaneId + '"] td span.count');
@@ -149,7 +151,7 @@
         }
       }
       if (alertMessage) {
-        alert(alertMessage);
+        setErrorMessage(alertMessage);
       }
     },
 
@@ -251,7 +253,101 @@
 
   window.AgileBoard = AgileBoard;
   window.PlanningBoard = PlanningBoard;
+
+  $.fn.StickyHeader = function() {
+    return this.each(function() {
+    var
+      $this = $(this),
+      $body = $('body'),
+      $html = $body.parent(),
+      $hideButton = $body.find('#hideSidebarButton'),
+      $fullScreenButton = $body.find('.icon-fullscreen'),
+      $containerFixed,
+      $tableFixed,
+      $tableRows,
+      $tableFixedRows,
+      containerWidth,
+      offset,
+      tableHeight,
+      tableHeadHeight,
+      tableOffsetTop,
+      tableOffsetBottom,
+      tmp;
+
+      function init() {
+          $this.wrap('<div class="container-fixed" />');
+          $tableFixed = $this.clone();
+          $containerFixed = $this.parents('.container-fixed');
+          $tableFixed
+              .find('tbody')
+              .remove()
+              .end()
+              .css({'display': 'table', 'top': '0px', 'position': 'fixed', 'z-index': '1'})
+              .insertBefore($this)
+              .hide();
+      }
+
+      function resizeFixed() {
+          containerWidth = $containerFixed.width();
+          tableHeadHeight = $this.find("thead").height() + 3;
+          $tableRows = $this.find('thead th');
+          $tableFixedRows = $tableFixed.find('th');
+
+          $tableFixed.css({'width': containerWidth});
+
+          $tableRows.each(function(i) {
+              tmp = jQuery(this).width();
+              jQuery($tableFixedRows[i]).css('width', tmp);
+          });
+      }
+
+      function scrollFixed() {
+          tableHeight = $this.height();
+          tableHeadHeight = $this.find("thead").height();
+          offset = $(window).scrollTop();
+          tableOffsetTop = $this.offset().top;
+          tableOffsetBottom = tableOffsetTop + tableHeight - tableHeadHeight;
+
+          resizeFixed();
+
+          if (offset < tableOffsetTop || offset > tableOffsetBottom) {
+              $tableFixed.css('display', 'none');
+          } else if (offset >= tableOffsetTop && offset <= tableOffsetBottom) {
+              $tableFixed.css('display', 'table');
+          }
+      }
+
+      $hideButton.click(function() {
+          resizeFixed();
+      });
+
+      $fullScreenButton.click(function() {
+          if ($html.hasClass('agile-board-fullscreen')) {
+              $('div.agile-board.autoscroll').scroll(scrollFixed);
+              $(window).unbind('scroll');
+          } else {
+              $(window).scroll(scrollFixed);
+              $('div.agile-board.autoscroll').unbind('scroll');
+              $tableFixed.hide();
+          }
+      });
+
+      $(window).scroll(scrollFixed);
+      $(window).resize(resizeFixed);
+
+      init();
+    });
+  };
 })();
+
+function setErrorMessage(message) {
+  $('div#agile-board-errors').html(message).show();
+  setTimeout(clearErrorMessage,3000);
+}
+
+function clearErrorMessage() {
+  $('div#agile-board-errors').html('').hide();
+}
 
 
 function incHtmlNumber(element) {
@@ -291,3 +387,10 @@ function observeIssueSearchfield(fieldId, url) {
     $this.bind('keyup click mousemove', reset);
   });
 }
+
+$(document).ready(function(){
+    $('table.issues-board').StickyHeader();
+    $('div#agile-board-errors').click(function(){
+      $(this).animate({top: -$(this).outerHeight()}, 500);
+    });
+});

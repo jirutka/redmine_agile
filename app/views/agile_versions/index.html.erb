@@ -11,7 +11,7 @@
   <% end %>
 <% end %>
 
-<% if @project.versions.empty? %>
+<% if @project.shared_versions.empty? %>
   <p class="nodata"><%= l(:label_no_data) %></p>
 <% else %>
   <%= render :partial => 'board' %>

@@ -1,8 +1,27 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2014 RedmineCRM
+Copyright (C) 2011-2015 RedmineCRM
 http://www.redminecrm.com/
+
+== 2015-02-10 v1.3.6
+
+* Sticky headers in fullscreen mode (Dariusz Kowalski)
+* Ajax error messages
+* Fixed bug in version planner with wrong column ID
+* Fixed 404 when enter hit in version planning form
+* Portuguese (Brazil) translation (Marcelo de A. Fernandes)
+
+== 2014-10-28 v1.3.5
+
+* Default boards for projects roles and users
+* Sub-projects issues in version planner
+
+== 2014-10-16 v1.3.4
+
+* Added filters for Assignee's role and Assignee's group
+* Shared versions support
+* Assignee history log
 
 == 2014-09-28 v1.3.3
 

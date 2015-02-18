@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -62,19 +62,23 @@ class AgileQuery < Query
   end
 
   def is_private?
-    !is_public?
+    visibility == VISIBILITY_PRIVATE
+  end
+
+  def is_public?
+    !is_private?
+  end
+
+  def self.default_query(project=nil)
+    false
   end
 
   def visibility=(value)
-    is_public = (value == VISIBILITY_PUBLIC)
+    self.is_public = value == VISIBILITY_PUBLIC
   end
 
   def visibility
-    if is_public?
-      VISIBILITY_PUBLIC
-    else
-      VISIBILITY_PRIVATE
-    end
+    self.is_public ? VISIBILITY_PUBLIC : VISIBILITY_PRIVATE
   end
 
   def build_from_params(params)

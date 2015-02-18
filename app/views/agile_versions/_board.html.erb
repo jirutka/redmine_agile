@@ -2,11 +2,13 @@
   <%= hidden_field_tag 'back_url', url_for(params) %>
   <%= hidden_field_tag 'project_id', @project.id if @project %>
 <div class="autoscroll">
+    <div class="flash error" style="display: none;" id="agile-board-errors">
+    </div>
     <table class="list  versions-planning-board">
       <thead>
       <tr>
         <th style="width: 33%; text-align: left;">
-          <%= text_field_tag "search", '', :placeholder => l(:label_agile_no_version_issues)  %>
+          <%= text_field_tag "search", '', :placeholder => l(:label_agile_no_version_issues) %>
           <%= javascript_tag "observeIssueSearchfield('search', '#{escape_javascript autocomplete_agile_versions_path(:project_id => @project)}');" %>
         </th>
         <th style="width: 33%; text-align: left;" id="backlog_version_header">

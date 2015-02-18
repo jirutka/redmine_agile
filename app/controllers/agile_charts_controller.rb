@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -95,9 +95,9 @@ private
       raise ActiveRecord::RecordNotFound
     end
 
-  rescue Exception => e
-    logger.error "RedmineAgile: Chart rendering Error -  #{e.message}" if logger && logger.error
-    render :nothing => true, :status => 500, :content_type => 'text/html'
+  # rescue Exception => e
+  #   logger.error "RedmineAgile: Chart rendering Error -  #{e.message}" if logger && logger.error
+  #   render :nothing => true, :status => 500, :content_type => 'text/html'
   end
 
   def find_optional_version

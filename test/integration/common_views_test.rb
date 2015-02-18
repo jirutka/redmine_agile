@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 require File.expand_path(File.dirname(__FILE__) + '/../../../../test/test_helper')
 
-class CommonViewsTest < ActionController::IntegrationTest
+class CommonViewsTest < ActionDispatch::IntegrationTest
   fixtures :projects,
            :users,
            :roles,

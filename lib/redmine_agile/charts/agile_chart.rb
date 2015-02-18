@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 require 'SVG/Graph/TimeSeries'
 require 'SVG/Graph/Line'
 require 'SVG/Graph/Plot'
+require 'SVG/Graph/Bar'
 
 module RedmineAgile
   class AgileChart
@@ -46,7 +47,7 @@ module RedmineAgile
   protected
 
     def current_date_period
-      @current_date_period ||= (@date_to < Date.today ? @period_count - 1 : @period_count - (@date_to - Date.today).to_i / @scale_division - 1) + 1
+      @current_date_period ||= (@date_to < Date.today ? @period_count - 1 : ( @period_count - (@date_to - Date.today).to_i / @scale_division - 1) + 1 ).round
     end
 
     def due_date_period
@@ -110,7 +111,7 @@ module RedmineAgile
       period_count = (@date_to.to_date + 1 - @date_from.to_date).to_i
       scale_division = period_count > 31 ? period_count / 31.0 : 1
 
-      [(period_count / scale_division).to_i, scale_division]
+      [(period_count / scale_division).round, scale_division]
     end
 
     def issues_count_by_period(issues_scope)

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,15 +22,15 @@ class AgileVersionsController < ApplicationController
 
   menu_item :agile
 
-  before_filter :find_project_by_project_id, :only => [:index, :autocomplete]
+  before_filter :find_project_by_project_id, :only => [:index, :autocomplete, :load]
   before_filter :find_version, :only => [:load]
   before_filter :authorize, :except => [:autocomplete, :load]
   before_filter :find_no_version_issues, :only => [:index, :autocomplete]
 
   def index
-    @backlog_version = @project.versions.open.where("LOWER(#{Version.table_name}.name) LIKE LOWER(?)", "backlog").first ||
-        @project.versions.open.where(:effective_date => nil).first ||
-        Version.open.where(:project_id => @project).order("effective_date ASC").first
+    @backlog_version = @project.shared_versions.open.where("LOWER(#{Version.table_name}.name) LIKE LOWER(?)", "backlog").first ||
+        @project.shared_versions.open.where(:effective_date => nil).first ||
+        @project.shared_versions.open.order("effective_date ASC").first
     @current_version = Version.open.
         where(:project_id => @project).
         where("#{Version.table_name}.id <> ?", @backlog_version).
@@ -55,14 +55,20 @@ class AgileVersionsController < ApplicationController
 
   def find_version
     @version = Version.visible.find(params[:version_id])
-    @project = @version.project
+    @project ||= @version.project
   rescue ActiveRecord::RecordNotFound
     render_404
   end
 
   def find_no_version_issues
     q = (params[:q] || params[:term]).to_s.strip
-    scope = (params[:scope] == "all" || @project.nil? ? Issue : @project.issues).open.visible.where(:fixed_version_id => nil).sorted_by_rank
+    scope = Issue.open.visible
+    if @project
+      project_ids = [@project.id]
+      project_ids += @project.descendants.collect(&:id) if Setting.display_subprojects_issues?
+      scope = scope.where(:project_id => project_ids)
+    end
+    scope = scope.where(:fixed_version_id => nil).sorted_by_rank
     if q.present?
       if q.match(/^#?(\d+)\z/)
         scope = scope.where("(#{Issue.table_name}.id = ?) OR (LOWER(#{Issue.table_name}.subject) LIKE LOWER(?))", $1.to_i, "%#{q}%")

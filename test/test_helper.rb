@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -36,6 +36,20 @@ def with_agile_settings(options, &block)
   yield
 ensure
   saved_settings.each {|k, v| Setting.plugin_redmine_agile[k] = v} if saved_settings
+end
+
+def log_user(login, password)
+  User.anonymous
+  get "/login"
+  assert_equal nil, session[:user_id]
+  assert_response :success
+  assert_template "account/login"
+  post "/login", :username => login, :password => password
+  assert_equal login, User.find(session[:user_id]).login
+end
+
+def credentials(user, password=nil)
+  {'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password || user)}
 end
 
 module RedmineAgile

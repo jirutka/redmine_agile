@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ class AgileQuery < Query
   scope :visible, lambda {|*args|
     user = args.shift || User.current
     base = Project.allowed_to_condition(user, :view_issues, *args)
-    scope = includes(:project).where("#{table_name}.project_id IS NULL OR (#{base})")
+    scope = eager_load(:project).where("#{table_name}.project_id IS NULL OR (#{base})")
 
     if user.admin?
       scope.where("#{table_name}.visibility <> ? OR #{table_name}.user_id = ?", VISIBILITY_PRIVATE, user.id)
@@ -180,6 +180,16 @@ class AgileQuery < Query
       :type => :list_optional, :values => assigned_to_values
     ) unless assigned_to_values.empty?
 
+    group_values = Group.all.collect {|g| [g.name, g.id.to_s] }
+    add_available_filter("member_of_group",
+      :type => :list_optional, :values => group_values
+    ) unless group_values.empty?
+
+    role_values = Role.givable.collect {|r| [r.name, r.id.to_s] }
+    add_available_filter("assigned_to_role",
+      :type => :list_optional, :values => role_values
+    ) unless role_values.empty?
+
     if versions.any?
       add_available_filter "fixed_version_id",
         :type => :list_optional,
@@ -287,6 +297,44 @@ class AgileQuery < Query
     "(#{sql})"
   end
 
+  def sql_for_member_of_group_field(field, operator, value)
+    if operator == '*' # Any group
+      groups = Group.all
+      operator = '=' # Override the operator since we want to find by assigned_to
+    elsif operator == "!*"
+      groups = Group.all
+      operator = '!' # Override the operator since we want to find by assigned_to
+    else
+      groups = Group.where(:id => value).all
+    end
+    groups ||= []
+
+    members_of_groups = groups.inject([]) {|user_ids, group|
+      user_ids + group.user_ids + [group.id]
+    }.uniq.compact.sort.collect(&:to_s)
+
+    '(' + sql_for_field("assigned_to_id", operator, members_of_groups, Issue.table_name, "assigned_to_id", false) + ')'
+  end
+
+  def sql_for_assigned_to_role_field(field, operator, value)
+    case operator
+    when "*", "!*" # Member / Not member
+      sw = operator == "!*" ? 'NOT' : ''
+      nl = operator == "!*" ? "#{Issue.table_name}.assigned_to_id IS NULL OR" : ''
+      "(#{nl} #{Issue.table_name}.assigned_to_id #{sw} IN (SELECT DISTINCT #{Member.table_name}.user_id FROM #{Member.table_name}" +
+        " WHERE #{Member.table_name}.project_id = #{Issue.table_name}.project_id))"
+    when "=", "!"
+      role_cond = value.any? ?
+        "#{MemberRole.table_name}.role_id IN (" + value.collect{|val| "'#{connection.quote_string(val)}'"}.join(",") + ")" :
+        "1=0"
+
+      sw = operator == "!" ? 'NOT' : ''
+      nl = operator == "!" ? "#{Issue.table_name}.assigned_to_id IS NULL OR" : ''
+      "(#{nl} #{Issue.table_name}.assigned_to_id #{sw} IN (SELECT DISTINCT #{Member.table_name}.user_id FROM #{Member.table_name}, #{MemberRole.table_name}" +
+        " WHERE #{Member.table_name}.project_id = #{Issue.table_name}.project_id AND #{Member.table_name}.id = #{MemberRole.table_name}.member_id AND #{role_cond}))"
+    end
+  end
+
   def issues(options={})
     order_option = [group_by_sort_order, options[:order]].flatten.reject(&:blank?)
 
@@ -312,7 +360,7 @@ class AgileQuery < Query
   def board_statuses
     status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
     status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
-    statuses = IssueStatus.where(:id => Tracker.includes(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+    statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
     result_statuses = case status_filter_operator
     when "o"
       statuses.where(:is_closed => false).sorted
@@ -321,7 +369,7 @@ class AgileQuery < Query
     when "="
       statuses.where(:id => status_filter_values).sorted
     when "!"
-      statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{connection.quote_string(val)}'"}.join(",") + ")").sorted
+      statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
     else
       statuses.sorted
     end

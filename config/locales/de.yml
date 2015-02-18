@@ -67,3 +67,6 @@ de:
   label_agile_swimlanes: Swimlanes
   label_agile_minimize_closed: Geschlossene Aufgaben minimieren
   label_agile_fields: Felder für Taskboard-Karten
+
+  #1.3.6
+  text_agile_move_not_possible: Diese Änderung ist nicht möglich

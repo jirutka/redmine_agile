@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -17,7 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-AGILE_VERSION_NUMBER = '1.3.3'
+require 'redmine'
+
+AGILE_VERSION_NUMBER = '1.3.7'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do
@@ -52,4 +54,6 @@ Redmine::Plugin.register :redmine_agile do
   end
 end
 
-require 'redmine_agile'
+ActionDispatch::Callbacks.to_prepare do
+  require 'redmine_agile'
+end

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,7 +22,9 @@
 
 resources :projects do
   resources :agile_queries, :only => [:new, :create]
-  resources :agile_versions, :only => [:index]
+  resources :agile_versions, :only => [:index] do
+    post :index, :on => :collection
+  end
 end
 
 resources :agile_versions, :only => [:update, :show] do
@@ -35,6 +37,7 @@ end
 resources :issues do
   get "done_ratio", :to => "agile_journal_details#done_ratio"
   get "status", :to => "agile_journal_details#status"
+  get "assignee", :to => "agile_journal_details#assignee"
 end
 
 resources :agile_queries

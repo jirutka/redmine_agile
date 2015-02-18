@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -73,7 +73,9 @@ class AgileBoardsController < ApplicationController
     saved = params[:issue] && params[:issue].inject(true) do |total, attribute|
        total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
     end
+    call_hook(:controller_agile_boards_update_before_save, { :params => params, :issue => @issue})
     if saved && @issue.save
+      call_hook(:controller_agile_boards_update_after_save, { :params => params, :issue => @issue})
       AgileRank.transaction do
         Issue.includes(:agile_rank).find(params[:positions].keys).each do |issue|
           issue.agile_rank.position = params[:positions][issue.id.to_s]['position']
@@ -86,7 +88,9 @@ class AgileBoardsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :json => @issue.errors.full_messages, :status => :fail, :layout => nil }
+        messages = @issue.errors.full_messages
+        messages = [l(:text_agile_move_not_possible)] if messages.empty?
+        format.html { render :json => messages, :status => :fail, :layout => nil }
       end
     end
   end

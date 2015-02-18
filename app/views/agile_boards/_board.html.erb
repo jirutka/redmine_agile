@@ -3,6 +3,8 @@
   <%= hidden_field_tag 'project_id', @project.id if @project %>
   <% board_statuses = IssueStatus.sorted %>
 <div class="agile-board autoscroll">
+    <div class="flash error" style="display: none;" id="agile-board-errors">
+    </div>
     <table class="list issues-board <%= 'status-colors' if RedmineAgile.status_colors? %> <%= 'minimize-closed' if RedmineAgile.minimize_closed? %>">
       <thead>
       <%= render_board_headers(@board_columns) %>

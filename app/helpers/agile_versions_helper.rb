@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -25,11 +25,16 @@ module AgileVersionsHelper
     version_id =  version.is_a?(Version) && version.id || version
     other_version_id = option[:other_version].is_a?(Version) && option[:other_version].id || option[:other_version]
     select_tag('version_id',
-      options_from_collection_for_select(@project.versions.open, "id", "name",
+      options_for_select(versions_collection_for_select,
           {:selected => version_id, :disabled => other_version_id}),
       :data => {:remote => true,
                 :method => 'get',
                 :url => load_agile_versions_path(:version_type => option[:version_type],
-                                                 :other_version_id => other_version_id)})
+                                                 :other_version_id => other_version_id,
+                                                 :project_id => @project)})
+  end
+
+  def versions_collection_for_select
+    @project.shared_versions.open.map{|version| [format_version_name(version), version.id.to_s]}
   end
 end

@@ -82,6 +82,8 @@ table.versions-planning-board td.issue-version-col {
   height: 400px;
 }
 
+table.list.versions-planning-board input#search.autocomplete {width: 80%;}
+
 table.list.versions-planning-board tbody tr,
 table.list.versions-planning-board tbody tr:hover {background-color: white;}
 

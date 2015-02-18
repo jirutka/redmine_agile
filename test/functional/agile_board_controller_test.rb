@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -60,6 +60,12 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_template :index
   end
 
+  def test_get_index_with_project
+    get :index, :project_id => "ecookbook"
+    assert_response :success
+    assert_template :index
+  end
+
   def test_get_index_truncated
     with_agile_settings "board_items_limit" => 1 do
       get :index, agile_query_params
@@ -102,6 +108,12 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_equal fixed_version_id, Issue.find(first_issue_id).fixed_version_id
     assert_equal first_pos, Issue.find(first_issue_id).agile_rank.position
     assert_equal second_pos, Issue.find(second_issue_id).agile_rank.position
+  end
+
+  def test_get_index_with_all_fields
+    get :index, agile_query_params.merge({:f => AgileQuery.available_columns.map(&:name)})
+    assert_response :success
+    assert_template :index
   end
 
   private

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2014 RedmineCRM
+# Copyright (C) 2011-2015 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -32,9 +32,11 @@ module RedmineAgile
         session[:agile_query] = {:id => @query.id, :project_id => @query.project_id}
         sort_clear
       elsif api_request? || params[:set_filter] || session[:agile_query].nil? || session[:agile_query][:project_id] != (@project ? @project.id : nil)
-        @query = AgileQuery.new(:name => "_")
-        @query.project = @project
-        @query.build_from_params(params)
+        unless @query
+          @query = AgileQuery.new(:name => "_")
+          @query.project = @project if @project
+          @query.build_from_params(params)
+        end
         session[:agile_query] = {:project_id => @query.project_id,
                                  :filters => @query.filters,
                                  :group_by => @query.group_by,
@@ -43,7 +45,7 @@ module RedmineAgile
       else
         # retrieve from session
         @query = nil
-        @query = AgileQuery.find_by_id(session[:agile_query][:id]) if session[:agile_query][:id]
+        @query ||= AgileQuery.find_by_id(session[:agile_query][:id]) if session[:agile_query][:id]
         @query ||= AgileQuery.new(:name => "_",
                                   :filters => session[:agile_query][:filters],
                                   :group_by => session[:agile_query][:group_by],
