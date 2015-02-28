@@ -340,7 +340,7 @@ class AgileQuery < Query
 
     scope = issue_scope.
       joins(:status, :project).
-      includes((options[:include] || []).uniq).
+      eager_load((options[:include] || []).uniq).
       where(options[:conditions]).
       order(order_option).
       joins(joins_for_order_statement(order_option.join(','))).
@@ -392,13 +392,13 @@ class AgileQuery < Query
 private
   def issue_scope
     Issue.visible.
-      includes(:status,
-               :project,
-               :assigned_to,
-               :tracker,
-               :priority,
-               :category,
-               :fixed_version).
+      eager_load(:status,
+                 :project,
+                 :assigned_to,
+                 :tracker,
+                 :priority,
+                 :category,
+                 :fixed_version).
       where(statement)
   end
 

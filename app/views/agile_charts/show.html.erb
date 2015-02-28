@@ -36,7 +36,7 @@
       </fieldset>
     </div>
     <p class="buttons">
-      <%= link_to_function l(:button_apply), 'submit_query_form("query_form")', :class => 'icon icon-checked' %>
+      <%= link_to_function l(:button_apply), '$("#query_form").submit()', :class => 'icon icon-checked' %>
       <%= link_to l(:button_clear), { :set_filter => 1, :project_id => @project }, :class => 'icon icon-reload'  %>
     </p>
   </div>
@@ -49,8 +49,4 @@
 <% content_for :sidebar do %>
   <%= render :partial => 'agile_boards/issues_links' %>
   <%= render :partial => 'agile_charts/agile_charts' %>
-<% end %>
-
-<% content_for :header_tags do %>
-  <%= javascript_include_tag 'select_list_move' %>
 <% end %>

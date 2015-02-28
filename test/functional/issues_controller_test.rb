@@ -21,7 +21,10 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class AgileRankTest < ActiveSupport::TestCase
+# Re-raise errors caught by the controller.
+# class HelpdeskMailerController; def rescue_action(e) raise e end; end
+
+class IssuesControllerTest < ActionController::TestCase
   fixtures :projects,
            :users,
            :roles,
@@ -46,22 +49,23 @@ class AgileRankTest < ActiveSupport::TestCase
            :journal_details,
            :queries
 
-  # Replace this with your real tests.
-  def test_save_color
-    issue = Issue.find(1)
-    issue.agile_rank.position = 1
-    assert issue.save
-    issue.reload
-    assert_equal 1, issue.agile_rank.position
+
+  def setup
+    @request.session[:user_id] = 1
   end
 
-  def test_delete_color
-    issue = Issue.find(1)
-    issue.agile_rank.position = 1
-    assert issue.save
-    issue.reload
-    agile_rank = issue.agile_rank
-    assert issue.destroy
-    assert !AgileRank.exists?(agile_rank.id)
+  def test_get_index_with_colors
+
+    with_agile_settings "color_on" => "issue" do
+      issue = Issue.find(1)
+      issue.color = "red"
+      issue.save
+      get :index
+      assert_response :success
+      assert_template :index
+      assert_select 'tr#issue-1.issue.bk-red', 1
+    end
+
   end
+
 end

@@ -30,7 +30,7 @@ module RedmineAgile
           unloadable
           has_one :agile_rank, :dependent => :destroy
 
-          scope :sorted_by_rank, lambda {includes(:agile_rank).
+          scope :sorted_by_rank, lambda {eager_load(:agile_rank).
                                    order("COALESCE(#{AgileRank.table_name}.position, 999999)")}
           alias_method_chain :agile_rank, :default
         end

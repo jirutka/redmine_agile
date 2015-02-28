@@ -77,7 +77,7 @@ class AgileBoardsController < ApplicationController
     if saved && @issue.save
       call_hook(:controller_agile_boards_update_after_save, { :params => params, :issue => @issue})
       AgileRank.transaction do
-        Issue.includes(:agile_rank).find(params[:positions].keys).each do |issue|
+        Issue.eager_load(:agile_rank).find(params[:positions].keys).each do |issue|
           issue.agile_rank.position = params[:positions][issue.id.to_s]['position']
           issue.agile_rank.save
         end

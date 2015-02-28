@@ -4,6 +4,11 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2015 RedmineCRM
 http://www.redminecrm.com/
 
+== 2015-02-25 v1.3.8
+
+* Redmine 3.0 support fixes
+* N+1 agile color fixes
+
 == 2015-02-10 v1.3.6
 
 * Sticky headers in fullscreen mode (Dariusz Kowalski)
