@@ -31,10 +31,15 @@ module AgileVersionsHelper
                 :method => 'get',
                 :url => load_agile_versions_path(:version_type => option[:version_type],
                                                  :other_version_id => other_version_id,
-                                                 :project_id => @project)})
+                                                 :project_id => @project)}) +
+    content_tag(:span, '', :class => "hours header-hours #{option[:version_type]}-hours")
   end
 
   def versions_collection_for_select
     @project.shared_versions.open.map{|version| [format_version_name(version), version.id.to_s]}
+  end
+
+  def estimated_hours(issue)
+    "%.2fh" % issue.estimated_hours.to_f
   end
 end

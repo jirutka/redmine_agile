@@ -86,6 +86,12 @@ table.list.versions-planning-board input#search.autocomplete {width: 80%;}
 
 table.list.versions-planning-board tbody tr,
 table.list.versions-planning-board tbody tr:hover {background-color: white;}
+table.list.versions-planning-board .header-hours {
+  float: right;
+  vertical-align: baseline;
+  height: 26px;
+  line-height: 26px;
+}
 
 /**********************************************************************/
 /* AGILE BOARD
@@ -171,6 +177,23 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.f
 .issue-card table.progress td {
   height: 5px;
   padding: 0px;
+}
+
+.issue-card li.task-closed {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.issue-card div.sub-issues {
+  border-top: 1px solid #d5d5d5;
+  padding-top: 5px;
+  margin-top: 5px;
+  font-size: 90%;
+}
+
+.issue-card div.sub-issues ul {
+  margin: 1px 0px 5px 0px;
+  padding-left: 30px;
 }
 
 .issue-card .issue-id.without-tracker {

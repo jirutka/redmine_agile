@@ -4,10 +4,22 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2015 RedmineCRM
 http://www.redminecrm.com/
 
-== 2015-02-25 v1.3.8
+== 2015-05-20 v1.3.9
+
+* Chinese translation (zhoutt)
+* Fixed print media styles for board
+* Parent task filter allowed commas
+* Version planner filters
+
+== 2015-03-06 v1.3.8
 
 * Redmine 3.0 support fixes
+* Autoupdate board on fullscreen view
 * N+1 agile color fixes
+* New filter Parent issue tracker
+* Total hours on version planning columns
+* Sub issues card field
+* Issue history for color changes
 
 == 2015-02-10 v1.3.6
 

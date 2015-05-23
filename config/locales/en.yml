@@ -72,3 +72,21 @@ en:
 
   #1.3.6
   text_agile_move_not_possible: That move is not possible
+
+  #1.3.8
+  label_agile_parent_issue_tracker_id: Parent tracker
+  label_agile_sub_issues: Sub issues
+  label_agile_color_green: Green
+  label_agile_color_blue: Blue
+  label_agile_color_turquoise: Turquoise
+  label_agile_color_lightgreen: Light green
+  label_agile_color_yellow: Yello
+  label_agile_color_orange: Orange
+  label_agile_color_red: Red
+  label_agile_color_purple: Purple
+  label_agile_color_gray: Gray
+  label_agile_has_sub_issues: Has sub issues
+  label_agile_light_free_version: Agile Light free version
+  label_agile_link_to_pro: Upgrade to PRO 
+  label_agile_link_to_pro_demo: PRO version live demo
+  label_agile_link_to_more_plugins: Find more RedmineCRM plugins

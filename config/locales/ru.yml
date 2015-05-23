@@ -70,3 +70,24 @@ ru:
   label_agile_minimize_closed: Минимизировать закрытые задачи
   label_agile_fields: Поля
   label_agile_default_board: По умолчанию
+
+  #1.3.6
+  text_agile_move_not_possible: Данное передвижение невозможно
+
+  #1.3.8
+  label_agile_parent_issue_tracker_id: Треккер родителя
+  label_agile_sub_issues: Подзадачи
+  label_agile_color_green: Зеленый
+  label_agile_color_blue: Синий
+  label_agile_color_turquoise: Бирюзовый
+  label_agile_color_lightgreen: Светло зеленый
+  label_agile_color_yellow: Желтый
+  label_agile_color_orange: Оранжевый
+  label_agile_color_red: Красный
+  label_agile_color_purple: Фиолетовый
+  label_agile_color_gray: Серый
+  label_agile_has_sub_issues: Подзадачи
+  label_agile_light_free_version: Agile бесплатная версия
+  label_agile_link_to_pro: Обновление до PRO 
+  label_agile_link_to_pro_demo: Онлайн демо PRO
+  label_agile_link_to_more_plugins: Другие плагины RedmineCRM

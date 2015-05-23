@@ -1,6 +1,5 @@
 <h2><%= l(:label_agile_version_planning) %></h2>
 
-
 <% if User.current.allowed_to?(:edit_issues, @project) %>
   <%= javascript_tag do %>
     new PlanningBoard().init({

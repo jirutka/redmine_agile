@@ -82,6 +82,76 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_template :index
   end
 
+  def create_subissue
+    @issue1 = Issue.find(1)
+    @subissue = Issue.create!(
+      :subject         => 'Sub issue',
+      :project         => @issue1.project,
+      :tracker         => @issue1.tracker,
+      :author          => @issue1.author,
+      :parent_issue_id => @issue1.id,
+      :fixed_version   => Version.last
+    )
+  end
+
+  def test_get_index_with_filter_on_parent_tracker
+    create_subissue
+    get :index, agile_query_params.merge({
+      :op => {:parent_issue_tracker_id => '='},
+      :v => {:parent_issue_tracker_id => [ Tracker.find(1).name ]},
+      :f => [:parent_issue_tracker_id],
+      :project_id => Project.order(:id).first.id
+    })
+    assert_response :success
+    assert_template :index
+    assert_equal [@subissue.id], assigns[:issues].map(&:id)
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_get_index_with_filter_on_two_parent_id
+    create_subissue
+    issue2 = Issue.generate!
+    child2 =  issue2.generate_child!
+    
+    get :index, agile_query_params.merge({
+      :op => {:parent_issue_id => '='},
+      :v => {:parent_issue_id => [ "#{@issue1.id}, #{issue2.id}" ]},
+      :f => [:parent_issue_id],
+      :project_id => Project.order(:id).first.id
+    })
+    assert_response :success
+    assert_template :index
+    assert_equal [@subissue.id, child2.id], assigns[:issues].map(&:id)
+  end if Redmine::VERSION.to_s > '2.4'
+
+  
+
+  def test_get_index_with_filter_on_parent_tracker_inversed
+    create_subissue
+    get :index, agile_query_params.merge({
+      :op => {:parent_issue_tracker_id => '!'},
+      :v => {:parent_issue_tracker_id => [ Tracker.find(1).name ]},
+      :f => [:parent_issue_tracker_id],
+      :project_id => Project.order(:id).first.id
+    })
+    assert_response :success
+    assert_template :index
+    assert_not_include @subissue.id, assigns[:issues].map(&:id)
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_get_index_with_filter_on_has_subissues
+    create_subissue
+    get :index, agile_query_params.merge({
+      :op => {:has_sub_issues => '='},
+      :v => {:has_sub_issues => [ 'yes' ]},
+      :f => [:has_sub_issues],
+      :project_id => Project.order(:id).first.id
+    })
+    assert_response :success
+    assert_template :index
+    assert_equal [@issue1.id], assigns[:issues].map(&:id)
+  end if Redmine::VERSION.to_s > '2.4'
+
+
   def test_put_update_status
     status_id = 1
     first_issue_id = 1

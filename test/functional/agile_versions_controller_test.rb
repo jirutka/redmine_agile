@@ -47,10 +47,13 @@ class AgileVersionsControllerTest < ActionController::TestCase
            :queries
 
   def setup
+    
     @project_1 = Project.find(1)
-    @project_2 = Project.find(5)
+    @project_3 = Project.find(5)
+
     EnabledModule.create(:project => @project_1, :name => 'agile')
-    EnabledModule.create(:project => @project_2, :name => 'agile')
+    EnabledModule.create(:project => @project_3, :name => 'agile')
+
     @request.session[:user_id] = 1
   end
 
@@ -66,9 +69,9 @@ class AgileVersionsControllerTest < ActionController::TestCase
   end
 
   def test_get_autocomplete_id
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"#1"
+    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"#3"
     assert_response :success
-    assert_match "print recipes",  @response.body
+    assert_match "Error 281",  @response.body
   end
 
   def test_get_autocomplete_text

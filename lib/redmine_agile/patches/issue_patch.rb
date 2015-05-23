@@ -40,6 +40,10 @@ module RedmineAgile
         def agile_rank_with_default
           agile_rank_without_default || build_agile_rank
         end
+
+        def sub_issues
+          descendants
+        end
       end
     end
 

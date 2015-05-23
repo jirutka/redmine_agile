@@ -21,9 +21,6 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-# Re-raise errors caught by the controller.
-# class HelpdeskMailerController; def rescue_action(e) raise e end; end
-
 class IssuesControllerTest < ActionController::TestCase
   fixtures :projects,
            :users,
@@ -51,21 +48,11 @@ class IssuesControllerTest < ActionController::TestCase
 
 
   def setup
+    @project_1 = Project.find(1)
+    @project_2 = Project.find(5)
+    EnabledModule.create(:project => @project_1, :name => 'agile')
+    EnabledModule.create(:project => @project_2, :name => 'agile')
     @request.session[:user_id] = 1
-  end
-
-  def test_get_index_with_colors
-
-    with_agile_settings "color_on" => "issue" do
-      issue = Issue.find(1)
-      issue.color = "red"
-      issue.save
-      get :index
-      assert_response :success
-      assert_template :index
-      assert_select 'tr#issue-1.issue.bk-red', 1
-    end
-
   end
 
 end

@@ -388,9 +388,25 @@ function observeIssueSearchfield(fieldId, url) {
   });
 }
 
+function recalculateHours() {
+  var backlogSum = 0;
+  $('.versions-planning-board td:nth-child(2) .issue-card').each(function(i, elem){
+    hours = parseFloat($(elem).data('estimated-hours'));
+    backlogSum += hours;
+  })
+  $('.versions-planning-board .backlog-hours').text('(' + backlogSum.toFixed(2) + 'h)');
+
+  var currentSum = 0;
+  $('.versions-planning-board td:nth-child(3) .issue-card').each(function(i, elem){
+    hours = parseFloat($(elem).data('estimated-hours'));
+    currentSum += hours;
+  })
+  $('.versions-planning-board .current-hours').text('(' + currentSum.toFixed(2) + 'h)');
+}
+
 $(document).ready(function(){
-    $('table.issues-board').StickyHeader();
-    $('div#agile-board-errors').click(function(){
-      $(this).animate({top: -$(this).outerHeight()}, 500);
-    });
+  $('table.issues-board').StickyHeader();
+  $('div#agile-board-errors').click(function(){
+    $(this).animate({top: -$(this).outerHeight()}, 500);
+  });
 });

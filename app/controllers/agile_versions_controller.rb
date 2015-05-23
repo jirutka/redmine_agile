@@ -21,20 +21,29 @@ class AgileVersionsController < ApplicationController
   unloadable
 
   menu_item :agile
-
+  
   before_filter :find_project_by_project_id, :only => [:index, :autocomplete, :load]
   before_filter :find_version, :only => [:load]
   before_filter :authorize, :except => [:autocomplete, :load]
   before_filter :find_no_version_issues, :only => [:index, :autocomplete]
 
+  include QueriesHelper
+  helper :queries
+  include RedmineAgile::AgileHelper
+
   def index
-    @backlog_version = @project.shared_versions.open.where("LOWER(#{Version.table_name}.name) LIKE LOWER(?)", "backlog").first ||
-        @project.shared_versions.open.where(:effective_date => nil).first ||
-        @project.shared_versions.open.order("effective_date ASC").first
-    @current_version = Version.open.
-        where(:project_id => @project).
-        where("#{Version.table_name}.id <> ?", @backlog_version).
-        order("effective_date DESC").first
+    retrieve_versions_query
+      @backlog_version = @query.backlog_version
+      @backlog_version_issues =  @query.backlog_version_issues
+
+      @current_version = @query.current_version
+      @current_version_issues = @query.current_version_issues
+    respond_to do |format|
+      format.html
+      format.js
+    end
+  rescue ActiveRecord::RecordNotFound
+    render_404
   end
 
   def autocomplete
@@ -42,7 +51,8 @@ class AgileVersionsController < ApplicationController
   end
 
   def load
-    @version_issues = @version.fixed_issues.open.visible.sorted_by_rank
+    retrieve_versions_query
+    @version_issues = @query.version_issues(@version)
     @version_type = params[:version_type]
     @other_version_type = @version_type == "backlog" ? "current" : "backlog"
     @other_version_id = params[:other_version_id]
@@ -61,24 +71,11 @@ class AgileVersionsController < ApplicationController
   end
 
   def find_no_version_issues
-    q = (params[:q] || params[:term]).to_s.strip
-    scope = Issue.open.visible
-    if @project
-      project_ids = [@project.id]
-      project_ids += @project.descendants.collect(&:id) if Setting.display_subprojects_issues?
-      scope = scope.where(:project_id => project_ids)
-    end
-    scope = scope.where(:fixed_version_id => nil).sorted_by_rank
-    if q.present?
-      if q.match(/^#?(\d+)\z/)
-        scope = scope.where("(#{Issue.table_name}.id = ?) OR (LOWER(#{Issue.table_name}.subject) LIKE LOWER(?))", $1.to_i, "%#{q}%")
-      else
-        scope = scope.where("LOWER(#{Issue.table_name}.subject) LIKE LOWER(?)", "%#{q}%")
-      end
-    end
-    @issue_count = scope.count
-    @issue_pages = Redmine::Pagination::Paginator.new @issue_count, 20, params['page']
-    @version_issues = scope.offset(@issue_pages.offset).limit(@issue_pages.per_page).all
+    retrieve_versions_query
+      scope = @query.no_version_issues(params)
+      @issue_count = scope.count
+      @issue_pages = Redmine::Pagination::Paginator.new @issue_count, 20, params['page']
+      @version_issues = scope.offset(@issue_pages.offset).limit(@issue_pages.per_page).all
   end
 
 end

@@ -1,6 +1,6 @@
 <div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %>" data-id="<%= issue.id %>">
     <span class="fields">
-    <% if @query.has_column_name?(:project) %>
+        <% if @query.has_column_name?(:project) %>
         <p class="project">
           <%= issue.project.name %>
         </p>
@@ -22,6 +22,11 @@
         <em class="info description">
           <%= issue.description.truncate(200) %>
         </em>
+        <% end %>
+        <% if @query.has_column_name?(:sub_issues) && issue.sub_issues.any? %>
+          <div class='sub-issues'>
+            <%= issue_children(issue) %>
+          </div>
         <% end %>
         <% if @query.has_column_name?(:thumbnails)  %>
           <% image = issue.attachments.select(&:thumbnailable?).last %>

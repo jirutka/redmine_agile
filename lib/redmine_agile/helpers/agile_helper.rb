@@ -55,6 +55,11 @@ module RedmineAgile
       end
     end
 
+    def retrieve_versions_query
+      @query = AgileVersionsQuery.new
+      @query.project = @project if @project
+    end
+
     def options_charts_for_select(selected, options={})
       options_for_select([[l(:label_agile_charts_issues_burndown), "issues_burndown"],
         [l(:label_agile_charts_work_burndown), "work_burndown"],

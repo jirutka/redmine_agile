@@ -65,7 +65,7 @@ class AgileQuery < Query
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -211,9 +211,15 @@ class AgileQuery < Query
     add_available_filter "estimated_hours", :type => :float
     add_available_filter "done_ratio", :type => :integer
     add_available_filter "parent_issue_id", :type => :relation
+    add_available_filter "has_sub_issues", :type => :list,
+      :values => [ l(:general_text_yes), l(:general_text_no)],
+      :label => :label_agile_has_sub_issues
     add_available_filter "version_status", :type => :list,
       :name => l("label_attribute_of_fixed_version", :name => 'status'),
       :values => Version::VERSION_STATUSES.collect {|s| [l("version_status_#{s}"), s]}
+    add_available_filter "parent_issue_tracker_id", :type => :list,
+      :label => :label_agile_parent_issue_tracker_id,
+      :values => Tracker.pluck(:name)
 
     if subprojects.any?
       add_available_filter "subproject_id",
@@ -285,7 +291,16 @@ class AgileQuery < Query
      sql_for_field(field, operator, value, Version.table_name, "status")
   end
 
+  def sql_for_has_sub_issues_field(field, operator, value)
+    cond = ''
+    cond = 'NOT' if operator == '=' && value.include?(I18n.t(:general_text_no))
+    cond = 'NOT' if operator == '!' && value.include?(I18n.t(:general_text_yes))
+    "( #{cond} EXISTS ( SELECT * FROM #{Issue.table_name} AS subissues WHERE subissues.parent_id = issues.id ) )"
+  end
+
   def sql_for_parent_issue_id_field(field, operator, value, options={})
+    value = value.first.split(",") if value.is_a? Array
+    value = value.split(",") if value.is_a? String
     sql = case operator
       when "*", "!*", "=", "!"
         sql_for_field(field, operator, value, queried_table_name, "parent_id")
@@ -295,6 +310,12 @@ class AgileQuery < Query
         "#{Issue.table_name}.parent_id #{op} (SELECT DISTINCT #{Issue.table_name}.id FROM #{Issue.table_name} WHERE #{Issue.table_name}.project_id #{comp} #{value.first.to_i})"
       end
     "(#{sql})"
+  end
+
+  def sql_for_parent_issue_tracker_id_field(field, operator, value)
+    cond = if operator == '=' then '' else 'NOT' end
+    selected_trackers_ids = Tracker.where(:name => value).pluck(:id).join(',')
+    "( EXISTS (SELECT * FROM #{Issue.table_name} AS parents WHERE parents.tracker_id #{cond} IN (#{selected_trackers_ids}) AND parents.id = issues.parent_id ) )"
   end
 
   def sql_for_member_of_group_field(field, operator, value)

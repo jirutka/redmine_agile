@@ -70,4 +70,14 @@ module AgileBoardsHelper
         (legend ? content_tag('td', content_tag('p', legend, :class => 'percent'), :class => 'legend') : ''.html_safe)
       ), :class => "progress progress-#{pcts[0]}", :style => "width: #{width};").html_safe
   end
+
+  def issue_children(issue)
+    return unless issue.children.any?
+    content_tag :ul do
+      issue.children.select{ |x| x.visible? }.each do |child|
+        id = if @query.has_column_name?(:tracker) || @query.has_column_name?(:id) then "##{child.id}:&nbsp;" else '' end
+        concat "<li class='#{'task-closed' if child.closed?}'><a href='#{issue_path(child)}'>#{id}#{child.subject}</a></li>#{issue_children(child)}".html_safe
+      end
+    end
+  end
 end

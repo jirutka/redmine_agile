@@ -1,7 +1,7 @@
 <% version_issues.each do |issue| %>
-  <div class="issue-card hascontextmenu" data-id="<%= issue.id %>">
+  <div class="issue-card hascontextmenu" data-id="<%= issue.id %>" data-estimated-hours="<%= estimated_hours(issue) %>">
     <% if issue.estimated_hours %>
-      <span class="hours"><%= "(#{"%.2f" % issue.estimated_hours.to_f}h)" %></span>
+      <span class="hours"><%= estimated_hours(issue) %></span>
     <% end %>
     <%= check_box_tag("ids[]", issue.id, false, :id => nil, :class => 'checkbox') %>
     <%= link_to_issue(issue, :project => (@project != issue.project)) %>

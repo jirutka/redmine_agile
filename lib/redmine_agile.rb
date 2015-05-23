@@ -22,7 +22,6 @@ require 'douglas_peucker'
 require 'redmine_agile/hooks/views_layouts_hook'
 require 'redmine_agile/hooks/views_issues_hook'
 require 'redmine_agile/hooks/views_versions_hook'
-
 require 'redmine_agile/patches/issue_patch'
 require 'redmine_agile/patches/compatibility_patch'
 

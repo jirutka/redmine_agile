@@ -56,10 +56,12 @@ class AgileBoardsController < ApplicationController
       @board_columns = @query.board_statuses
       respond_to do |format|
         format.html { render :template => 'agile_boards/index', :layout => !request.xhr? }
+        format.js
       end
     else
       respond_to do |format|
         format.html { render(:template => 'agile_boards/index', :layout => !request.xhr?) }
+        format.js
       end
     end
   rescue ActiveRecord::RecordNotFound
