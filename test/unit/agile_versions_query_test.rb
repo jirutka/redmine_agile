@@ -21,14 +21,14 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class AgileVersionsControllerTest < ActionController::TestCase
+class AgileVersionsQueryTest < ActiveSupport::TestCase
   fixtures :projects,
            :users,
            :roles,
            :members,
            :member_roles,
-           :issues,
            :issue_statuses,
+           :issues,
            :versions,
            :trackers,
            :projects_trackers,
@@ -47,37 +47,27 @@ class AgileVersionsControllerTest < ActionController::TestCase
            :queries
 
   def setup
-    
-    @project_1 = Project.find(1)
-    @project_3 = Project.find(5)
-    
-    EnabledModule.create(:project => @project_1, :name => 'agile')
-    EnabledModule.create(:project => @project_3, :name => 'agile')
-
-    @request.session[:user_id] = 1
+    super
+    RedmineAgile.create_issues
+    @query = AgileVersionsQuery.new
+        @query.project = Project.find(2)
+    @backlog_version = Version.find(7)
+    @current_version = Version.find(5)
   end
 
-  def test_get_index
-    get :index, :project_id => @project_1
-    assert_response :success
-    assert_template :index
+  def test_backlog_version
+    assert_equal @backlog_version, @query.backlog_version
   end
 
-  def test_get_load
-    xhr :get, :load, :version_type => "backlog", :version_id => "3", :project_id => "ecookbook"
-    assert_response :success
+  def test_current_version
+    assert_equal @current_version, @query.current_version
   end
 
-  def test_get_autocomplete_id
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"#3"
-    assert_response :success
-    assert_match "Error 281",  @response.body
+  def test_backlog_issues
+    assert_equal [100,101,102,103], @query.backlog_version_issues.map(&:id).sort
   end
-
-  def test_get_autocomplete_text
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"error"
-    assert_response :success
-    assert_match "Error 281",  @response.body
+  
+  def test_current_issues
+    assert_equal [104], @query.current_version_issues.map(&:id).sort
   end
-
 end

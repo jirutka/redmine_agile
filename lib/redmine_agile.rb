@@ -23,6 +23,7 @@ require 'redmine_agile/hooks/views_layouts_hook'
 require 'redmine_agile/hooks/views_issues_hook'
 require 'redmine_agile/hooks/views_versions_hook'
 require 'redmine_agile/patches/issue_patch'
+
 require 'redmine_agile/patches/compatibility_patch'
 
 require 'redmine_agile/helpers/agile_helper'
@@ -64,11 +65,11 @@ module RedmineAgile
 
     def use_colors?
       false
-    end
+          end
 
     def color_base
       "none"
-    end
+          end
 
     def minimize_closed?
       Setting.plugin_redmine_agile['minimize_closed'].to_i > 0
@@ -80,7 +81,7 @@ module RedmineAgile
 
     def status_colors?
       false
-    end
+          end
 
   end
 

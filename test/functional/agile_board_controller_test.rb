@@ -151,6 +151,18 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_equal [@issue1.id], assigns[:issues].map(&:id)
   end if Redmine::VERSION.to_s > '2.4'
 
+  def test_get_index_with_filter_and_field_time_in_state
+    create_subissue
+    columns_group_by = AgileQuery.new.groupable_columns
+    columns_group_by.each do |col|
+      get :index, agile_query_params.merge({
+        :project_id => Project.order(:id).first.id,
+        :group_by => col.name.to_s
+        })
+      assert_response :success, "Error with group by #{col.name}"
+      assert_template :index
+    end
+  end if Redmine::VERSION.to_s > '2.4'
 
   def test_put_update_status
     status_id = 1

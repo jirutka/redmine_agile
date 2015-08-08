@@ -88,6 +88,19 @@ ru:
   label_agile_color_gray: Серый
   label_agile_has_sub_issues: Подзадачи
   label_agile_light_free_version: Agile бесплатная версия
-  label_agile_link_to_pro: Обновление до PRO 
+  label_agile_link_to_pro: Обновление до PRO
   label_agile_link_to_pro_demo: Онлайн демо PRO
   label_agile_link_to_more_plugins: Другие плагины RedmineCRM
+  label_agile_button_agree: Согласен
+  label_agile_license: Лицензионное соглашение RedmineCRM
+  label_agile_saving_boards: Сохранить настройку доски
+  label_agile_horizontal_swim_lines: Группировки карточек
+  label_agile_board_sub_columns: Доп. колонки
+  label_agile_additional_agile_charts: Доп. диаграммы
+  label_agile_coloured_issue_cards: Цветовая индикация карточек
+  label_agile_4_more_features: И еще другие 4 функции...
+  label_agile_upgrade_to_pro: 'Обновитесь до PRO версии чтобы:'
+
+  label_agile_day_in_state: В статусе
+  #1.3.10
+  project_module_agile: Agile

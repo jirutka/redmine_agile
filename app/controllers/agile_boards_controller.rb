@@ -54,6 +54,11 @@ class AgileBoardsController < ApplicationController
       @issues = @query.issues
       @issue_board = @query.issue_board
       @board_columns = @query.board_statuses
+      
+      if @query.has_column_name?(:day_in_state)
+        @journals_for_state = Journal.joins(:details).where(:journals => {:journalized_id => @issues.map{|issue| (issue.id rescue nil)}, :journalized_type => "Issue"}, :journal_details => {:prop_key => 'status_id'}).order("created_on DESC") 
+      end
+
       respond_to do |format|
         format.html { render :template => 'agile_boards/index', :layout => !request.xhr? }
         format.js
@@ -70,12 +75,14 @@ class AgileBoardsController < ApplicationController
 
   def update
     (render_403; return false) unless @issue.editable?
+    retrieve_agile_query
     @issue.init_journal(User.current)
     @issue.safe_attributes = params[:issue]
     saved = params[:issue] && params[:issue].inject(true) do |total, attribute|
        total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
     end
     call_hook(:controller_agile_boards_update_before_save, { :params => params, :issue => @issue})
+    @update = true
     if saved && @issue.save
       call_hook(:controller_agile_boards_update_after_save, { :params => params, :issue => @issue})
       AgileRank.transaction do
@@ -85,8 +92,7 @@ class AgileBoardsController < ApplicationController
         end
       end
       respond_to do |format|
-        # format.js
-        format.html { render :json => @issue, :status => :ok, :layout => nil }
+        format.html { render(:partial => 'issue_card', :locals => {:issue => @issue}, :status => :ok, :layout => nil) }
       end
     else
       respond_to do |format|

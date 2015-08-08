@@ -45,6 +45,16 @@ module RedmineAgile
       else
         # retrieve from session
         @query = nil
+        if session[:agile_query] && !session[:agile_query][:id] && !params[:project_id]
+          query_params = {
+            :name => "_",
+            :filters => session[:agile_query][:filters],
+            :group_by => session[:agile_query][:group_by],
+            :color_base => session[:agile_query][:color_base],
+            :column_names => session[:agile_query][:column_names]
+          }
+          @query = AgileQuery.new(query_params)
+        end
         @query ||= AgileQuery.find_by_id(session[:agile_query][:id]) if session[:agile_query][:id]
         @query ||= AgileQuery.new(:name => "_",
                                   :filters => session[:agile_query][:filters],
@@ -52,12 +62,25 @@ module RedmineAgile
                                   :color_base => session[:agile_query][:color_base],
                                   :column_names => session[:agile_query][:column_names])
         @query.project = @project
+        session[:agile_query] = {:project_id => @query.project_id,
+                                 :filters => @query.filters,
+                                 :group_by => @query.group_by,
+                                 :color_base => (@query.respond_to?(:color_base) && @query.color_base),
+                                 :column_names => @query.column_names}
       end
     end
 
     def retrieve_versions_query
       @query = AgileVersionsQuery.new
       @query.project = @project if @project
+                end
+    def options_card_colors_for_select(selected, options={})
+      options_for_select([[l(:label_agile_color_no_colors), "none"],
+        [l(:label_issue), "issue"],
+        [l(:label_tracker), "tracker"],
+        [l(:field_priority), "priority"],
+        [l(:label_spent_time), "spent_time"]].compact,
+        selected)
     end
 
     def options_charts_for_select(selected, options={})

@@ -31,7 +31,8 @@ class AgileQuery < Query
     QueryColumn.new(:estimated_hours, :sortable => "#{Issue.table_name}.estimated_hours"),
     QueryColumn.new(:done_ratio, :sortable => "#{Issue.table_name}.done_ratio"),
     QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileRank.table_name}.position", :caption => :field_parent_issue),
-    QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id")
+    QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id"),
+    QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state)
   ]
 
   scope :visible, lambda {|*args|
@@ -65,7 +66,7 @@ class AgileQuery < Query
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -360,7 +361,7 @@ class AgileQuery < Query
     order_option = [group_by_sort_order, options[:order]].flatten.reject(&:blank?)
 
     scope = issue_scope.
-      joins(:status, :project).
+      joins(:status).
       eager_load((options[:include] || []).uniq).
       where(options[:conditions]).
       order(order_option).
@@ -408,7 +409,7 @@ class AgileQuery < Query
     @truncated = RedmineAgile.board_items_limit <= issue_scope.count
     all_issues = self.issues.limit(RedmineAgile.board_items_limit).sorted_by_rank
     all_issues.group_by{|i| [i.status_id]}
-  end
+      end
 
 private
   def issue_scope

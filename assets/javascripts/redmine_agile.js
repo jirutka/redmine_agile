@@ -182,7 +182,7 @@
           var oldSwimLaneId = $item.attr('oldSwimLaneId');
           var oldSwimLaneField = $item.attr('oldSwimLaneField');
           var $oldColumn = $('.ui-sortable[data-id="' + oldStatusId + '"]');
-
+          
           $column.find('.issue-card').each(function(i, e) {
             var $e = $(e);
             positions[$e.data('id')] = { position: $e.index() };
@@ -203,6 +203,7 @@
             data: params,
             success: function(data, status, xhr) {
               self.successSortable(oldStatusId, newStatusId, oldSwimLaneId, swimLaneId);
+              $($item).replaceWith(data);
             },
             error: function(xhr, status, error) {
               self.errorSortable($oldColumn, xhr.responseText);
@@ -214,12 +215,14 @@
     },
 
     initDraggable: function() {
-      $(".assignable-user").draggable({
-        helper: "clone",
-        start: function startDraggable(event, ui) {
-          $(ui.helper).addClass("draggable-active")
-        }
-      });
+      if ($("#group_by").val() != "assigned_to"){
+        $(".assignable-user").draggable({
+                helper: "clone",
+                start: function startDraggable(event, ui) {
+                  $(ui.helper).addClass("draggable-active")
+                }
+              });
+      }
     },
 
     initDroppable: function() {
@@ -232,15 +235,17 @@
         tolerance: 'pointer',
         drop: function(event, ui) {
           var $self = $(this);
-
           $.ajax({
             url: self.routes.issues_path + '/' + $self.data("id"),
             type: "PUT",
-            dataType: "json",
+            dataType: "JSON",
             data: {
               issue: {
                 assigned_to_id: ui.draggable.data("id")
               }
+            },
+            success: function(data, status, xhr){
+              // $self.html(data);
             }
           });
           $self.find("p.info").show();
@@ -250,7 +255,7 @@
     },
 
   }
-
+  
   window.AgileBoard = AgileBoard;
   window.PlanningBoard = PlanningBoard;
 
@@ -282,7 +287,7 @@
               .find('tbody')
               .remove()
               .end()
-              .css({'display': 'table', 'top': '0px', 'position': 'fixed', 'z-index': '1'})
+              .css({'display': 'table', 'top': '0px', 'position': 'fixed'})
               .insertBefore($this)
               .hide();
       }
@@ -314,6 +319,11 @@
               $tableFixed.css('display', 'none');
           } else if (offset >= tableOffsetTop && offset <= tableOffsetBottom) {
               $tableFixed.css('display', 'table');
+              // Fix for chrome not redrawing header
+              $tableFixed.css('z-index', '1');
+              setTimeout(function(){
+                $tableFixed.css('z-index', '');
+              }, 0);
           }
       }
 
@@ -321,7 +331,7 @@
           resizeFixed();
       });
 
-      $fullScreenButton.click(function() {
+      function bindScroll() {
           if ($html.hasClass('agile-board-fullscreen')) {
               $('div.agile-board.autoscroll').scroll(scrollFixed);
               $(window).unbind('scroll');
@@ -330,12 +340,16 @@
               $('div.agile-board.autoscroll').unbind('scroll');
               $tableFixed.hide();
           }
+      }
+
+      $fullScreenButton.click(function() {
+        bindScroll();
       });
 
-      $(window).scroll(scrollFixed);
       $(window).resize(resizeFixed);
-
       init();
+      bindScroll();
+
     });
   };
 })();

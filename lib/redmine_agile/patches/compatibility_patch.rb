@@ -54,7 +54,7 @@ class AgileQuery < Query
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id day_in_state).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -304,7 +304,7 @@ class AgileQuery < Query
     @truncated = RedmineAgile.board_items_limit <= issue_scope.count
     all_issues = self.issues.limit(RedmineAgile.board_items_limit).sorted_by_rank
     all_issues.group_by{|i| [i.status_id]}
-  end
+      end
 
 private
   def issue_scope

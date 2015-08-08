@@ -29,7 +29,7 @@ class AgileVersionsQuery
   def backlog_version_issues
     return [] if backlog_version.blank?
     backlog_version.fixed_issues.open.visible.sorted_by_rank
-  end
+      end
 
   def current_version
     @current_version = Version.open.
@@ -40,19 +40,19 @@ class AgileVersionsQuery
 
   def current_version_issues
     return [] if current_version.blank?
-    backlog_version.fixed_issues.open.visible.sorted_by_rank
-  end
+    current_version.fixed_issues.open.visible.sorted_by_rank
+      end
 
   def no_version_issues(params={})
     q = (params[:q] || params[:term]).to_s.strip
     scope = Issue.open.visible
-    if project
+        if project
       project_ids = [project.id]
       project_ids += project.descendants.collect(&:id) if Setting.display_subprojects_issues?
       scope = scope.where(:project_id => project_ids)
     end
     scope = scope.where(:fixed_version_id => nil).sorted_by_rank
-    if q.present?
+        if q.present?
       if q.match(/^#?(\d+)\z/)
         scope = scope.where("(#{Issue.table_name}.id = ?) OR (LOWER(#{Issue.table_name}.subject) LIKE LOWER(?))", $1.to_i,"%#{q}%")
       else
@@ -64,5 +64,5 @@ class AgileVersionsQuery
 
   def version_issues(version)
     version.fixed_issues.open.visible.sorted_by_rank
-  end
+      end
 end

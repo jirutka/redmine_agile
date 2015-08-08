@@ -4,6 +4,14 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2015 RedmineCRM
 http://www.redminecrm.com/
 
+== 2015-08-06 v1.3.10
+
+* Fixed bug with sticky headers after fullscreen auto update
+* Colored by spent time
+* Fixed bug with version planner unassigned issues
+* Added translation for module
+* Days in state card field
+
 == 2015-05-20 v1.3.9
 
 * Chinese translation (zhoutt)

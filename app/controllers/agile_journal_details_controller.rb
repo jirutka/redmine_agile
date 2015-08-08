@@ -45,7 +45,7 @@ class AgileJournalDetailsController < ApplicationController
   private
 
   def find_issue
-    @issue = Issue.find(params[:issue_id])
+    @issue = Issue.find(params[:issue_id]).eager_load(:journals => :details)
     raise Unauthorized unless @issue.visible?
     @project = @issue.project
   rescue ActiveRecord::RecordNotFound

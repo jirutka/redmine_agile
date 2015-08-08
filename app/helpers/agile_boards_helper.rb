@@ -22,7 +22,7 @@
 module AgileBoardsHelper
   def agile_color_class(issue, options={})
     ''
-  end
+      end
 
   def header_th(name, rowspan = 1, colspan = 1, leaf = nil)
     th_attributes = {}
@@ -36,7 +36,7 @@ module AgileBoardsHelper
 
   def render_board_headers(columns)
     "<tr>#{columns.map{|column| header_th(column.name, 1, 1, column)}.join}</tr>".html_safe
-  end
+      end
 
   def color_by_name(name)
     "##{"%06x" % (name.unpack('H*').first.hex % 0xffffff)}"
@@ -80,4 +80,13 @@ module AgileBoardsHelper
       end
     end
   end
+
+  def time_in_state(distance=nil)
+    return "" if !distance || !(distance.is_a? Time)
+    distance = Time.now - distance
+    hours = distance/(3600)
+    return "#{I18n.t('datetime.distance_in_words.x_hours', :count => hours.to_i)}" if hours < 24
+    "#{I18n.t('datetime.distance_in_words.x_days', :count => (hours/24).to_i)}"
+  end
+
 end
