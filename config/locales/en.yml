@@ -102,4 +102,5 @@ en:
 
   label_agile_day_in_state:  In status
   #1.3.10
+  label_agile_hide_closed_issues_data: Hide closed issues data
   project_module_agile: Agile

@@ -24,6 +24,9 @@ module AgileBoardsHelper
     ''
       end
 
+  def agile_user_color(issue, options={})
+  end
+
   def header_th(name, rowspan = 1, colspan = 1, leaf = nil)
     th_attributes = {}
     if leaf
@@ -87,6 +90,12 @@ module AgileBoardsHelper
     hours = distance/(3600)
     return "#{I18n.t('datetime.distance_in_words.x_hours', :count => hours.to_i)}" if hours < 24
     "#{I18n.t('datetime.distance_in_words.x_days', :count => (hours/24).to_i)}"
+  end
+
+  def class_for_closed_issue(issue)
+    return '' if !RedmineAgile.hide_closed_issues_data?
+    return 'closed-issue' if issue.closed?
+    ''
   end
 
 end

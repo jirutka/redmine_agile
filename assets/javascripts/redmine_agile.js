@@ -183,6 +183,13 @@
           var oldSwimLaneField = $item.attr('oldSwimLaneField');
           var $oldColumn = $('.ui-sortable[data-id="' + oldStatusId + '"]');
           
+          if ($column.hasClass("closed")){
+            $item.addClass("float-left")
+          }
+          else{
+            $item.removeClass("closed-issue");
+            $item.removeClass("float-left")
+          }
           $column.find('.issue-card').each(function(i, e) {
             var $e = $(e);
             positions[$e.data('id')] = { position: $e.index() };
@@ -236,16 +243,20 @@
         drop: function(event, ui) {
           var $self = $(this);
           $.ajax({
-            url: self.routes.issues_path + '/' + $self.data("id"),
+            url: self.routes.update_agile_board_path,
             type: "PUT",
-            dataType: "JSON",
+            dataType: "html",
             data: {
               issue: {
                 assigned_to_id: ui.draggable.data("id")
-              }
+              },
+              id: $self.data("id")
             },
             success: function(data, status, xhr){
-              // $self.html(data);
+              $self.replaceWith(data);
+            },
+            error:function(xhr, status, error) {
+              alert(error);
             }
           });
           $self.find("p.info").show();
@@ -418,9 +429,32 @@ function recalculateHours() {
   $('.versions-planning-board .current-hours').text('(' + currentSum.toFixed(2) + 'h)');
 }
 
+function getToolTipInfo(){
+  var node = this;
+  var issue_id = $(node).parents(".issue-card").data("id");
+  var tip = $(node).children(".tip");
+  if( $(tip).html() && $(tip).html().trim() != "")
+    return;
+  $.ajax({
+      url: '/agile/issue_tooltip',
+      type: "get",
+      dataType: "html",
+      data: {
+        id: issue_id
+      },
+      success: function(data, status, xhr){
+        $(tip).html(data);
+      },
+      error:function(xhr, status, error) {
+        $(tip).html(error);
+      }
+    });
+}
+
 $(document).ready(function(){
   $('table.issues-board').StickyHeader();
   $('div#agile-board-errors').click(function(){
     $(this).animate({top: -$(this).outerHeight()}, 500);
   });
+  $('.tooltip').mouseenter(getToolTipInfo);
 });

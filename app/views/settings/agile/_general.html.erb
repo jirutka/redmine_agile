@@ -24,3 +24,7 @@
   <label><%= l(:label_agile_time_reports_items_limit) %></label>
   <%= text_field_tag 'settings[time_reports_items_limit]', RedmineAgile.time_reports_items_limit, :size => 3 %>
 </p>
+<p>
+  <label><%= l(:label_agile_hide_closed_issues_data) %></label>
+  <%= check_box_tag 'settings[hide_closed_issues_data]', 1, RedmineAgile.hide_closed_issues_data? %>
+</p>

@@ -45,6 +45,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
            :journals,
            :journal_details,
            :queries
+  fixtures :email_addresses if Redmine::VERSION.to_s > '3.0'
 
   def setup
     @project_1 = Project.find(1)
@@ -111,7 +112,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     create_subissue
     issue2 = Issue.generate!
     child2 =  issue2.generate_child!
-    
+
     get :index, agile_query_params.merge({
       :op => {:parent_issue_id => '='},
       :v => {:parent_issue_id => [ "#{@issue1.id}, #{issue2.id}" ]},
@@ -120,10 +121,10 @@ class AgileBoardsControllerTest < ActionController::TestCase
     })
     assert_response :success
     assert_template :index
-    assert_equal [@subissue.id, child2.id], assigns[:issues].map(&:id)
+    assert_equal [@subissue.id, child2.id].sort, assigns[:issues].map(&:id).sort
   end if Redmine::VERSION.to_s > '2.4'
 
-  
+
 
   def test_get_index_with_filter_on_parent_tracker_inversed
     create_subissue
@@ -192,8 +193,73 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_equal second_pos, Issue.find(second_issue_id).agile_rank.position
   end
 
+  def test_put_update_assigned
+    assigned_to_id = 3
+    issue_id = 1
+    xhr :put, :update, :id => issue_id, :issue => {:assigned_to_id => assigned_to_id}
+    assert_response :success
+    assert_equal assigned_to_id, Issue.find(issue_id).assigned_to_id
+  end
+
   def test_get_index_with_all_fields
     get :index, agile_query_params.merge({:f => AgileQuery.available_columns.map(&:name)})
+    assert_response :success
+    assert_template :index
+  end
+
+  def test_short_card_for_closed_issue
+    with_agile_settings "hide_closed_issues_data" => "1" do
+      closed_issues = Issue.where(:status_id => IssueStatus.where(:is_closed => true))
+      project = closed_issues.first.project
+      get :index, agile_query_params.merge("f"=>[""])
+      assert_response :success
+      assert_template :index
+      assert_select '.closed-issue', project.issues.where(:status_id => IssueStatus.where(:is_closed => true)).count
+    end
+  end
+
+  def test_get_tooltip_for_issue
+    issue = Issue.where(:status_id => IssueStatus.where(:is_closed => true)).first
+    get :issue_tooltip, :id => issue.id
+    assert_response :success
+    assert_template "agile_boards/_issue_tooltip"
+    assert_select 'a.issue', 1
+    assert_select 'strong', 6
+    assert_match issue.status.name, @response.body
+  end
+
+  def test_empty_node_for_tooltip
+    with_agile_settings "hide_closed_issues_data" => "1" do
+      closed_issues = Issue.where(:status_id => IssueStatus.where(:is_closed => true))
+      project = closed_issues.first.project
+      get :index, agile_query_params.merge("f"=>[""])
+      assert_select "span.tip", {:text => ""}
+    end
+  end
+
+  def test_setting_for_closed_issues
+    with_agile_settings "hide_closed_issues_data" => "0" do
+      closed_issues = Issue.where(:status_id => IssueStatus.where(:is_closed => true))
+      project = closed_issues.first.project
+      get :index, agile_query_params.merge("f"=>[""])
+      assert_response :success
+      assert_template :index
+      assert_select '.closed-issue', 0
+    end
+  end
+
+  def test_index_with_js_format
+    with_agile_settings "hide_closed_issues_data" => "1" do
+      closed_issues = Issue.where(:status_id => IssueStatus.where(:is_closed => true))
+      project = closed_issues.first.project
+      xhr :get, :index, agile_query_params.merge("f"=>[""], :format => :js)
+      assert_response :success
+      assert_match "$('.tooltip').mouseenter(getToolTipInfo)", @response.body
+    end
+  end
+
+  def test_get_index_with_day_in_state_and_parent_group
+    get :index, agile_query_params.merge(:c => ["day_in_state"], :group_by => "parent")
     assert_response :success
     assert_template :index
   end

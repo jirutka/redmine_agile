@@ -79,7 +79,8 @@ module RedmineAgile
         [l(:label_issue), "issue"],
         [l(:label_tracker), "tracker"],
         [l(:field_priority), "priority"],
-        [l(:label_spent_time), "spent_time"]].compact,
+        [l(:label_spent_time), "spent_time"],
+        [l(:field_assigned_to), "user"]].compact,
         selected)
     end
 

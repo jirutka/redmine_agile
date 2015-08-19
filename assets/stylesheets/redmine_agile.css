@@ -19,6 +19,7 @@ html.agile-board-fullscreen div.agile-board {
   bottom: 0px;
   z-index: 20;
   background: white;
+  overflow-y:scroll;
 }
 
 html.agile-board-fullscreen table.list.issues-board {
@@ -39,7 +40,7 @@ html.agile-board-fullscreen .icon-fullscreen {
 }
 
 div.agile-board.autoscroll {
-  overflow-y: scroll;
+  overflow: visible;
 }
 
 /**********************************************************************/
@@ -134,7 +135,13 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.f
   text-align: left;
   white-space: normal;
   cursor: pointer;
+  float: left;
+  width: 90%;
 }
+
+.issue-card.float-left {float: left;}
+.issue-card.closed-issue {width: auto;}
+.issue-card .tip{ position: fixed;}
 
 .issue-card:not(.context-menu-selection) .attributes,
 .issue-card:not(.context-menu-selection) span.hours  {color: #888;}
@@ -142,9 +149,7 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.f
 .issue-card .attributes,
 .issue-card span.hours {font-size: 90%;}
 
-.issue-card span.hours {
-  float: right;
-}
+.issue-card span.hours {float: right;}
 
 .issue-card .thumbnail {
   height: 145px;

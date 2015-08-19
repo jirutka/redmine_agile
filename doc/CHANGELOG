@@ -4,6 +4,11 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2015 RedmineCRM
 http://www.redminecrm.com/
 
+== 2015-08-18 v1.3.11
+
+* Setting for closed cards view
+* Colorized by assignee
+
 == 2015-08-06 v1.3.10
 
 * Fixed bug with sticky headers after fullscreen auto update

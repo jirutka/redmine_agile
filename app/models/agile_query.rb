@@ -30,9 +30,9 @@ class AgileQuery < Query
     QueryColumn.new(:tracker, :sortable => "#{Tracker.table_name}.position", :groupable => true),
     QueryColumn.new(:estimated_hours, :sortable => "#{Issue.table_name}.estimated_hours"),
     QueryColumn.new(:done_ratio, :sortable => "#{Issue.table_name}.done_ratio"),
+    QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state),
     QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileRank.table_name}.position", :caption => :field_parent_issue),
-    QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id"),
-    QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state)
+    QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id")
   ]
 
   scope :visible, lambda {|*args|
@@ -373,7 +373,10 @@ class AgileQuery < Query
     if has_column?(:author)
       scope = scope.preload(:author)
     end
-
+    if order_option.detect {|x| x.match("agile_ranks.position")}
+      scope = scope.sorted_by_rank 
+    end
+    
     scope
   rescue ::ActiveRecord::StatementInvalid => e
     raise StatementInvalid.new(e.message)

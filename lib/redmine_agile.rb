@@ -83,6 +83,10 @@ module RedmineAgile
       false
           end
 
+    def hide_closed_issues_data?
+      Setting.plugin_redmine_agile['hide_closed_issues_data'].to_i > 0
+    end
+
   end
 
 

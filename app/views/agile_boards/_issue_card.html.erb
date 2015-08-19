@@ -1,73 +1,85 @@
-<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %>" data-id="<%= issue.id %>">
-    <span class="fields">
-        <% if @query.has_column_name?(:project) %>
-          <p class="project">
-            <%= issue.project.name %>
+<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %>">
+    <% if issue.closed? && RedmineAgile.hide_closed_issues_data? %>
+      <span class="fields">
+         <div class="tooltip">
+           <p class="issue-id <%= 'without-tracker' if @query.has_column_name?(:tracker).blank? %>">
+               <strong><%= link_to "#{'#' + issue.id.to_s}", issue_path(issue) %></strong>
+            </p>
+            <span class="tip">
+            </span>
+          </div>
+      </span>
+    <% else %>
+      <span class="fields">
+          <% if @query.has_column_name?(:project) %>
+            <p class="project">
+              <%= issue.project.name %>
+            </p>
+          <% end %>
+          <p class="issue-id <%= 'without-tracker' if @query.has_column_name?(:tracker).blank? %>">
+            <%= check_box_tag("ids[]", issue.id, false, :id => nil, :class => 'checkbox') %>
+            <% if @query.has_column_name?(:tracker) %>
+              <strong><%= issue_heading(issue) %></strong>
+            <% end %>
+            <%= render_issue_card_hours(@query, issue) %>
           </p>
-        <% end %>
-        <p class="issue-id <%= 'without-tracker' if @query.has_column_name?(:tracker).blank? %>">
-          <%= check_box_tag("ids[]", issue.id, false, :id => nil, :class => 'checkbox') %>
-          <% if @query.has_column_name?(:tracker) %>
-            <strong><%= issue_heading(issue) %></strong>
-          <% end %>
-          <%= render_issue_card_hours(@query, issue) %>
-        </p>
-        <p class="name" ><%= link_to "#{'#' + issue.id.to_s + ': ' if @query.has_column_name?(:id) && @query.has_column_name?(:tracker).blank?}#{issue.subject.truncate(100)}", issue_path(issue) %></p>
-        <p class="attributes">
-          <% @query.card_columns.select{|c| !c.value(issue).blank? }.each do |column| %>
-            <b><%= column.caption %></b>: <%= column_content(column, issue) %> <br>
-          <% end %>
-        </p>
-        
-        <% if @query.has_column_name?(:day_in_state) %>
+          <p class="name" ><%= link_to "#{'#' + issue.id.to_s + ': ' if @query.has_column_name?(:id) && @query.has_column_name?(:tracker).blank?}#{issue.subject.truncate(100)}", issue_path(issue) %></p>
           <p class="attributes">
-              <b><%= " #{I18n.t('label_agile_day_in_state')}: " %></b>
-              <% if @journals_for_state %>
-                <% find_change_state = false %>
-                <% @journals_for_state.each do |journal| %>
-                  <% if journal.journalized_id == issue.id %>
-                    <%= time_in_state(journal.created_on) %>
-                    <% find_change_state = true %>
-                    <% break %>
+            <% @query.card_columns.select{|c| !c.value(issue).blank? }.each do |column| %>
+              <b><%= column.caption %></b>: <%= column_content(column, issue) %> <br>
+            <% end %>
+          </p>
+          
+          <% if @query.has_column_name?(:day_in_state) %>
+            <p class="attributes">
+                <b><%= " #{I18n.t('label_agile_day_in_state')}: " %></b>
+                <% if @journals_for_state %>
+                  <% find_change_state = false %>
+                  <% @journals_for_state.each do |journal| %>
+                    <% if journal.journalized_id == issue.id %>
+                      <%= time_in_state(journal.created_on) %>
+                      <% find_change_state = true %>
+                      <% break %>
+                    <% end %>
                   <% end %>
+                  <% if !find_change_state %>
+                    <%= time_in_state(issue.created_on) %>
+                  <% end %>
+                <% else %>
+                  <%= time_in_state(issue.day_in_state.created_on) %>
                 <% end %>
-                <% if !find_change_state %>
-                  <%= time_in_state(issue.created_on) %>
-                <% end %>
-              <% else %>
-                <%= time_in_state(issue.day_in_state.created_on) %>
-              <% end %>
-          </p>
-        <% end %>
-
-        <% if @query.has_column_name?(:description) && !issue.description.blank? %>
-          <em class="info description">
-            <%= issue.description.truncate(200) %>
-          </em>
-        <% end %>
-        <% if @query.has_column_name?(:sub_issues) && issue.sub_issues.any? %>
-          <div class='sub-issues'>
-            <%= issue_children(issue) %>
-          </div>
-        <% end %>
-        <% if @query.has_column_name?(:thumbnails)  %>
-          <% image = issue.attachments.select(&:thumbnailable?).last %>
-          <% if image %>
-          <div class="thumbnail" style="background-image: url('<%= thumbnail_path(image, :size => 250) %>')"/>
-          </div>
+            </p>
           <% end %>
-        <% end %>
-        <% if @query.has_column_name?(:assigned_to) %>
-          <p class="info" style="<%= 'display: none;' unless issue.assigned_to %>">
-            <span class="user"><%= avatar(issue.assigned_to, :size => "14").to_s.html_safe + " " + link_to_user(issue.assigned_to) if issue.assigned_to %></span>
-          </p>
-        <% end %>
-        
 
-        <% if @query.has_column_name?(:done_ratio) %>
-          <%= progress_bar(issue.done_ratio, :width => '100%') %>
-        <% end %>
-    </span>
+          <% if @query.has_column_name?(:description) && !issue.description.blank? %>
+            <em class="info description">
+              <%= issue.description.truncate(200) %>
+            </em>
+          <% end %>
+          <% if @query.has_column_name?(:sub_issues) && issue.sub_issues.any? %>
+            <div class='sub-issues'>
+              <%= issue_children(issue) %>
+            </div>
+          <% end %>
+          <% if @query.has_column_name?(:thumbnails)  %>
+            <% image = issue.attachments.select(&:thumbnailable?).last %>
+            <% if image %>
+            <div class="thumbnail" style="background-image: url('<%= thumbnail_path(image, :size => 250) %>')"/>
+            </div>
+            <% end %>
+          <% end %>
+          <% if @query.has_column_name?(:assigned_to) %>
+            <p class="info" style="<%= 'display: none;' unless issue.assigned_to %>">
+              <span class="user"><%= avatar(issue.assigned_to, :size => "14").to_s.html_safe + " " + link_to_user(issue.assigned_to) if issue.assigned_to %></span>
+            </p>
+          <% end %>
+          
+
+          <% if @query.has_column_name?(:done_ratio) %>
+            <%= progress_bar(issue.done_ratio, :width => '100%') %>
+          <% end %>
+      </span>
+    <% end %>
 </div>
 <% if User.current.allowed_to?(:edit_issues, @project, :global => true) && @update %>
   <script type="text/javascript">
@@ -84,5 +96,6 @@
             $(".issue-card").addClass("hascontextmenu");
         }
     };
+    $('.tooltip').hover(getToolTipInfo);
   </script>
 <% end %>

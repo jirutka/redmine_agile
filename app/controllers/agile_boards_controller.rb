@@ -22,7 +22,7 @@ class AgileBoardsController < ApplicationController
 
   menu_item :agile
 
-  before_filter :find_issue, :only => [:update]
+  before_filter :find_issue, :only => [:update, :issue_tooltip]
   before_filter :find_optional_project, :only => [:index]
 
   helper :issues
@@ -56,7 +56,12 @@ class AgileBoardsController < ApplicationController
       @board_columns = @query.board_statuses
       
       if @query.has_column_name?(:day_in_state)
-        @journals_for_state = Journal.joins(:details).where(:journals => {:journalized_id => @issues.map{|issue| (issue.id rescue nil)}, :journalized_type => "Issue"}, :journal_details => {:prop_key => 'status_id'}).order("created_on DESC") 
+        @journals_for_state = Journal.joins(:details).where(
+          :journals => {
+            :journalized_id => @issues.map{|issue| (issue.id rescue nil)}, 
+            :journalized_type => "Issue"
+          }, 
+          :journal_details => {:prop_key => 'status_id'}).order("created_on DESC") 
       end
 
       respond_to do |format|
@@ -90,7 +95,7 @@ class AgileBoardsController < ApplicationController
           issue.agile_rank.position = params[:positions][issue.id.to_s]['position']
           issue.agile_rank.save
         end
-      end
+      end if params[:positions]
       respond_to do |format|
         format.html { render(:partial => 'issue_card', :locals => {:issue => @issue}, :status => :ok, :layout => nil) }
       end
@@ -101,6 +106,10 @@ class AgileBoardsController < ApplicationController
         format.html { render :json => messages, :status => :fail, :layout => nil }
       end
     end
+  end
+
+  def issue_tooltip
+    render :partial => 'issue_tooltip'
   end
 
 end
