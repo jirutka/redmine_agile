@@ -24,7 +24,7 @@ module AgileBoardsHelper
     ''
       end
 
-  def agile_user_color(issue, options={})
+  def agile_user_color(login, options={})
   end
 
   def header_th(name, rowspan = 1, colspan = 1, leaf = nil)
@@ -33,8 +33,11 @@ module AgileBoardsHelper
       th_attributes[:"data-column-id"] = leaf.id
       issue_count = leaf.instance_variable_get("@issue_count")
       count_tag = " (#{content_tag(:span, issue_count.to_i, :class => 'count')})".html_safe
+      # estimated hours total
+      hours_count = leaf.instance_variable_get("@estimated_hours_sum") || 0
+      hours_tag = " #{content_tag(:span, ("%.2fh" % hours_count.to_f).to_s, :class => 'hours', :title => l(:field_estimated_hours))}".html_safe if hours_count > 0
     end
-    content_tag :th, h(name) + count_tag, th_attributes
+    content_tag :th, h(name) + count_tag + hours_tag, th_attributes
   end
 
   def render_board_headers(columns)
@@ -96,6 +99,16 @@ module AgileBoardsHelper
     return '' if !RedmineAgile.hide_closed_issues_data?
     return 'closed-issue' if issue.closed?
     ''
+  end
+
+  def init_agile_tooltip_info
+    javascript_tag "function callGetToolTipInfo()
+      {
+        var url = '#{issue_tooltip_url}';
+        getToolTipInfo(this, url);
+      }
+      $('.tooltip').mouseenter(callGetToolTipInfo);
+    "
   end
 
 end

@@ -19,7 +19,7 @@
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.3.11'
+AGILE_VERSION_NUMBER = '1.3.12'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do

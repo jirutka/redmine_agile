@@ -42,7 +42,9 @@ module RedmineAgile
 
         def day_in_state
           change_time = journals.joins(:details).where(:journals => {:journalized_id => id, :journalized_type => "Issue"}, :journal_details => {:prop_key => 'status_id'}).order("created_on DESC").first
-          change_time || ""
+          change_time.created_on 
+        rescue 
+          self.created_on
         end
 
         def sub_issues

@@ -18,7 +18,23 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 class RenameIssueStatusOrders < ActiveRecord::Migration
-  def change
+  def up
+    remove_index :issue_status_orders, :issue_id
+    remove_index :issue_status_orders, :position
+
     rename_table :issue_status_orders, :agile_ranks
+
+    add_index :agile_ranks, :issue_id
+    add_index :agile_ranks, :position
+  end
+
+  def down
+    remove_index :agile_ranks, :issue_id
+    remove_index :agile_ranks, :position
+
+    rename_table :agile_ranks, :issue_status_orders
+
+    add_index :issue_status_orders, :issue_id
+    add_index :issue_status_orders, :position
   end
 end

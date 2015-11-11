@@ -1,4 +1,4 @@
-<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %>">
+<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue.assigned_to.login, :color_base => @query.respond_to?(:color_base) && @query.color_base) if issue.assigned_to %>">
     <% if issue.closed? && RedmineAgile.hide_closed_issues_data? %>
       <span class="fields">
          <div class="tooltip">
@@ -29,12 +29,12 @@
               <b><%= column.caption %></b>: <%= column_content(column, issue) %> <br>
             <% end %>
           </p>
-          
+
           <% if @query.has_column_name?(:day_in_state) %>
             <p class="attributes">
                 <b><%= " #{I18n.t('label_agile_day_in_state')}: " %></b>
+                <% find_change_state = false %>
                 <% if @journals_for_state %>
-                  <% find_change_state = false %>
                   <% @journals_for_state.each do |journal| %>
                     <% if journal.journalized_id == issue.id %>
                       <%= time_in_state(journal.created_on) %>
@@ -42,11 +42,10 @@
                       <% break %>
                     <% end %>
                   <% end %>
-                  <% if !find_change_state %>
-                    <%= time_in_state(issue.created_on) %>
-                  <% end %>
-                <% else %>
-                  <%= time_in_state(issue.day_in_state.created_on) %>
+                <% end %>
+
+                <% if !find_change_state %>
+                  <%= time_in_state(issue.day_in_state) %>
                 <% end %>
             </p>
           <% end %>
@@ -64,7 +63,7 @@
           <% if @query.has_column_name?(:thumbnails)  %>
             <% image = issue.attachments.select(&:thumbnailable?).last %>
             <% if image %>
-            <div class="thumbnail" style="background-image: url('<%= thumbnail_path(image, :size => 250) %>')"/>
+            <div class="thumbnail" style="background-image: url('<%= thumbnail_path(image, :size => 250) %>')">
             </div>
             <% end %>
           <% end %>
@@ -73,7 +72,7 @@
               <span class="user"><%= avatar(issue.assigned_to, :size => "14").to_s.html_safe + " " + link_to_user(issue.assigned_to) if issue.assigned_to %></span>
             </p>
           <% end %>
-          
+
 
           <% if @query.has_column_name?(:done_ratio) %>
             <%= progress_bar(issue.done_ratio, :width => '100%') %>
@@ -96,6 +95,10 @@
             $(".issue-card").addClass("hascontextmenu");
         }
     };
-    $('.tooltip').hover(getToolTipInfo);
+
+    if ($('html').hasClass('agile-board-fullscreen')) {
+      $(".issue-card[data-id=<%= issue.id %>]").removeClass("hascontextmenu");
+    };
   </script>
+  <%= init_agile_tooltip_info %>
 <% end %>

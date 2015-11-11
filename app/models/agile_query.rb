@@ -32,7 +32,8 @@ class AgileQuery < Query
     QueryColumn.new(:done_ratio, :sortable => "#{Issue.table_name}.done_ratio"),
     QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state),
     QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileRank.table_name}.position", :caption => :field_parent_issue),
-    QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id")
+    QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id"),
+    QueryColumn.new(:relations, :caption => :label_related_issues)
   ]
 
   scope :visible, lambda {|*args|
@@ -112,6 +113,7 @@ class AgileQuery < Query
     self.group_by = params[:group_by] || (params[:query] && params[:query][:group_by])
     self.column_names = params[:c] || (params[:query] && params[:query][:column_names])
     self.color_base = params[:color_base] || (params[:query] && params[:query][:color_base])
+    self.draw_relations = params[:draw_relations] || (params[:query] && params[:query][:draw_relations])
     self
   end
 
@@ -232,6 +234,10 @@ class AgileQuery < Query
     add_custom_fields_filters(issue_custom_fields)
 
     add_associations_custom_fields_filters :project, :author, :assigned_to, :fixed_version
+
+    IssueRelation::TYPES.each do |relation_type, options|
+      add_available_filter relation_type, :type => :relation, :label => options[:name]
+    end
 
     Tracker.disabled_core_fields(trackers).each {|field|
       delete_available_filter field
@@ -400,6 +406,9 @@ class AgileQuery < Query
     end
     result_statuses.map do |s|
       s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+      if has_column_name?(:estimated_hours)
+        s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+      end
       s
     end
   end
@@ -408,11 +417,61 @@ class AgileQuery < Query
     @issue_count_by_status ||= issue_scope.group("#{Issue.table_name}.status_id").count
   end
 
+  def issue_count_by_estimated_hours
+    @issue_count_by_estimated_hours ||= issue_scope.group("#{Issue.table_name}.status_id").sum("estimated_hours")
+  end
+
   def issue_board(options={})
     @truncated = RedmineAgile.board_items_limit <= issue_scope.count
     all_issues = self.issues.limit(RedmineAgile.board_items_limit).sorted_by_rank
     all_issues.group_by{|i| [i.status_id]}
       end
+
+  # Function for filter with relations
+
+  def sql_for_relations(field, operator, value, options={})
+    relation_options = IssueRelation::TYPES[field]
+    return relation_options unless relation_options
+
+    relation_type = field
+    join_column, target_join_column = "issue_from_id", "issue_to_id"
+    if relation_options[:reverse] || options[:reverse]
+      relation_type = relation_options[:reverse] || relation_type
+      join_column, target_join_column = target_join_column, join_column
+    end
+
+    sql = case operator
+      when "*", "!*"
+        op = (operator == "*" ? 'IN' : 'NOT IN')
+        "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name} WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}')"
+      when "=", "!"
+        op = (operator == "=" ? 'IN' : 'NOT IN')
+        "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name} WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}' AND #{IssueRelation.table_name}.#{target_join_column} = #{value.first.to_i})"
+      when "=p", "=!p", "!p"
+        op = (operator == "!p" ? 'NOT IN' : 'IN')
+        comp = (operator == "=!p" ? '<>' : '=')
+        "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name}, #{Issue.table_name} relissues WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}' AND #{IssueRelation.table_name}.#{target_join_column} = relissues.id AND relissues.project_id #{comp} #{value.first.to_i})"
+      end
+
+    if relation_options[:sym] == field && !options[:reverse]
+      sqls = [sql, sql_for_relations(field, operator, value, :reverse => true)]
+      sql = sqls.join(["!", "!*", "!p"].include?(operator) ? " AND " : " OR ")
+    end
+    "(#{sql})"
+  end
+
+  IssueRelation::TYPES.keys.each do |relation_type|
+    alias_method "sql_for_#{relation_type}_field".to_sym, :sql_for_relations
+  end
+
+  def draw_relations
+    r = options[:draw_relations]
+    r.nil? || r == '1'
+  end
+
+  def draw_relations=(arg)
+    options[:draw_relations] = (arg == '0' ? '0' : nil)
+  end
 
 private
   def issue_scope
@@ -426,5 +485,6 @@ private
                  :fixed_version).
       where(statement)
   end
+
 
 end

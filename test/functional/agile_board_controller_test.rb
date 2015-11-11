@@ -29,6 +29,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
            :member_roles,
            :issues,
            :issue_statuses,
+           :issue_relations,
            :versions,
            :trackers,
            :projects_trackers,
@@ -56,15 +57,22 @@ class AgileBoardsControllerTest < ActionController::TestCase
   end
 
   def test_get_index
+    # global board
     get :index
     assert_response :success
     assert_template :index
+    assert_equal Issue.open.map(&:id).sort, assigns[:issues].map(&:id).sort
+    assert_select ".issue-card", Issue.open.count
   end
 
   def test_get_index_with_project
-    get :index, :project_id => "ecookbook"
-    assert_response :success
-    assert_template :index
+    get :index, :project_id => @project_1
+    issues = Issue.where(:project_id => [@project_1] + Project.where(:parent_id => @project_1.id).to_a,
+      :status_id => IssueStatus.where(:is_closed => false))
+    assert_equal issues.map(&:id).sort, assigns[:issues].map(&:id).sort
+    assert_select ".issue-card", issues.count
+    assert_select ".issue-card span.fields p.issue-id strong", issues.count
+    assert_select ".issue-card span.fields p.name a", issues.count
   end
 
   def test_get_index_truncated
@@ -81,6 +89,9 @@ class AgileBoardsControllerTest < ActionController::TestCase
     get :index, agile_query_params.merge({:op => {:status_id => "!"}, :v => {:status_id => ["1"]}})
     assert_response :success
     assert_template :index
+    expected_issues = Issue.where(:project_id => [@project_1] + Project.where(:parent_id => @project_1.id).to_a,
+      :status_id => IssueStatus.where("id != 1"))
+    assert_equal expected_issues.map(&:id).sort, assigns[:issues].map(&:id).sort
   end
 
   def create_subissue
@@ -254,7 +265,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       project = closed_issues.first.project
       xhr :get, :index, agile_query_params.merge("f"=>[""], :format => :js)
       assert_response :success
-      assert_match "$('.tooltip').mouseenter(getToolTipInfo)", @response.body
+      assert_match "$('.tooltip').mouseenter(callGetToolTipInfo)", @response.body
     end
   end
 
@@ -264,10 +275,92 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_template :index
   end
 
+  def test_assinged_to_and_in_state_in_index
+    issue1 = Issue.find(1)
+    issue2 = Issue.create!(
+      :subject         => 'Test assigned_to with day in state',
+      :project         => issue1.project,
+      :tracker         => issue1.tracker,
+      :author          => issue1.author,
+      :fixed_version   => Version.last
+    )
+    get :index, agile_query_params.merge(:c => ["day_in_state"], :group_by => "parent")
+    assigned_to_id = 3
+    issue_id = issue2.id
+    xhr :put, :update, :id => issue_id, :issue => {:assigned_to_id => assigned_to_id}
+    assert_response :success
+  end
+
+  def test_index_with_relations_relates
+    create_issue_relation
+    
+    get :index, agile_query_params.merge(:op => {:status_id => "*", :relates => "*"}, :f => ["relates"])
+    assert_response :success
+    assert_template :index
+    assert_equal [1, 7, 8], assigns[:issues].map(&:id).sort
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_index_with_relations_blocked
+    create_issue_relation
+
+    get :index, agile_query_params.merge(:op => {:status_id => "*", :blocked => "*"}, :f => ["blocked"])
+    assert_response :success
+    assert_template :index
+    assert_equal [2, 11], assigns[:issues].map(&:id).sort
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_list_of_attributes_on_update_status
+    params = agile_query_params.merge(:c => ["project", "day_in_state"], :group_by => "parent")
+    params.delete(:project_id)
+    get :index, params
+    assert_response :success
+    assert_template :index
+    assert_select 'p.project'
+    put :update, {:issue => {:status_id => 2}, :id => 1 }
+    assert_select 'p.project', {:text => @project_1.to_s}
+  end
+
+  def test_day_in_state_when_change_status
+    @request.session[:agile_query] = {}
+    @request.session[:agile_query][:column_names] = ["project", "day_in_state"]
+    issue = Issue.find(1)
+    put :update, {:issue => {:status_id => 2}, :id => 1 }
+    issue.reload
+    assert_response :success
+    assert_equal 2, issue.status_id 
+    assert_select 'p.attributes', /0.hours/
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_global_query_and_project_board
+    query = AgileQuery.create(:name => 'global', :column_names => ["project"], :visibility => 2, :options => {:is_default => true})
+    get :index, :project_id => 1
+    assert_select 'p.project', {:count => 0, :text => Project.find(2).to_s}
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_total_estimated_hours_for_status
+    [1, 2, 3].each do |id|
+      issue = Issue.find(id)
+      issue.estimated_hours = 10
+      issue.save
+    end
+    get :index, agile_query_params.merge(:c => ["estimated_hours"])
+    assert_response :success
+    assert_select 'thead tr th span.hours', {:count => 1, :text => "20.00h"} #status_id == 1
+    assert_select 'thead tr th span.hours', {:count => 1, :text => "10.00h"} #status_id == 2
+  end if Redmine::VERSION.to_s > '2.4'
+
   private
 
   def agile_query_params
     {:set_filter => "1", :f => ["status_id", ""], :op => {:status_id => "o"}, :c => ["tracker", "assigned_to"],  :project_id => "ecookbook"}
+  end
+
+  def create_issue_relation
+    IssueRelation.delete_all
+    IssueRelation.create!(:relation_type => "relates", :issue_from => Issue.find(1), :issue_to => Issue.find(7))
+    IssueRelation.create!(:relation_type => "relates", :issue_from => Issue.find(8), :issue_to => Issue.find(1))
+    IssueRelation.create!(:relation_type => "blocks", :issue_from => Issue.find(1), :issue_to => Issue.find(11))
+    IssueRelation.create!(:relation_type => "blocks", :issue_from => Issue.find(12), :issue_to => Issue.find(2))
   end
 
 end

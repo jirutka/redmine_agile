@@ -80,7 +80,7 @@ class AgileBoardsController < ApplicationController
 
   def update
     (render_403; return false) unless @issue.editable?
-    retrieve_agile_query
+    retrieve_agile_query_from_session
     @issue.init_journal(User.current)
     @issue.safe_attributes = params[:issue]
     saved = params[:issue] && params[:issue].inject(true) do |total, attribute|

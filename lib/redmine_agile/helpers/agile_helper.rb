@@ -22,6 +22,30 @@
 module RedmineAgile
   module AgileHelper
 
+    def retrieve_agile_query_from_session
+      if session[:agile_query]
+        if session[:agile_query][:id]
+          @query = AgileQuery.find_by_id(session[:agile_query][:id])
+          return unless @query
+        else
+          @query = AgileQuery.new(
+            :name => "_", 
+            :filters => session[:agile_query][:filters], 
+            :group_by => session[:agile_query][:group_by], 
+            :column_names => session[:agile_query][:column_names]
+          )
+        end
+        if session[:agile_query].has_key?(:project_id)
+          @query.project_id = session[:agile_query][:project_id]
+        else
+          @query.project = @project
+        end
+        @query
+      else
+        @query = AgileQuery.new(:name => "_")
+      end
+    end
+
     def retrieve_agile_query
       if !params[:query_id].blank?
         cond = "project_id IS NULL"
@@ -33,9 +57,10 @@ module RedmineAgile
         sort_clear
       elsif api_request? || params[:set_filter] || session[:agile_query].nil? || session[:agile_query][:project_id] != (@project ? @project.id : nil)
         unless @query
-          @query = AgileQuery.new(:name => "_")
-          @query.project = @project if @project
+          @query = AgileQuery.new(:name => "_", :project => @project)
           @query.build_from_params(params)
+        else
+          @query.project = @project if @project
         end
         session[:agile_query] = {:project_id => @query.project_id,
                                  :filters => @query.filters,
@@ -55,6 +80,7 @@ module RedmineAgile
           }
           @query = AgileQuery.new(query_params)
         end
+        
         @query ||= AgileQuery.find_by_id(session[:agile_query][:id]) if session[:agile_query][:id]
         @query ||= AgileQuery.new(:name => "_",
                                   :filters => session[:agile_query][:filters],

@@ -284,7 +284,8 @@ table.list.issues tr.issue.br-yellow, .issue-card.br-yellow {border-left: 5px so
 table.list.issues tr.issue.br-orange, .issue-card.br-orange {border-left: 5px solid orange;}
 table.list.issues tr.issue.br-purple, .issue-card.br-purple {border-left: 5px solid purple;}
 table.list.issues tr.issue.br-gray, .issue-card.br-gray {border-left: 5px solid gray;}
-
+table.list thead tr th span.hours {color: #888; float: right; font-size: 90%; font-weight: normal;}
+table.issues-board thead th {white-space: normal;}
 /*
 tr.issue.br-red td.id::before,
 tr.issue.br-green td.id::before,

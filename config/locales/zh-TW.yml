@@ -3,7 +3,7 @@
 # Author: zhoutt
 # Based on file: en.yml
 
-zh:
+'zh-TW':
   label_agile: 敏捷
   label_agile_board: 敏捷看板
   label_agile_board_plural: 敏捷看板

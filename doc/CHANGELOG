@@ -4,6 +4,14 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2015 RedmineCRM
 http://www.redminecrm.com/
 
+== 2015-11-03 v1.3.12
+
+* Estimated time sum in column header
+* Issue relations filter
+* Fixed bug with Mysql migration
+* Fixed bug with global board cards view
+* Fixed issue context menu bug
+
 == 2015-08-18 v1.3.11
 
 * Setting for closed cards view
