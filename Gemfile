@@ -1,1 +1,1 @@
-gem 'svg-graph'
+gem "redmine_crm"

@@ -453,7 +453,12 @@ class AgileQuery < Query
 
   def board_statuses
     if Redmine::VERSION.to_s > '2.4'
-      statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+      statuses =
+        if Redmine::VERSION.to_s >= '3.4' && project
+          project.rolled_up_statuses
+        else
+          IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+        end
       status_filter_values = (options[:f_status] if options)
       if status_filter_values
         result_statuses = statuses.where(:id => status_filter_values)
@@ -594,9 +599,10 @@ private
   end
 
   def current_version
-    project.shared_versions.open.where("LOWER(#{Version.table_name}.name) NOT LIKE LOWER(?)", 'backlog').
-                                 where('effective_date >= ? OR effective_date IS NULL', Date.today).
-                                 order("#{Version.table_name}.created_on DESC, #{Version.table_name}.effective_date ASC").first
+    return @current_version if @current_version
+    versions = project.shared_versions.open.where("LOWER(#{Version.table_name}.name) NOT LIKE LOWER(?)", 'backlog')
+    versions -= versions.select(&:completed?).reverse
+    @current_version = versions.to_a.uniq.sort.first
   end
 
 end

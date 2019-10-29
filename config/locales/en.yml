@@ -129,3 +129,6 @@ en:
   field_color: Color
 
   field_duration: Duration
+
+  field_closed_on_trendline: Closed trendline
+  field_created_on_trendline: Created trendline

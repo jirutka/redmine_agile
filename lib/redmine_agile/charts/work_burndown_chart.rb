@@ -19,10 +19,8 @@
 
 module RedmineAgile
   class WorkBurndownChart < BurndownChart
-
-    def initialize(data_scope, options={})
+    def initialize(data_scope, options = {})
       super data_scope, options
-      @style_sheet = "#{Redmine::Utils.relative_url_root}/plugin_assets/redmine_agile/stylesheets/charts/work_burndown.css"
       if @estimated_unit == 'hours'
         @y_title = l(:label_agile_charts_number_of_hours)
         @graph_title = l(:label_agile_charts_work_burndown_hours)
@@ -30,35 +28,28 @@ module RedmineAgile
         @y_title = l(:label_agile_charts_number_of_story_points)
         @graph_title = l(:label_agile_charts_work_burndown_sp)
       end
+
+      @line_colors = { :work => '0,153,0', :ideal => '102,102,102', :total => '0,153,0' }
     end
 
     protected
 
-    def calc_burndown_data
-      if use_subissue_done_ratio && @estimated_unit == 'hours'
-        data_scope = @data_scope.
-          where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1")
-      else
-        data_scope = @data_scope
-      end
+    def calculate_burndown_data
+      data_scope = @data_scope
+      data_scope = data_scope.where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1") if use_subissue_done_ratio && @estimated_unit == 'hours'
+
       if @estimated_unit == 'hours'
-        all_issues = data_scope.
-          where("#{Issue.table_name}.estimated_hours IS NOT NULL").
-          eager_load([:journals, :status, {:journals => {:details => :journal}}])
-        cumulative_total_hours = data_scope.
-          sum("#{Issue.table_name}.estimated_hours").to_f
+        all_issues = data_scope.where("#{Issue.table_name}.estimated_hours IS NOT NULL").
+                     eager_load([:journals, :status, { :journals => { :details => :journal } }])
+        cumulative_total_hours = data_scope.sum("#{Issue.table_name}.estimated_hours").to_f
       else
-        all_issues = data_scope.
-          where("#{AgileData.table_name}.story_points IS NOT NULL").
-          joins(:agile_data).
-          eager_load([:journals, :status, {:journals => {:details => :journal}}])
-        cumulative_total_hours = data_scope.
-          joins(:agile_data).
-          sum("#{AgileData.table_name}.story_points").to_f
+        all_issues = data_scope.where("#{AgileData.table_name}.story_points IS NOT NULL").
+                     joins(:agile_data).eager_load([:journals, :status, { :journals => { :details => :journal } }])
+        cumulative_total_hours = data_scope.joins(:agile_data).sum("#{AgileData.table_name}.story_points").to_f
       end
 
-      data = chart_dates_by_period.select{|d| d <= Date.today}.map do |date|
-        issues = all_issues.select {|issue| issue.created_on.localtime.to_date <= date }
+      data = chart_dates_by_period.select { |d| d <= Date.today }.map do |date|
+        issues = all_issues.select { |issue| issue.created_on.localtime.to_date <= date }
         total_hours_left, cumulative_total_hours_left = date_effort(issues, date)
         [total_hours_left, cumulative_total_hours - cumulative_total_hours_left]
       end
@@ -69,10 +60,9 @@ module RedmineAgile
     private
 
     def first_period_effort(issues_scope, start_date, cumulative_total_hours)
-      issues = issues_scope.select {|issue| issue.created_on.localtime.to_date <= start_date }
+      issues = issues_scope.select { |issue| issue.created_on.localtime.to_date <= start_date }
       total_left, cumulative_left = date_effort(issues, start_date - 1)
       [[total_left, cumulative_total_hours - cumulative_left]]
     end
-
   end
 end

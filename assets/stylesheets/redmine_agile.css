@@ -451,3 +451,10 @@ table.issues-board tbody td.over_wp_limit {background-color: #FFF6F6;}
 .agile-board-fullscreen .lock{
   position: fixed;
 }
+
+
+.agile-chart-container {
+  margin: auto;
+  height: 400px;
+  max-width: 800px;
+}

@@ -57,84 +57,84 @@ class AgileChartsControllerTest < ActionController::TestCase
     @request.session[:user_id] = 1
     get :render_chart, :chart => "issues_burndown", :version_id => 2
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_issues_burndown
     @request.session[:user_id] = 1
     get :render_chart, :chart => "issues_burndown"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burndown_sp
     @request.session[:user_id] = 1
     get :render_chart, :chart => "work_burndown_sp"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burndown_hours
     @request.session[:user_id] = 1
     get :render_chart, :chart => "work_burndown_hours"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_burnup
     @request.session[:user_id] = 1
     get :render_chart, :chart => "burnup"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burnup_sp
     @request.session[:user_id] = 1
     get :render_chart, :chart => "work_burnup_sp"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burnup_hours
     @request.session[:user_id] = 1
     get :render_chart, :chart => "work_burnup_hours"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_trackers_cumulative_flow
     @request.session[:user_id] = 1
     get :render_chart, :chart => "trackers_cumulative_flow"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_cumulative_flow
     @request.session[:user_id] = 1
     get :render_chart, :chart => "cumulative_flow"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_issues_velocity
     @request.session[:user_id] = 1
     get :render_chart, :chart => "issues_velocity"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_lead_time
     @request.session[:user_id] = 1
     get :render_chart, :chart => "lead_time"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_average_lead_time
     @request.session[:user_id] = 1
     get :render_chart, :chart => "average_lead_time"
     assert_response :success
-    assert_equal 'image/svg+xml', @response.content_type
+    assert_equal 'application/json', @response.content_type
   end
 
   def test_issues_burndown_chart_when_first_issue_later_then_due_date

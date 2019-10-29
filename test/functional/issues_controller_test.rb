@@ -106,4 +106,21 @@ class IssuesControllerTest < ActionController::TestCase
       assert_select '.attributes', :text => /Story points/, :count => 0
     end
   end
+
+  def test_show_issue_with_order_by_story_points
+    session[:issue_query] = { :project_id => Issue.find(1).project_id,
+                              :filters => { 'status_id' => { :operator => 'o', :values => [''] } },
+                              :group_by => '',
+                              :column_names => [:tracker, :status, :story_points],
+                              :totalable_names => [],
+                              :sort => [['story_points', 'asc'], ['id', 'desc']]
+                            }
+    with_agile_settings 'estimate_units' => 'story_points' do
+      get :show, :id => 1
+      assert_response :success
+      assert_select '.attributes', :text => /Story points/, :count => 0
+    end
+  ensure
+    session[:issue_query] = {}
+  end
 end

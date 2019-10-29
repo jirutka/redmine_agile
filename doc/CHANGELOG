@@ -4,6 +4,12 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2017 RedmineUP
 http://www.redmineup.com/
 
+== 2017-09-06 v1.4.5
+
+* Agile charts moved to Chartjs
+* Fixed current version filter value
+* Fixed issue sorting bug with active story points
+
 == 2017-07-06 v1.4.4
 
 * Redmine 3.4 support 
