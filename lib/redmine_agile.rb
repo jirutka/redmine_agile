@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'douglas_peucker'
+require 'redmine_agile/patches/compatibility/application_controller_patch' if Rails::VERSION::MAJOR < 4
 
 require 'redmine_agile/hooks/views_layouts_hook'
 require 'redmine_agile/hooks/views_issues_hook'
@@ -61,7 +61,7 @@ module RedmineAgile
     end
 
     def default_chart
-      Setting.plugin_redmine_agile['default_chart'] || "issues_burndown"
+      Setting.plugin_redmine_agile['default_chart'] || 'issues_burndown'
     end
 
     def estimate_units
@@ -69,7 +69,7 @@ module RedmineAgile
     end
 
     def use_story_points?
-      estimate_units == "story_points"
+      estimate_units == 'story_points'
     end
 
     def trackers_for_sp
@@ -121,8 +121,6 @@ module RedmineAgile
     def allow_inline_comments?
       Setting.plugin_redmine_agile['allow_inline_comments'].to_i > 0
     end
-
   end
-
 
 end

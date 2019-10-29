@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 class AgileJournalDetailsController < ApplicationController
   unloadable
 
-  before_filter :find_issue
+  before_action :find_issue
 
   helper :issues
   helper :agile_support

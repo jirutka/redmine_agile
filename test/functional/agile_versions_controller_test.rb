@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -58,24 +58,24 @@ class AgileVersionsControllerTest < ActionController::TestCase
   end
 
   def test_get_index
-    get :index, :project_id => @project_1
+    compatible_request :get, :index, :project_id => @project_1
     assert_response :success
-    assert_template :index
+    assert_match /Version planning/, @response.body
   end
 
   def test_get_load
-    xhr :get, :load, :version_type => "backlog", :version_id => "3", :project_id => "ecookbook"
+    compatible_xhr_request :get, :load, :version_type => 'backlog', :version_id => '3', :project_id => 'ecookbook'
     assert_response :success
   end
 
   def test_get_autocomplete_id
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"#3"
+    compatible_xhr_request :get, :autocomplete, :project_id => 'ecookbook', :q => '#3'
     assert_response :success
     assert_match "Error 281",  @response.body
   end
 
   def test_get_autocomplete_text
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"error"
+    compatible_xhr_request :get, :autocomplete, :project_id => 'ecookbook', :q => 'error'
     assert_response :success
     assert_match "Error 281",  @response.body
   end

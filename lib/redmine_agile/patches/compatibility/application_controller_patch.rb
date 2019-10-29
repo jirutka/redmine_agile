@@ -18,11 +18,24 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 module RedmineAgile
-  module Hooks
-    class ViewsLayoutsHook < Redmine::Hook::ViewListener
-      def view_layouts_base_html_head(context={})
-        return stylesheet_link_tag(:redmine_agile, :plugin => 'redmine_agile') 
+  module Patches
+    module ApplicationControllerPatch
+      def self.included(base) # :nodoc:
+        base.extend(ClassMethods)
+        base.class_eval do
+          unloadable # Send unloadable so it will not be unloaded in development
+        end
+      end
+
+      module ClassMethods
+        def before_action(*filters, &block)
+          before_filter(*filters, &block)
+        end
       end
     end
   end
+end
+
+unless ApplicationController.included_modules.include?(RedmineAgile::Patches::ApplicationControllerPatch)
+  ApplicationController.send(:include, RedmineAgile::Patches::ApplicationControllerPatch)
 end

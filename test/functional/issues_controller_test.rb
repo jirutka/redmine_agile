@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -46,7 +46,6 @@ class IssuesControllerTest < ActionController::TestCase
            :journal_details,
            :queries
 
-
   def setup
     @project_1 = Project.find(1)
     @project_2 = Project.find(5)
@@ -56,30 +55,30 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_new_issue_with_sp_value
-    with_agile_settings "estimate_units" => "story_points" do
-      get :new, :project_id => 1
+    with_agile_settings 'estimate_units' => 'story_points' do
+      compatible_request :get, :new, :project_id => 1
       assert_response :success
       assert_select 'input#issue_agile_data_attributes_story_points'
     end
   end
 
   def test_new_issue_without_sp_value
-    with_agile_settings "estimate_units" => "hours" do
-      get :new, :project_id => 1
+    with_agile_settings 'estimate_units' => 'hours' do
+      compatible_request :get, :new, :project_id => 1
       assert_response :success
       assert_select 'input#issue_agile_data_attributes_story_points', :count => 0
     end
   end
 
   def test_create_issue_with_sp_value
-    with_agile_settings "estimate_units" => "story_points" do
+    with_agile_settings 'estimate_units' => 'story_points' do
       assert_difference 'Issue.count' do
-        post :create, :project_id => 1, :issue => {
+        compatible_request :post, :create, :project_id => 1, :issue => {
           :subject => 'issue with sp',
           :tracker_id => 3,
           :status_id => 1,
           :priority_id => IssuePriority.first.id,
-          :agile_data_attributes => {:story_points => 50}
+          :agile_data_attributes => { :story_points => 50 }
         }
       end
       issue = Issue.last
@@ -89,8 +88,8 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_post_issue_journal_story_points
-    with_agile_settings "estimate_units" => "story_points" do
-      put :update, :id => 1, :issue => {:agile_data_attributes => {:story_points => 100 }}
+    with_agile_settings 'estimate_units' => 'story_points' do
+      compatible_request :put, :update, :id => 1, :issue => { :agile_data_attributes => { :story_points => 100 } }
       issue = Issue.find(1)
       assert_equal 100, issue.story_points
       sp_history = JournalDetail.where(:property => 'attr', :prop_key => 'story_points', :journal_id => issue.journals).last
@@ -100,10 +99,10 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_show_issue_with_story_points
-    with_agile_settings "estimate_units" => "story_points" do
-      get :show, :id => 1
+    with_agile_settings 'estimate_units' => 'story_points' do
+      compatible_request :get, :show, :id => 1
       assert_response :success
-      assert_select '.attributes', :text => /Story points/, :count => 0
+      assert_select '.attributes', :text => /Story points/, :count => 1
     end
   end
 
@@ -116,9 +115,9 @@ class IssuesControllerTest < ActionController::TestCase
                               :sort => [['story_points', 'asc'], ['id', 'desc']]
                             }
     with_agile_settings 'estimate_units' => 'story_points' do
-      get :show, :id => 1
+      compatible_request :get, :show, :id => 1
       assert_response :success
-      assert_select '.attributes', :text => /Story points/, :count => 0
+      assert_select '.attributes', :text => /Story points/, :count => 1
     end
   ensure
     session[:issue_query] = {}

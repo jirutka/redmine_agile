@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -55,25 +55,25 @@ class AgileJournalDetailsControllerTest < ActionController::TestCase
   end
 
   def test_get_done_ratio
-    get :done_ratio, :issue_id => 1
+    compatible_request :get, :done_ratio, :issue_id => 1
     assert_response :success
-    assert_template :done_ratio
+    assert_match /% Done/, @response.body
     assert_match /Bug #1/, @response.body
     assert_select 'table.progress', 2
   end
 
   def test_get_status
-    get :status, :issue_id => 1
+    compatible_request :get, :status, :issue_id => 1
     assert_response :success
-    assert_template :status
+    assert_match /Issue statuses/, @response.body
     assert_match /Bug #1/, @response.body
     assert_select '.list td.name', 2
   end
 
   def test_get_done_assignee
-    get :assignee, :issue_id => 1
+    compatible_request :get, :assignee, :issue_id => 1
     assert_response :success
-    assert_template :assignee
+    assert_match /Assignee/, @response.body
     assert_match /Bug #1/, @response.body
     assert_select '.list td a.user', 1
   end

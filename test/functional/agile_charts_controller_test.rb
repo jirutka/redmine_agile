@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -48,91 +48,91 @@ class AgileChartsControllerTest < ActionController::TestCase
 
   def test_get_show
     @request.session[:user_id] = 1
-    get :show
+    compatible_request :get, :show
     assert_response :success
-    assert_template :show
+    assert_select 'canvas#agile-chart', 1
   end
 
   def test_get_render_chart_issues_burndown_with_version
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "issues_burndown", :version_id => 2
+    compatible_request :get, :render_chart, :chart => 'issues_burndown', :version_id => 2
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_issues_burndown
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "issues_burndown"
+    compatible_request :get, :render_chart, :chart => 'issues_burndown'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burndown_sp
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "work_burndown_sp"
+    compatible_request :get, :render_chart, :chart => 'work_burndown_sp'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burndown_hours
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "work_burndown_hours"
+    compatible_request :get, :render_chart, :chart => 'work_burndown_hours'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_burnup
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "burnup"
+    compatible_request :get, :render_chart, :chart => 'burnup'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burnup_sp
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "work_burnup_sp"
+    compatible_request :get, :render_chart, :chart => 'work_burnup_sp'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_work_burnup_hours
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "work_burnup_hours"
+    compatible_request :get, :render_chart, :chart => 'work_burnup_hours'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_trackers_cumulative_flow
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "trackers_cumulative_flow"
+    compatible_request :get, :render_chart, :chart => 'trackers_cumulative_flow'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_cumulative_flow
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "cumulative_flow"
+    compatible_request :get, :render_chart, :chart => 'cumulative_flow'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_issues_velocity
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "issues_velocity"
+    compatible_request :get, :render_chart, :chart => 'issues_velocity'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_lead_time
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "lead_time"
+    compatible_request :get, :render_chart, :chart => 'lead_time'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
 
   def test_get_render_chart_average_lead_time
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "average_lead_time"
+    compatible_request :get, :render_chart, :chart => 'average_lead_time'
     assert_response :success
     assert_equal 'application/json', @response.content_type
   end
@@ -141,12 +141,10 @@ class AgileChartsControllerTest < ActionController::TestCase
     @project_1 = Project.find(1)
     EnabledModule.create(:project => @project_1, :name => 'agile')
     @request.session[:user_id] = 1
-    new_version = Version.create!(:name => "Some new vesion", :effective_date => (Date.today - 10.days), :project_id => @project_1.id)
+    new_version = Version.create!(:name => 'Some new vesion', :effective_date => (Date.today - 10.days), :project_id => @project_1.id)
     issue = Issue.create!(:project_id => 1, :tracker_id => 1, :subject => 'test_issues_burndown_chart_when_first_issue_later_then_due_date', :author_id => 2, :start_date => Date.today)
     new_version.fixed_issues << issue
-    get :render_chart, :chart => "issues_burndown", :project_id => 1, :version_id => new_version.id
+    compatible_request :get, :render_chart, :chart => 'issues_burndown', :project_id => 1, :version_id => new_version.id
     assert_response :success
   end
-
-
 end

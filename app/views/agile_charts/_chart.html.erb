@@ -5,61 +5,63 @@
 <% else %>
   <div class="agile-chart-container">
     <canvas id="agile-chart"></canvas>
-  <div>
+  </div>
 <% end %>
 
 <%= javascript_tag do %>
   $(document).ready(function(){
 
-    $.getJSON(<%= raw url_for(:controller => 'agile_charts', :action => 'render_chart', :project_id => @project,
-                              :chart => chart, :version_id => @version).to_json %>, function(data){
+    if (document.getElementById("agile-chart")) {
+      $.getJSON(<%= raw url_for(:controller => 'agile_charts', :action => 'render_chart', :project_id => @project,
+                                :chart => chart, :version_id => @version).to_json %>, function(data){
 
-      Chart.defaults.global.defaultFontColor = 'black';
-      Chart.defaults.global.defaultFontFamily = '"Arial", sans-serif';
-      Chart.defaults.global.defaultFontStyle = 'normal';
+        Chart.defaults.global.defaultFontColor = 'black';
+        Chart.defaults.global.defaultFontFamily = '"Arial", sans-serif';
+        Chart.defaults.global.defaultFontStyle = 'normal';
 
-      var chartData = {
-        labels: data['labels'],
-        datasets: data['datasets'],
-        stacked: data['stacked']
-      };
+        var chartData = {
+          labels: data['labels'],
+          datasets: data['datasets'],
+          stacked: data['stacked']
+        };
 
-      new Chart(document.getElementById("agile-chart").getContext("2d"), {
-        type: 'bar',
-        data: chartData,
-        options: {
-          maintainAspectRatio: false,
-          legend: { position: 'right' },
-          title: {
-            display: true,
-            fontSize: 16,
-            fontStyle: 'normal',
-            text: data['title']
-          },
-          elements: {
-            line: {
-                tension: 0, // disables bezier curves
-            }
-          },
-          scales: {
-            yAxes: [{
-              stacked: data['stacked'],
-              scaleLabel: {
-                display: true,
-                fontColor: 'rgba(255, 0, 0 ,1)',
-                fontSize: 14,
-                labelString: data['y_title']
+        new Chart(document.getElementById("agile-chart").getContext("2d"), {
+          type: 'bar',
+          data: chartData,
+          options: {
+            maintainAspectRatio: false,
+            legend: { position: 'right' },
+            title: {
+              display: true,
+              fontSize: 16,
+              fontStyle: 'normal',
+              text: data['title']
+            },
+            elements: {
+              line: {
+                  tension: 0, // disables bezier curves
               }
-            }],
-            xAxes: [{
-                ticks: {
-                    autoSkip: true,
-                    maxRotation: 0
+            },
+            scales: {
+              yAxes: [{
+                stacked: data['stacked'],
+                scaleLabel: {
+                  display: true,
+                  fontColor: 'rgba(255, 0, 0 ,1)',
+                  fontSize: 14,
+                  labelString: data['y_title']
                 }
-            }]
+              }],
+              xAxes: [{
+                  ticks: {
+                      autoSkip: true,
+                      maxRotation: 0
+                  }
+              }]
+            }
           }
-        }
+        });
       });
-    });
+    }
   });
 <% end %>

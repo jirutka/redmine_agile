@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,6 +22,8 @@
 require File.expand_path('../../../test_helper', __FILE__)
 
 class AgileBoardsHelperTest < ActiveSupport::TestCase
+  fixtures :projects
+
   include ApplicationHelper
   include AgileBoardsHelper
   include CustomFieldsHelper
@@ -47,7 +49,7 @@ class AgileBoardsHelperTest < ActiveSupport::TestCase
   end
 
   def test_show_checklist
-    issue1 = Issue.find(1)
+    issue1 = Issue.first
     checklist = issue1.checklists.create(:subject => 'TEST1', :position => 1)
     User.current = User.find(1)
     

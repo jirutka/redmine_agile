@@ -5,8 +5,13 @@
 <% end %>
 </div>
 
-<h2><%= @query.new_record? ? l(:label_agile_board) : h(@query.name) %></h2>
 <% html_title(@query.new_record? ? l(:label_agile_board) : @query.name) %>
+<h2>
+  <%= @query.new_record? ? l(:label_agile_board) : h(@query.name) %>
+  <span class="live_search">
+    <%= text_field_tag(:search, '', :id => 'agile_live_search', :class => 'live_search_field', :placeholder => l(:label_cards_search)) %>
+  </span>
+</h2>
 
 <%= form_tag({ :controller => 'agile_boards', :action => 'index', :project_id => @project },
             :method => :get, :id => 'query_form', :onsubmit => 'DisableNullFields()') do %>

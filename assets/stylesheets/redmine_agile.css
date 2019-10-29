@@ -7,9 +7,6 @@
 /**********************************************************************/
 /* FULLSCREEN
 /**********************************************************************/
-html {
-  overflow-y: inherit !important;
-}
 html.agile-board-fullscreen {
   overflow: hidden;
 }
@@ -457,4 +454,8 @@ table.issues-board tbody td.over_wp_limit {background-color: #FFF6F6;}
   margin: auto;
   height: 400px;
   max-width: 800px;
+}
+
+.issue-card.filtered {
+  opacity: 0.2;
 }

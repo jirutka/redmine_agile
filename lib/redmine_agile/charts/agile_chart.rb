@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -141,7 +141,7 @@ module RedmineAgile
     end
 
     def chart_periods
-      raise Exception "Dates can't be blank" if [@date_to, @date_from].any?(&:blank?)
+      raise "Dates can't be blank" if [@date_to, @date_from].any?(&:blank?)
       period_count = (@date_to.to_date + 1 - @date_from.to_date).to_i
       scale_division = period_count > 31 ? period_count / 31.0 : 1
 

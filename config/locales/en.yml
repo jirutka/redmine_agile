@@ -132,3 +132,6 @@ en:
 
   field_closed_on_trendline: Closed trendline
   field_created_on_trendline: Created trendline
+
+  label_agile_sp_values: Story points values
+  label_cards_search: Search by subject

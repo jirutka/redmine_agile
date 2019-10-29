@@ -18,11 +18,26 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 module RedmineAgile
-  module Hooks
-    class ViewsLayoutsHook < Redmine::Hook::ViewListener
-      def view_layouts_base_html_head(context={})
-        return stylesheet_link_tag(:redmine_agile, :plugin => 'redmine_agile') 
+  module Patches
+    module QueriesControllerPatch
+      def self.included(base)
+        base.send(:include, InstanceMethods)
+        base.class_eval do
+          alias_method :query_class_without_agile, :query_class
+          alias_method :query_class, :query_class_with_agile
+        end
+      end
+
+      module InstanceMethods
+        def query_class_with_agile
+          return AgileChartsQuery if params[:type] == 'AgileChartsQuery'
+          query_class_without_agile
+        end
       end
     end
   end
+end
+
+unless QueriesController.included_modules.include?(RedmineAgile::Patches::QueriesControllerPatch)
+  QueriesController.send(:include, RedmineAgile::Patches::QueriesControllerPatch)
 end

@@ -1,8 +1,19 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2017 RedmineUP
+Copyright (C) 2011-2018 RedmineUP
 http://www.redmineup.com/
+
+== 2018-03-20 v1.4.6
+
+* Redmine 4 support
+* Quick seach on the board
+* Issue tags field on cards
+* Story Points available values setting
+* Fixed story point showing bug
+* Fixed makeup on issue edit form
+* Fixed light version dropable bug
+* Fixed custom fields bug with charts
 
 == 2017-09-06 v1.4.5
 

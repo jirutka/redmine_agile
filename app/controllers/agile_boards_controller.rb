@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@ class AgileBoardsController < ApplicationController
 
   menu_item :agile
 
-  before_filter :find_issue, :only => [:update, :issue_tooltip, :inline_comment]
-  before_filter :find_optional_project, :only => [:index, :create_issue]
+  before_action :find_issue, :only => [:update, :issue_tooltip, :inline_comment]
+  before_action :find_optional_project, :only => [:index, :create_issue]
 
   helper :issues
   helper :journals
@@ -73,12 +73,9 @@ class AgileBoardsController < ApplicationController
     retrieve_agile_query_from_session
     old_status = @issue.status
     @issue.init_journal(User.current)
-    if auto_assign_on_move?
-      @issue.safe_attributes = params[:issue].merge({ :assigned_to_id => User.current.id })
-    else
-      @issue.safe_attributes = params[:issue]
-    end
-    saved = params[:issue] && params[:issue].inject(true) do |total, attribute|
+    @issue.safe_attributes = auto_assign_on_move? ? params[:issue].merge(:assigned_to_id => User.current.id) : params[:issue]
+    checking_params = params.respond_to?(:to_unsafe_hash) ? params.to_unsafe_hash : params
+    saved = checking_params['issue'] && checking_params['issue'].inject(true) do |total, attribute|
       if @issue.attributes.include?(attribute.first)
         total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
       else

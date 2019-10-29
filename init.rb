@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ requires_redmine_crm :version_or_higher => '0.0.32' rescue raise "\n\033[31mRedm
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.4.5'
+AGILE_VERSION_NUMBER = '1.4.6'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do
@@ -34,11 +34,13 @@ Redmine::Plugin.register :redmine_agile do
 
   requires_redmine :version_or_higher => '2.3'
 
-  settings :default => {
-    'default_columns' => %w(tracker assigned_to)
-                       },
+  settings :default => { 'default_columns' => %w(tracker assigned_to) },
            :partial => 'settings/agile/general'
 
+  menu :application_menu, :agile,
+       { :controller => 'agile_boards', :action => 'index' },
+       :caption => :label_agile,
+       :if => Proc.new { User.current.allowed_to?(:view_agile_queries, nil, :global => true) }
   menu :project_menu, :agile, {:controller => 'agile_boards', :action => 'index' },
                               :caption => :label_agile,
                               :after => :gantt,
@@ -50,11 +52,9 @@ Redmine::Plugin.register :redmine_agile do
     permission :manage_public_agile_queries, {:agile_queries => [:new, :create, :edit, :update, :destroy]}, :require => :member
     permission :manage_agile_verions, {:agile_versions => [:index, :update]}
     permission :add_agile_queries, {:agile_queries => [:new, :create, :edit, :update, :destroy]}, :require => :loggedin
-    permission :view_agile_queries, {:agile_boards => [:index, :create_issue], :agile_queries => :index}
-    permission :view_agile_charts, {:agile_charts => [:show, :render_chart, :select_version_chart]}
+    permission :view_agile_queries, {:agile_boards => [:index, :create_issue], :agile_queries => :index}, :read => true
+    permission :view_agile_charts, {:agile_charts => [:show, :render_chart, :select_version_chart]}, :read => true
   end
 end
 
-ActionDispatch::Callbacks.to_prepare do
-  require 'redmine_agile'
-end
+require 'redmine_agile'

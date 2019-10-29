@@ -640,6 +640,15 @@ $(document).ready(function(){
   $('div#agile-board-errors').click(function(){
     $(this).animate({top: -$(this).outerHeight()}, 500);
   });
+
+  $("#agile_live_search").keyup(function() {
+    var cards = $(".issues-board").find(".issue-card");
+    var searchTerm = this.value;
+    cards.removeClass("filtered");
+    cards.filter(function() {
+      return $(this).find(".name").text().toLowerCase().indexOf(searchTerm) === -1;
+    }).addClass("filtered");
+  });
 });
 
 function DisableNullFields() {

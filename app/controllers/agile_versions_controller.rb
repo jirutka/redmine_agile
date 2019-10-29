@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,11 +21,11 @@ class AgileVersionsController < ApplicationController
   unloadable
 
   menu_item :agile
-  
-  before_filter :find_project_by_project_id, :only => [:index, :autocomplete, :load]
-  before_filter :find_version, :only => [:load]
-  before_filter :authorize, :except => [:autocomplete, :load]
-  before_filter :find_no_version_issues, :only => [:index, :autocomplete]
+
+  before_action :find_project_by_project_id, :only => [:index, :autocomplete, :load]
+  before_action :find_version, :only => [:load]
+  before_action :authorize, :except => [:autocomplete, :load]
+  before_action :find_no_version_issues, :only => [:index, :autocomplete]
 
   include QueriesHelper
   helper :queries

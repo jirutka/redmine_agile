@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -30,11 +30,13 @@ module RedmineAgile
           unloadable
           has_one :agile_data, :dependent => :destroy
           delegate :position, :to => :agile_data, :allow_nil => true
-          scope :sorted_by_rank, lambda {eager_load(:agile_data).
-                                   order("COALESCE(#{AgileData.table_name}.position, 999999)")}
-          safe_attributes 'agile_data_attributes', :if => lambda {|issue, user| issue.new_record? || user.allowed_to?(:edit_issues, issue.project) && RedmineAgile.use_story_points?}
+          scope :sorted_by_rank, lambda { eager_load(:agile_data).
+                                          order("COALESCE(#{AgileData.table_name}.position, 999999)") }
+          safe_attributes 'agile_data_attributes', :if => lambda { |issue, user| issue.new_record? || user.allowed_to?(:edit_issues, issue.project) && RedmineAgile.use_story_points? }
           accepts_nested_attributes_for :agile_data, :allow_destroy => true
-          alias_method_chain :agile_data, :default
+
+          alias_method :agile_data_without_default, :agile_data
+          alias_method :agile_data, :agile_data_with_default
         end
       end
 
@@ -44,10 +46,11 @@ module RedmineAgile
         end
 
         def day_in_state
-          change_time = journals.joins(:details).where(:journals => {:journalized_id => id, :journalized_type => "Issue"}, :journal_details => {:prop_key => 'status_id'}).order("created_on DESC").first
+          change_time = journals.joins(:details).where(:journals => { :journalized_id => id, :journalized_type => 'Issue' },
+                                                       :journal_details => { :prop_key => 'status_id' }).order('created_on DESC').first
           change_time.created_on
         rescue
-          self.created_on
+          created_on
         end
 
         def last_comment

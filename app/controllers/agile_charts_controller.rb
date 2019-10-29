@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2018 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@ class AgileChartsController < ApplicationController
 
   menu_item :agile
 
-  before_filter :find_optional_project, :only => [:show, :render_chart]
-  before_filter :find_optional_version, :only => [:render_chart, :select_version_chart]
+  before_action :find_optional_project, :only => [:show, :render_chart]
+  before_action :find_optional_version, :only => [:render_chart, :select_version_chart]
 
   helper :issues
   helper :journals
