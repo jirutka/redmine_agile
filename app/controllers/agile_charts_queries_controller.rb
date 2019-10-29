@@ -17,14 +17,5 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class CreateAgileColors < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
-  def change
-    create_table :agile_colors do |t|
-      t.references :container, :polymorphic => true
-      t.string :color
-    end
-
-    add_index :agile_colors, :container_id
-    add_index :agile_colors, :container_type
-  end
+class AgileChartsQueriesController < ApplicationController
 end

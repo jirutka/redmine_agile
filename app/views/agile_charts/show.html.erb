@@ -9,13 +9,13 @@
   <div id="query_form_with_buttons" class="hide-when-print">
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">
-      <fieldset id="filters" class="collapsible <%= @query.new_record? ? "" : "collapsed" %>">
+      <fieldset id="filters" class="collapsible">
         <legend onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
-        <div style="<%= @query.new_record? ? "" : "display: none;" %>">
+        <div>
           <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
         </div>
       </fieldset>
-      <fieldset class="collapsible collapsed">
+      <fieldset class="collapsible">
         <legend onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
         <div>
           <table>
@@ -23,12 +23,10 @@
               <td><label for='chart'><%= l(:label_agile_chart) %></label></td>
               <td><%= select_tag('chart', options_charts_for_select(@chart)) %></td>
             </tr>
-            <tr>
-              <td><%= l(:label_agile_date_from) %></td>
+            <tr id="interval-size">
+              <td><%= l(:label_agile_interval_size) %></td>
               <td>
-                <%= text_field_tag 'date_from', @query.date_from, :size => 10 %><%= calendar_for('date_from') %>
-                <%= l(:label_agile_date_to) %>
-                <%= text_field_tag 'date_to', @query.date_to, :size => 10 %><%= calendar_for('date_to') %>
+                <%= select_tag 'interval_size', options_for_select(RedmineAgile::AgileChart::TIME_INTERVALS.map { |i| [l(:"label_agile_#{i}"), i] }, @query.interval_size) %>
               </td>
             </tr>
           </table>
@@ -46,7 +44,19 @@
 
 <%= render_agile_chart(@chart, @issues) if @query.valid? %>
 
+<% content_for :header_tags do %>
+  <%= chartjs_assets %>
+  <%= javascript_include_tag 'redmine_agile', plugin: 'redmine_agile' %>
+<% end %>
+
 <% content_for :sidebar do %>
   <%= render :partial => 'agile_boards/issues_links' %>
   <%= render :partial => 'agile_charts/agile_charts' %>
+<% end %>
+
+<%= javascript_tag do %>
+  $(document).ready(function() {
+    /* Hide chart_period checkbox so that it couldn't be unchecked */
+    hideChartPeriodCheckbox();
+  });
 <% end %>

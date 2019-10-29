@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2019 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,12 +22,13 @@ class AgileChartsQuery < AgileQuery
 
   validate :validate_query_dates
 
-  def initialize(attributes=nil, *args)
+  attr_writer :date_from, :date_to
+
+  def initialize(attributes = nil, *args)
     super attributes
     self.filters.delete('status_id')
+    self.filters['chart_period'] = { operator: 'm', values: [''] } unless has_filter?('chart_period')
   end
-
-  self.operators_by_filter_type[:chart_period] = [ "><", "w", "lw", "l2w", "m", "lm", "y"]
 
   def initialize_available_filters
     principals = []
@@ -36,7 +37,7 @@ class AgileChartsQuery < AgileQuery
     categories = []
     issue_custom_fields = []
 
-    # add_available_filter "chart_period", :type => :chart_period, :name => l(:label_agile_chart_period)
+    add_available_filter 'chart_period', type: :date_past, name: l(:label_date)
 
     if project
       principals += project.principals.sort
@@ -133,20 +134,32 @@ class AgileChartsQuery < AgileQuery
     "1=1"
   end
 
-  def date_from
-    @date_from
+  def chart
+    options[:chart]
   end
 
-  def date_from=(arg)
-    @date_from = Date.parse(arg.to_s) rescue nil
+  def chart=(arg)
+    options[:chart] = arg
+  end
+
+  def date_from
+    @date_from ||= chart_period[:from]
   end
 
   def date_to
-    @date_to
+    @date_to ||= chart_period[:to]
   end
 
-  def date_to=(arg)
-    @date_to = Date.parse(arg.to_s) rescue nil
+  def interval_size
+    options[:interval_size]
+  end
+
+  def interval_size=(value)
+    if RedmineAgile::AgileChart::TIME_INTERVALS.include?(value)
+      options[:interval_size] = value
+    else
+      raise ArgumentError.new("value must be one of: #{RedmineAgile::AgileChart::TIME_INTERVALS.join(', ')}")
+    end
   end
 
   def build_from_params(params)
@@ -160,19 +173,43 @@ class AgileChartsQuery < AgileQuery
     end
     self.group_by = params[:group_by] || (params[:query] && params[:query][:group_by])
     self.column_names = params[:c] || (params[:query] && params[:query][:column_names])
-
-    self.date_from = params[:date_from] || (params[:query] && params[:query][:date_from])
-    self.date_to = params[:date_to] || (params[:query] && params[:query][:date_to])
+    self.chart = params[:chart] || (params[:query] && params[:query][:chart]) || RedmineAgile.default_chart
+    self.interval_size = params[:interval_size] || (params[:query] && params[:query][:interval_size]) || RedmineAgile::AgileChart::DAY_INTERVAL
     self
   end
 
-private
+  private
+
+  def issue_scope
+    Issue.visible.
+      eager_load(:status,
+                 :project,
+                 :assigned_to,
+                 :tracker,
+                 :priority,
+                 :category,
+                 :fixed_version,
+                 :agile_data).
+      where(statement)
+  end
+
   def validate_query_dates
-    if (self.date_from && self.date_to && self.date_from >= self.date_to) ||
-       (self.date_from && self.date_to.blank?)
-      m = l(:label_agile_chart_dates) + " " + l(:invalid, :scope => 'activerecord.errors.messages')
-      errors.add(:base, m)
+    if (self.date_from && self.date_to && self.date_from >= self.date_to)
+      errors.add(:base, l(:label_agile_chart_dates) + ' ' + l(:invalid, scope: 'activerecord.errors.messages'))
     end
   end
 
+  def db_timestamp_regex
+    /(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:.\d*))/
+  end
+
+  def chart_period
+    field = 'chart_period'
+    operator = filters[field][:operator]
+    values = filters[field][:values]
+    statement = sql_for_field(field, operator, values, Issue.table_name, field)
+
+    { from: statement.match("chart_period > '#{db_timestamp_regex}") { |m| Time.zone.parse(m[1]) },
+      to: statement.match("chart_period <= '#{db_timestamp_regex}") { |m| Time.zone.parse(m[1]) } }
+  end
 end

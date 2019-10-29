@@ -1,34 +1,21 @@
-<% if User.current.allowed_to?(:edit_issues, @project, :global => true) %>
-  <script type="text/javascript">
-    new AgileBoard().init({
-      project_id: '<%= @project && @project.id %>',
-      update_agile_board_path: '<%= escape_javascript update_agile_board_path %>',
-      issues_path: '<%= escape_javascript issues_path %>'
-    });
-
-    document.onkeydown = function(evt) {
-        evt = evt || window.event;
-        if (evt.keyCode == 27) {
-            $('html.agile-board-fullscreen').removeClass('agile-board-fullscreen');
-            $(".issue-card").addClass("hascontextmenu");
-        }
-    };
-  </script>
-<% end %>
-
-
 <div class="contextual">
-<% if !@query.new_record? && @query.editable_by?(User.current) %>
-  <%= link_to l(:button_edit), edit_agile_query_path(@query), :class => 'icon icon-edit' %>
-  <%= delete_link agile_query_path(@query) %>
-<% end %>
+  <%= link_to l(:label_agile_charts), @project ? project_agile_charts_path(project_id: @project) : agile_charts_path, class: 'icon icon-stats' %>
+  <% if !@query.new_record? && @query.editable_by?(User.current) %>
+    <%= link_to l(:button_edit), edit_agile_query_path(@query), class: 'icon icon-edit' %>
+    <%= delete_link agile_query_path(@query) %>
+  <% end %>
 </div>
 
-<h2><%= @query.new_record? ? l(:label_agile_board) : h(@query.name) %></h2>
 <% html_title(@query.new_record? ? l(:label_agile_board) : @query.name) %>
+<h2>
+  <%= @query.new_record? ? l(:label_agile_board) : h(@query.name) %>
+  <span class="live_search">
+    <%= text_field_tag(:search, '', :id => 'agile_live_search', :class => 'live_search_field', :placeholder => l(:label_cards_search)) %>
+  </span>
+</h2>
 
 <%= form_tag({ :controller => 'agile_boards', :action => 'index', :project_id => @project },
-            :method => :get, :id => 'query_form') do %>
+            :method => :get, :id => 'query_form', :onsubmit => 'DisableNullFields()') do %>
   <div id="query_form_with_buttons" class="hide-when-print">
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">
@@ -38,10 +25,20 @@
           <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
         </div>
       </fieldset>
-      <fieldset class="collapsible collapsed">
+      <fieldset id="options" class="collapsible collapsed">
         <legend onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
         <div style="display: none;">
           <table class="options">
+            <% if Redmine::VERSION.to_s > '2.4' %>
+              <tr>
+                <td>
+                  <%= l(:label_agile_board_columns) %>
+                </td>
+                <td class="card-fields">
+                  <%= render_board_fields_status(@query) %>
+                </td>
+              </tr>
+            <% end %>
             <tr>
               <td><%= l(:label_agile_fields) %></td>
               <td class="card-fields">
@@ -73,9 +70,9 @@
 <% end %>
 
 <% content_for :sidebar do %>
-
-  <%- #render :partial => 'upgrade_to_pro' %>
-
+ 
+  <%= render :partial => 'upgrade_to_pro' %>
+ 
   <%= render :partial => 'issues_links' %>
   <% if @project && @project.assignable_users.any? %>
     <%= render :partial => 'members' %>
@@ -85,8 +82,18 @@
 
 <% html_title l(:label_agile_board) %>
 <% content_for :header_tags do %>
-  <%= javascript_include_tag :redmine_agile, :plugin => 'redmine_agile' %>
+  <%= javascript_include_tag "redmine_agile", :plugin => 'redmine_agile' %>
   <%= javascript_include_tag "jquery.ui.touch-punch.js", :plugin => 'redmine_agile' %>
-  <%= stylesheet_link_tag :context_menu %>
+  <%= stylesheet_link_tag 'context_menu' %>
   <%= stylesheet_link_tag "redmine_agile.css", :plugin => "redmine_agile", :media => "print" %>
+<% end %>
+<% if User.current.allowed_to?(:edit_issues, @project, :global => true) %>
+  <script type="text/javascript">
+    var agileBoard = new AgileBoard({
+      project_id: '<%= @project && @project.id %>',
+      update_agile_board_path: '<%= escape_javascript update_agile_board_path %>',
+      issues_path: '<%= escape_javascript issues_path %>',
+      create_issue_path: '<%= escape_javascript(agile_create_issue_path(:project_id => @project)) if @project %>'
+    });
+  </script>
 <% end %>

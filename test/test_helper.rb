@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2019 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,12 +40,21 @@ end
 
 def log_user(login, password)
   User.anonymous
-  get "/login"
-  assert_equal nil, session[:user_id]
+  compatible_request :get, '/logout'
+  compatible_request :get, '/login'
+  assert_nil session[:user_id]
   assert_response :success
-  assert_template "account/login"
-  post "/login", :username => login, :password => password
+  compatible_request :post, '/login', :username => login, :password => password
   assert_equal login, User.find(session[:user_id]).login
+end
+
+def wait_for_ajax
+  counter = 0
+  while page.execute_script('return $.active').to_i > 0
+    counter += 1
+    sleep(0.1)
+    raise 'AJAX request took longer than 5 seconds.' if counter >= 50
+  end
 end
 
 def credentials(user, password=nil)
@@ -53,6 +62,23 @@ def credentials(user, password=nil)
 end
 
 module RedmineAgile
+  module TestHelper
+    def compatible_request(type, action, parameters = {})
+      return send(type, action, parameters) if Redmine::VERSION.to_s < '3.5' && Redmine::VERSION::BRANCH == 'stable'
+      send(type, action, :params => parameters)
+    end
+
+    def compatible_xhr_request(type, action, parameters = {})
+      return xhr type, action, parameters if Redmine::VERSION.to_s < '3.5' && Redmine::VERSION::BRANCH == 'stable'
+      send(type, action, :params => parameters, :xhr => true)
+    end
+
+    def agile_issues_in_list
+      ids = css_select('p.issue-id input').map { |tag| tag.to_s.to_s[/.*?value=\"(\d+)".*?/, 1] }.map(&:to_i)
+      Issue.where(:id => ids).sort_by { |issue| ids.index(issue.id) }
+    end
+  end
+
   module Demo
     # create_issue(10.days.ago, 4.days.ago, version)
     # 100.times{|i| create_issue(100.days.ago + i, 90.days.ago + i, version)}
@@ -139,6 +165,7 @@ module RedmineAgile
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 3,
+    :agile_data_attributes => { :story_points => 10 }
     },
     {
     :project_id => 2,
@@ -167,7 +194,7 @@ module RedmineAgile
     :category_id => 1,
     :description => "Unable to print recipes",
     :tracker_id => 3,
-    :assigned_to_id => 1,
+    :assigned_to_id => 2,
     :author_id => 3,
     :status_id => 2,
     :start_date => 1.day.ago.to_date.to_s(:db),
@@ -195,7 +222,7 @@ module RedmineAgile
     :estimated_hours => 55,
     },
     # Current Version
-    {          
+    {
     :project_id => 2,
     :priority_id => 2,
     :subject => "Issue 104",
@@ -250,12 +277,12 @@ module RedmineAgile
     :estimated_hours => 8,
     },
     # No Version
-    {       
+    {
     :project_id => 2,
     :priority_id => 2,
     :subject => "Blaa",
     :id => 107,
-    # fixed_version_id =>         
+    # fixed_version_id =>
     :category_id => 3,
     :description => "Unable to print recipes",
     :tracker_id => 2,
@@ -273,7 +300,7 @@ module RedmineAgile
     :priority_id => 2,
     :subject => "No Version Issue 108",
     :id => 108,
-    # fixed_version_id =>         
+    # fixed_version_id =>
     :category_id => 3,
     :description => "No Version Issue 108",
     :tracker_id => 2,
@@ -291,7 +318,7 @@ module RedmineAgile
     :priority_id => 2,
     :subject => "Blaaa",
     :id => 109,
-    # fixed_version_id =>         
+    # fixed_version_id =>
     :category_id => 3,
     :description => "Unable to print recipes",
     :tracker_id => 2,
@@ -312,3 +339,24 @@ module RedmineAgile
   end
 
 end
+
+class RedmineAgile::TestCase
+  def self.create_fixtures(fixtures_directory, table_names, class_names = {})
+    if ActiveRecord::VERSION::MAJOR >= 4
+      ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
+    else
+      ActiveRecord::Fixtures.create_fixtures(fixtures_directory, table_names, class_names = {})
+    end
+  end
+
+  def self.prepare
+    Role.find(1, 2, 3, 4).each do |r|
+      r.permissions << :manage_public_agile_queries
+      r.permissions << :add_agile_queries
+      r.permissions << :view_agile_queries
+      r.save
+    end
+  end
+end
+
+include RedmineAgile::TestHelper

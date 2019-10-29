@@ -1,8 +1,104 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2015 RedmineCRM
-http://www.redminecrm.com/
+Copyright (C) 2011-2019 RedmineUP
+http://www.redmineup.com/
+
+== 2019-02-08 v1.4.8
+
+* Added new Version planner
+* Added saving for Agile charts
+* Fixed "Related to" filter 
+* Fixed "Parent task" filter
+* Fixed search sensitive bug
+* Fixed empty current version bug
+
+== 2018-09-25 v1.4.7
+
+* Added missing filters: Issue, Description, Private, Watcher
+* Added preloading of colors for issues
+* Fixed tags render on a card
+* Fixed public board permission bug
+* Fixed agile board adaptability
+* Fixed fullscreen link displaying
+* Fixed filtering by Company custom field
+
+== 2018-03-20 v1.4.6
+
+* Redmine 4 support
+* Quick seach on the board
+* Issue tags field on cards
+* Story Points available values setting
+* Fixed story point showing bug
+* Fixed makeup on issue edit form
+* Fixed light version dropable bug
+* Fixed custom fields bug with charts
+
+== 2017-09-06 v1.4.5
+
+* Agile charts moved to Chartjs
+* Fixed current version filter value
+* Fixed issue sorting bug with active story points
+
+== 2017-07-06 v1.4.4
+
+* Redmine 3.4 support 
+* Color attribute for users
+* Agile board <Current version> query filter
+* Added initional state for status and assignee history 
+* Chinese translation update
+* Fixed checklist items order
+
+== 2017-03-20 v1.4.3
+
+* Added assignee, status and % done history urls
+* Created and Updated dates card fields
+* Fixed version from future bug
+* Fixed Agile board z-index bug
+* Fixed blocked query filter error
+* Fixed bug with zero divide for spent time color
+* Added trendline first point
+
+== 2016-11-16 v1.4.2
+
+* Trendlines for lead time and velocity charts
+* Current active version filter
+* Chinese translation (Zuofeng Zhang)
+* Issue order for swimlanes
+* Fixed bug with session storage overload
+* Story points chart data calculation bug fixed
+* Firefox and IE bug with on board comments fixed
+
+== 2016-06-20 v1.4.1
+
+* Agile board header height fixed for IE
+* Auto assign user on move card
+* Burndown/burnup charts fixes for story points and hours
+* Context menu for fullscreen board
+* Separate charts for SP and hours
+* Lock board on autorefresh
+
+== 2016-02-09 v1.4.0
+
+* Story points estimation
+* Card assignment error messages
+* Cleanup WIP limits option styles
+* Highligh inline created cards
+* Inline comments board lock
+* Fixed version planning access right
+* Fixed unicode letters in locale files
+* Fixed performance issues with board rendering
+
+== 2016-01-20 v1.3.13
+
+* Inline issue creation
+* Work-in-progress limits
+* Colored by project
+* Adding notes inline
+* Checklist on card view
+* Last comment card field
+* French locale by Olivier Houdas
+* Fixed bug with sorting cards in redmine < 3
 
 == 2015-11-03 v1.3.12
 

@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2019 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 require File.expand_path(File.dirname(__FILE__) + '/../../../../test/test_helper')
 
-class CommonViewsTest < ActionDispatch::IntegrationTest
+class RedmineAgile::CommonViewsTest < ActionDispatch::IntegrationTest
   fixtures :projects,
            :users,
            :roles,
@@ -52,38 +52,35 @@ class CommonViewsTest < ActionDispatch::IntegrationTest
     EnabledModule.create(:project => @project_1, :name => 'agile')
     EnabledModule.create(:project => @project_1, :name => 'gantt')
     EnabledModule.create(:project => @project_1, :name => 'calendar')
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-    @request.env['HTTP_REFERER'] = '/'
   end
 
-  test "View issues" do
-    log_user("admin", "admin")
-    get "/issues"
+  test 'View issues' do
+    log_user('admin', 'admin')
+    compatible_request :get, '/issues'
     assert_response :success
   end
 
-  test "View Gantt chart" do
-    log_user("admin", "admin")
-    get "/projects/ecookbook/issues/gantt"
+  test 'View Gantt chart' do
+    log_user('admin', 'admin')
+    compatible_request :get, '/projects/ecookbook/issues/gantt'
     assert_response :success
   end
 
-  test "View Calendar" do
-    log_user("admin", "admin")
-    get "/projects/ecookbook/issues/calendar"
+  test 'View Calendar' do
+    log_user('admin', 'admin')
+    compatible_request :get, '/projects/ecookbook/issues/calendar'
     assert_response :success
   end
 
-  test "View agile settings" do
-    log_user("admin", "admin")
-    get "/settings/plugin/redmine_agile"
+  test 'View agile settings' do
+    log_user('admin', 'admin')
+    compatible_request :get, '/settings/plugin/redmine_agile'
     assert_response :success
   end
 
-  test "View version" do
-    log_user("admin", "admin")
-    get "/versions/2"
+  test 'View version' do
+    log_user('admin', 'admin')
+    compatible_request :get, '/versions/2'
     assert_response :success
   end
 
