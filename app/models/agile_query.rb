@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,30 +19,22 @@
 
 class AgileQuery < Query
   unloadable
-  include Redmine::SafeAttributes
 
   attr_reader :truncated
 
   self.queried_class = Issue
-  self.view_permission = :view_issues if Redmine::VERSION.to_s >= '3.4'
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{Issue.table_name}.id", :default_order => 'desc', :caption => :label_agile_issue_id),
-    QueryColumn.new(:project, :groupable => "#{Issue.table_name}.project_id", :sortable => "#{Project.table_name}.id"),
+    QueryColumn.new(:project, :groupable => "#{Issue.table_name}.project_id"),
     QueryColumn.new(:tracker, :sortable => "#{Tracker.table_name}.position", :groupable => true),
     QueryColumn.new(:estimated_hours, :sortable => "#{Issue.table_name}.estimated_hours"),
     QueryColumn.new(:done_ratio, :sortable => "#{Issue.table_name}.done_ratio"),
     QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state),
-    QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileData.table_name}.position", :caption => :field_parent_issue),
+    QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileRank.table_name}.position", :caption => :field_parent_issue),
     QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id"),
-    QueryColumn.new(:relations, :caption => :label_related_issues),
-    QueryColumn.new(:last_comment, :caption => :label_agile_last_comment),
-    QueryColumn.new(:story_points, :caption => :label_agile_story_points)
+    QueryColumn.new(:relations, :caption => :label_related_issues)
   ]
-
-  if RedmineAgile.use_checklist?
-    self.available_columns << QueryColumn.new(:checklists, :caption => :label_checklist_plural)
-  end
 
   scope :visible, lambda {|*args|
     user = args.shift || User.current
@@ -70,15 +62,12 @@ class AgileQuery < Query
 
   def initialize(attributes=nil, *args)
     super attributes
-    unless Redmine::VERSION.to_s > '2.4'
-      self.filters ||= { 'status_id' => {:operator => "*", :values => [""]} }
-    end
-    self.filters ||= { }
+    self.filters ||= { 'status_id' => {:operator => "o", :values => [""]} }
     @truncated = false
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues checklists last_comment story_points).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -125,9 +114,6 @@ class AgileQuery < Query
     self.column_names = params[:c] || (params[:query] && params[:query][:column_names])
     self.color_base = params[:color_base] || (params[:query] && params[:query][:color_base])
     self.draw_relations = params[:draw_relations] || (params[:query] && params[:query][:draw_relations])
-    if params[:f_status] || params[:wp]
-      self.options = options.merge({ :f_status => params[:f_status], :wp => params[:wp] })
-    end
     self
   end
 
@@ -163,10 +149,8 @@ class AgileQuery < Query
     principals.sort!
     users = principals.select {|p| p.is_a?(User)}
 
-    unless Redmine::VERSION.to_s > '2.4'
-      add_available_filter "status_id",
-        :type => :list_status, :values => IssueStatus.sorted.collect{|s| [s.name, s.id.to_s] }
-    end
+    add_available_filter "status_id",
+      :type => :list_status, :values => IssueStatus.sorted.collect{|s| [s.name, s.id.to_s] }
 
     if project.nil?
       project_values = []
@@ -210,12 +194,9 @@ class AgileQuery < Query
     ) unless role_values.empty?
 
     if versions.any?
-      fixed_versions = []
-      fixed_versions << ["<< #{l(:label_current_version)} >>", 'current_version']
-      versions.sort.each{ |s| fixed_versions << ["#{s.project.name} - #{s.name}", s.id.to_s] }
       add_available_filter "fixed_version_id",
         :type => :list_optional,
-        :values => fixed_versions
+        :values => versions.sort.collect{|s| ["#{s.project.name} - #{s.name}", s.id.to_s] }
     end
 
     if categories.any?
@@ -266,7 +247,10 @@ class AgileQuery < Query
   def available_columns
     return @available_columns if @available_columns
     @available_columns = self.class.available_columns.dup
-    @available_columns += (project ? project.all_issue_custom_fields : IssueCustomField).visible.collect { |cf| QueryCustomFieldColumn.new(cf) }
+    @available_columns += (project ?
+                            project.all_issue_custom_fields :
+                            IssueCustomField
+                           ).visible.collect {|cf| QueryCustomFieldColumn.new(cf) }
 
     if User.current.allowed_to?(:view_time_entries, project, :global => true)
       index = nil
@@ -278,10 +262,6 @@ class AgileQuery < Query
         :default_order => 'desc',
         :caption => :label_spent_time
       )
-    end
-
-    if Redmine::Plugin.installed?(:redmineup_tags)
-      @available_columns << QueryColumn.new(:tags, :caption => :field_tags)
     end
 
     disabled_fields = Tracker.disabled_core_fields(trackers).map {|field| field.sub(/_id$/, '')}
@@ -373,7 +353,7 @@ class AgileQuery < Query
         " WHERE #{Member.table_name}.project_id = #{Issue.table_name}.project_id))"
     when "=", "!"
       role_cond = value.any? ?
-        "#{MemberRole.table_name}.role_id IN (" + value.collect{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")" :
+        "#{MemberRole.table_name}.role_id IN (" + value.collect{|val| "'#{connection.quote_string(val)}'"}.join(",") + ")" :
         "1=0"
 
       sw = operator == "!" ? 'NOT' : ''
@@ -383,15 +363,9 @@ class AgileQuery < Query
     end
   end
 
-  def condition_for_status
-    if Redmine::VERSION.to_s > '2.4'
-      return {:status_id => options[:f_status] || IssueStatus.where(:is_closed => false)}
-    end
-    '1=1'
-  end
-
   def issues(options={})
     order_option = [group_by_sort_order, options[:order]].flatten.reject(&:blank?)
+
     scope = issue_scope.
       joins(:status).
       eager_load((options[:include] || []).uniq).
@@ -405,100 +379,35 @@ class AgileQuery < Query
     if has_column?(:author)
       scope = scope.preload(:author)
     end
-
-    if has_column_name?(:checklists)
-      scope = scope.preload(:checklists)
+    if order_option.detect {|x| x.match("agile_ranks.position")}
+      scope = scope.sorted_by_rank 
     end
-
-    if order_option.detect {|x| x.match("agile_data.position")}
-      scope = scope.sorted_by_rank
-    end
-
-    if has_column_name?(:last_comment)
-      journal_comment = Journal.joins(:issue).where("#{Journal.table_name}.notes <> ''").
-        where(:issues => {:id => issues_ids(scope)}).order("#{Journal.table_name}.id ASC")
-      @last_comments = {}
-
-      journal_comment.each do |lc|
-        @last_comments[lc.journalized_id] = lc
-      end
-    end
-
-    if has_column_name?(:day_in_state)
-      @journals_for_state = Journal.joins(:details).where(
-        :journals => {
-          :journalized_id => issues_ids(scope),
-          :journalized_type => "Issue"
-        },
-        :journal_details => {:prop_key => 'status_id'}).order("created_on DESC")
-    end
-
-
+    
     scope
-    rescue ::ActiveRecord::StatementInvalid => e
-      raise StatementInvalid.new(e.message)
-  end
-
-  def issues_ids(scope)
-    @issues_ids ||= scope.map(&:id)
-  end
-
-  def journals_for_state
-    @journals_for_state
-  end
-
-  def issue_last_comment(issue, options = {})
-    return unless has_column_name?(:last_comment) || options[:inline_adding]
-    return issue.last_comment unless @last_comments
-    @last_comments[issue.id]
+  rescue ::ActiveRecord::StatementInvalid => e
+    raise StatementInvalid.new(e.message)
   end
 
   def board_statuses
-    if Redmine::VERSION.to_s > '2.4'
-      statuses =
-        if Redmine::VERSION.to_s >= '3.4' && project
-          project.rolled_up_statuses
-        else
-          IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
-        end
-      status_filter_values = (options[:f_status] if options)
-      if status_filter_values
-        result_statuses = statuses.where(:id => status_filter_values)
-      else
-        result_statuses = statuses.where(:is_closed => false)
-      end
-      result_statuses.sorted.map do |s|
-        s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-        if has_column_name?(:estimated_hours)
-          s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
-        end
-        if has_column_name?(:story_points)
-          s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
-        end
-        s
-      end
+    status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
+    status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
+    statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+    result_statuses = case status_filter_operator
+    when "o"
+      statuses.where(:is_closed => false).sorted
+    when "c"
+      statuses.where(:is_closed => true).sorted
+    when "="
+      statuses.where(:id => status_filter_values).sorted
+    when "!"
+      statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
     else
-      status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
-      status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
-      statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
-      result_statuses = case status_filter_operator
-      when "o"
-        statuses.where(:is_closed => false).sorted
-      when "c"
-        statuses.where(:is_closed => true).sorted
-      when "="
-        statuses.where(:id => status_filter_values).sorted
-      when "!"
-        statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
-      else
-        statuses.sorted
-      end
-      result_statuses.map do |s|
-        s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-        if has_column_name?(:estimated_hours)
-          s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
-        end
-        s
+      statuses.sorted
+    end
+    result_statuses.map do |s|
+      s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+      if has_column_name?(:estimated_hours)
+        s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
       end
       s
     end
@@ -510,10 +419,6 @@ class AgileQuery < Query
 
   def issue_count_by_estimated_hours
     @issue_count_by_estimated_hours ||= issue_scope.group("#{Issue.table_name}.status_id").sum("estimated_hours")
-  end
-
-  def issue_count_by_story_points
-    @issue_count_by_story_points ||= issue_scope.group("#{Issue.table_name}.status_id").sum("#{AgileData.table_name}.story_points")
   end
 
   def issue_board(options={})
@@ -546,9 +451,6 @@ class AgileQuery < Query
         op = (operator == "!p" ? 'NOT IN' : 'IN')
         comp = (operator == "=!p" ? '<>' : '=')
         "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name}, #{Issue.table_name} relissues WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}' AND #{IssueRelation.table_name}.#{target_join_column} = relissues.id AND relissues.project_id #{comp} #{value.first.to_i})"
-      when "*o", "!o"
-        op = (operator == "!o" ? 'NOT IN' : 'IN')
-        "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name}, #{Issue.table_name} relissues WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}' AND #{IssueRelation.table_name}.#{target_join_column} = relissues.id AND relissues.status_id IN (SELECT id FROM #{IssueStatus.table_name} WHERE is_closed=#{self.class.connection.quoted_false}))"
       end
 
     if relation_options[:sym] == field && !options[:reverse]
@@ -571,20 +473,6 @@ class AgileQuery < Query
     options[:draw_relations] = (arg == '0' ? '0' : nil)
   end
 
-  def statement
-    if values_for('fixed_version_id') == ['current_version'] && project
-      version = current_version
-      # substitute id for current version
-      filters['fixed_version_id'][:values] = [version.id.to_s] if version
-    end
-    clauses = super
-    if version
-      # return string for correct value in a select on a form
-      filters['fixed_version_id'][:values] = ['current_version']
-    end
-    clauses
-  end
-
 private
   def issue_scope
     Issue.visible.
@@ -594,17 +482,9 @@ private
                  :tracker,
                  :priority,
                  :category,
-                 :fixed_version,
-                 :agile_data).
-      where(statement).
-      where(condition_for_status)
+                 :fixed_version).
+      where(statement)
   end
 
-  def current_version
-    return @current_version if @current_version
-    versions = project.shared_versions.open.where("LOWER(#{Version.table_name}.name) NOT LIKE LOWER(?)", 'backlog')
-    versions -= versions.select(&:completed?).reverse
-    @current_version = versions.to_a.uniq.sort.first
-  end
 
 end

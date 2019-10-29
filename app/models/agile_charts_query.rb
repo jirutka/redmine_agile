@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -167,20 +167,6 @@ class AgileChartsQuery < AgileQuery
   end
 
 private
-
-  def issue_scope
-    Issue.visible.
-      eager_load(:status,
-                 :project,
-                 :assigned_to,
-                 :tracker,
-                 :priority,
-                 :category,
-                 :fixed_version,
-                 :agile_data).
-      where(statement)
-  end
-
   def validate_query_dates
     if (self.date_from && self.date_to && self.date_from >= self.date_to) ||
        (self.date_from && self.date_to.blank?)

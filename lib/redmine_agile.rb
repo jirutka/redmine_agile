@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,12 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'redmine_agile/patches/compatibility/application_controller_patch' if Rails::VERSION::MAJOR < 4
+require 'douglas_peucker'
 
 require 'redmine_agile/hooks/views_layouts_hook'
 require 'redmine_agile/hooks/views_issues_hook'
 require 'redmine_agile/hooks/views_versions_hook'
-require 'redmine_agile/hooks/controller_issue_hook'
 require 'redmine_agile/patches/issue_patch'
 
 require 'redmine_agile/patches/compatibility_patch'
@@ -33,12 +32,12 @@ require 'redmine_agile/charts/agile_chart'
 require 'redmine_agile/charts/burndown_chart'
 require 'redmine_agile/charts/work_burndown_chart'
 
+
 module RedmineAgile
 
   ISSUES_PER_COLUMN = 10
   TIME_REPORTS_ITEMS = 1000
   BOARD_ITEMS = 500
-  ESTIMATE_UNITS = ['hours', 'story_points']
 
   class << self
     def time_reports_items_limit
@@ -61,25 +60,7 @@ module RedmineAgile
     end
 
     def default_chart
-      Setting.plugin_redmine_agile['default_chart'] || 'issues_burndown'
-    end
-
-    def estimate_units
-      Setting.plugin_redmine_agile['estimate_units'] || 'hours'
-    end
-
-    def use_story_points?
-      estimate_units == 'story_points'
-    end
-
-    def trackers_for_sp
-      Setting.plugin_redmine_agile['trackers_for_sp']
-    end
-
-    def use_story_points_for?(tracker)
-      return true if trackers_for_sp.blank?
-      tracker = tracker.is_a?(Tracker) ? tracker.id.to_s : tracker
-      trackers_for_sp == tracker
+      Setting.plugin_redmine_agile['default_chart'] || "issues_burndown"
     end
 
     def use_colors?
@@ -98,10 +79,6 @@ module RedmineAgile
       Setting.plugin_redmine_agile['exclude_weekends'].to_i > 0
     end
 
-    def auto_assign_on_move?
-      Setting.plugin_redmine_agile['auto_assign_on_move'].to_i > 0
-    end
-
     def status_colors?
       false
           end
@@ -110,17 +87,7 @@ module RedmineAgile
       Setting.plugin_redmine_agile['hide_closed_issues_data'].to_i > 0
     end
 
-    def use_checklist?
-      @@chcklist_plugin_installed ||= (Redmine::Plugin.installed?(:redmine_checklists))
-    end
-
-    def allow_create_card?
-      false
-    end
-
-    def allow_inline_comments?
-      Setting.plugin_redmine_agile['allow_inline_comments'].to_i > 0
-    end
   end
+
 
 end

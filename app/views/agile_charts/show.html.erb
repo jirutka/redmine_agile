@@ -46,10 +46,6 @@
 
 <%= render_agile_chart(@chart, @issues) if @query.valid? %>
 
-<% content_for :header_tags do %>
-  <%= chartjs_assets %>
-<% end %>
-
 <% content_for :sidebar do %>
   <%= render :partial => 'agile_boards/issues_links' %>
   <%= render :partial => 'agile_charts/agile_charts' %>

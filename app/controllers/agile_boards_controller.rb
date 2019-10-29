@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ class AgileBoardsController < ApplicationController
 
   menu_item :agile
 
-  before_action :find_issue, :only => [:update, :issue_tooltip, :inline_comment]
-  before_action :find_optional_project, :only => [:index, :create_issue]
+  before_filter :find_issue, :only => [:update, :issue_tooltip]
+  before_filter :find_optional_project, :only => [:index]
 
   helper :issues
   helper :journals
@@ -49,10 +49,20 @@ class AgileBoardsController < ApplicationController
 
   def index
     retrieve_agile_query
+
     if @query.valid?
       @issues = @query.issues
       @issue_board = @query.issue_board
       @board_columns = @query.board_statuses
+      
+      if @query.has_column_name?(:day_in_state)
+        @journals_for_state = Journal.joins(:details).where(
+          :journals => {
+            :journalized_id => @issues.map{|issue| (issue.id rescue nil)}, 
+            :journalized_type => "Issue"
+          }, 
+          :journal_details => {:prop_key => 'status_id'}).order("created_on DESC") 
+      end
 
       respond_to do |format|
         format.html { render :template => 'agile_boards/index', :layout => !request.xhr? }
@@ -71,30 +81,21 @@ class AgileBoardsController < ApplicationController
   def update
     (render_403; return false) unless @issue.editable?
     retrieve_agile_query_from_session
-    old_status = @issue.status
     @issue.init_journal(User.current)
-    @issue.safe_attributes = auto_assign_on_move? ? params[:issue].merge(:assigned_to_id => User.current.id) : params[:issue]
-    checking_params = params.respond_to?(:to_unsafe_hash) ? params.to_unsafe_hash : params
-    saved = checking_params['issue'] && checking_params['issue'].inject(true) do |total, attribute|
-      if @issue.attributes.include?(attribute.first)
-        total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
-      else
-        total &&= true
-      end
+    @issue.safe_attributes = params[:issue]
+    saved = params[:issue] && params[:issue].inject(true) do |total, attribute|
+       total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
     end
     call_hook(:controller_agile_boards_update_before_save, { :params => params, :issue => @issue})
     @update = true
     if saved && @issue.save
       call_hook(:controller_agile_boards_update_after_save, { :params => params, :issue => @issue})
-      AgileData.transaction do
-        Issue.eager_load(:agile_data).find(params[:positions].keys).each do |issue|
-          issue.agile_data.position = params[:positions][issue.id.to_s]['position']
-          issue.agile_data.save
+      AgileRank.transaction do
+        Issue.eager_load(:agile_rank).find(params[:positions].keys).each do |issue|
+          issue.agile_rank.position = params[:positions][issue.id.to_s]['position']
+          issue.agile_rank.save
         end
       end if params[:positions]
-
-      @inline_adding = params[:issue][:notes] || nil
-
       respond_to do |format|
         format.html { render(:partial => 'issue_card', :locals => {:issue => @issue}, :status => :ok, :layout => nil) }
       end
@@ -102,27 +103,13 @@ class AgileBoardsController < ApplicationController
       respond_to do |format|
         messages = @issue.errors.full_messages
         messages = [l(:text_agile_move_not_possible)] if messages.empty?
-        format.html {
-          render :json => messages, :status => :fail, :layout => nil
-        }
+        format.html { render :json => messages, :status => :fail, :layout => nil }
       end
     end
   end
 
   def issue_tooltip
     render :partial => 'issue_tooltip'
-  end
-
-  def inline_comment
-    render 'inline_comment', :layout => nil
-  end
-
-  private
-
-  def auto_assign_on_move?
-    RedmineAgile.auto_assign_on_move? && @issue.assigned_to.nil? &&
-      !params[:issue].keys.include?('assigned_to_id') &&
-      @issue.status_id != params[:issue]['status_id'].to_i
   end
 
 end

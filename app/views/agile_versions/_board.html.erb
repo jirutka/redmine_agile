@@ -1,5 +1,5 @@
 <%= form_tag({}) do -%>
-  <%= hidden_field_tag 'back_url', url_for(params.respond_to?(:to_unsafe_hash) ? params.to_unsafe_hash : params) %>
+  <%= hidden_field_tag 'back_url', url_for(params) %>
   <%= hidden_field_tag 'project_id', @project.id if @project %>
 <div class="autoscroll">
     <div class="flash error" style="display: none;" id="agile-board-errors">
@@ -11,10 +11,10 @@
           <%= text_field_tag "search", '', :placeholder => l(:label_agile_no_version_issues) %>
           <%= javascript_tag "observeIssueSearchfield('search', '#{escape_javascript autocomplete_agile_versions_path(:project_id => @project)}');" %>
         </th>
-        <th style="width: 33%; text-align: left;" id="backlog_version_header" data-estimated-unit="<%= estimated_unit%>">
+        <th style="width: 33%; text-align: left;" id="backlog_version_header">
           <%= version_select_tag(@backlog_version, :version_type => "backlog", :other_version => @current_version) %>
         </th>
-        <th style="width: 33%; text-align: left;" id="current_version_header" data-estimated-unit="<%= estimated_unit%>">
+        <th style="width: 33%; text-align: left;" id="current_version_header">
           <%= version_select_tag(@current_version, :version_type => "current", :other_version => @backlog_version) %>
         </th>
       </tr>

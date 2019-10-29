@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class CreateIssueStatusOrders < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
+class CreateIssueStatusOrders < ActiveRecord::Migration
   def change
     create_table :issue_status_orders do |t|
       t.integer :issue_id

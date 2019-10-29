@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -118,12 +118,6 @@ module SVG
       # Plot::set_defaults, sets:
       # [x_label_format] '%Y-%m-%d %H:%M:%S'
       # [popup_format]  '%.2f'
-
-      def initialize(config)
-        @top_align = @top_font = @right_align = @right_font = 1
-        super(config)
-      end
-
       def set_defaults
         super
         init_with(
@@ -134,7 +128,6 @@ module SVG
         )
       end
 
-      attr_accessor :top_align, :top_font, :right_align, :right_font
       # The format string use do format the X axis labels.
       # See Time::strformat
       attr_accessor :x_label_format
@@ -197,7 +190,7 @@ module SVG
 
       protected
 
-      def format(x, y, _desc = nil)
+      def format x, y
         popup_format % y.to_f
       end
 
@@ -215,31 +208,9 @@ module SVG
         scale_range = (max_value + right_pad) - min_value
 
         scale_division = scale_x_divisions || (scale_range / 10.0)
-        @x_offset = 0
 
         if scale_x_integers
           scale_division = scale_division < 1 ? 1 : scale_division.round
-          @x_offset = min_value.to_f - min_value.floor
-        end
-
-        [min_value, max_value, scale_division]
-      end
-
-      def y_range
-        max_value = @data.collect{|x| x[:data][Y].max }.max
-        min_value = @data.collect{|x| x[:data][Y].min }.min
-        min_value = min_value<min_y_value ? min_value : min_y_value if min_y_value
-
-        range = max_value - min_value
-        top_pad = range == 0 ? 10 : range / 20.0
-        scale_range = (max_value + top_pad) - min_value
-
-        scale_division = scale_y_divisions || (scale_range / 10.0)
-        @y_offset = 0
-
-        if scale_y_integers
-          scale_division = scale_division < 1 ? 1 : scale_division.round
-          @y_offset = (min_value.to_f - min_value.floor).to_f
         end
 
         [min_value, max_value, scale_division]
@@ -312,6 +283,7 @@ module SVG
         min.step( max, scale_division ) {|v| rv << v}
         return rv
       end
+
     end
   end
 end

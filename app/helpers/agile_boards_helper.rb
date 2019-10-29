@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,28 +24,18 @@ module AgileBoardsHelper
     ''
       end
 
-  def agile_user_color(user, options={})
+  def agile_user_color(login, options={})
   end
 
   def header_th(name, rowspan = 1, colspan = 1, leaf = nil)
     th_attributes = {}
     if leaf
-      # th_attributes[:style] = ""
       th_attributes[:"data-column-id"] = leaf.id
-      issue_count = leaf.instance_variable_get("@issue_count") || 0
+      issue_count = leaf.instance_variable_get("@issue_count")
       count_tag = " (#{content_tag(:span, issue_count.to_i, :class => 'count')})".html_safe
-      
-
       # estimated hours total
-      story_points_count = leaf.instance_variable_get("@story_points") || 0
       hours_count = leaf.instance_variable_get("@estimated_hours_sum") || 0
-      if story_points_count > 0
-        hours_tag = " #{content_tag(:span, (story_points_count).to_s + 'sp',
-          :class => 'hours', :title => l(:field_estimated_hours))}".html_safe
-      else
-        hours_tag = " #{content_tag(:span, ("%.2fh" % hours_count.to_f).to_s,
-        :class => 'hours', :title => l(:field_estimated_hours))}".html_safe if hours_count > 0
-      end
+      hours_tag = " #{content_tag(:span, ("%.2fh" % hours_count.to_f).to_s, :class => 'hours', :title => l(:field_estimated_hours))}".html_safe if hours_count > 0
     end
     content_tag :th, h(name) + count_tag + hours_tag, th_attributes
   end
@@ -59,32 +49,16 @@ module AgileBoardsHelper
   end
 
   def render_board_fields_selection(query)
-    query.available_inline_columns.reject(&:frozen?).reject{ |c| c.name == :story_points && !RedmineAgile.use_story_points? }.map do |column|
+    query.available_inline_columns.reject(&:frozen?).map do |column|
       label_tag('', check_box_tag('c[]', column.name, query.columns.include?(column)) + column.caption, :class => "floating" )
     end.join(" ").html_safe
-  end
-
-  def render_board_fields_status(query)
-    available_statuses = Redmine::VERSION.to_s >= '3.4' && @project ? @project.rolled_up_statuses : IssueStatus.sorted
-    current_statuses = query.options[:f_status] || IssueStatus.where(:is_closed => false).pluck(:id).map(&:to_s)
-    wp = query.options[:wp] || {}
-    status_tags = available_statuses.map do |status|
-      label_tag('', check_box_tag('f_status[]', status.id, current_statuses.include?(status.id.to_s)
-      ) + status.to_s, :class => 'floating')
-    end.join(' ').html_safe
-    hidden_field_tag('f[]', 'status_id').html_safe +
-      hidden_field_tag('op[status_id]', "=").html_safe +
-      status_tags
   end
 
   def render_issue_card_hours(query, issue)
     hours = []
     hours << "%.2f" % issue.total_spent_hours.to_f if query.has_column_name?(:spent_hours) && issue.total_spent_hours > 0
     hours << "%.2f" % issue.estimated_hours.to_f if query.has_column_name?(:estimated_hours) && issue.estimated_hours
-    hours = [hours.join('/') + "h"] unless hours.blank?
-    hours << "#{issue.story_points}sp" if query.has_column_name?(:story_points) && issue.story_points
-
-    content_tag(:span, "(#{hours.join('/')})", :class => 'hours') unless hours.blank?
+    content_tag(:span, "(#{hours.join('/')}h)", :class => 'hours') unless hours.blank?
   end
 
   def agile_progress_bar(pcts, options={})
@@ -127,23 +101,14 @@ module AgileBoardsHelper
     ''
   end
 
-  def init_agile_tooltip_info(options={})
-    js_code = "function callGetToolTipInfo()
+  def init_agile_tooltip_info
+    javascript_tag "function callGetToolTipInfo()
       {
         var url = '#{issue_tooltip_url}';
-        agileBoard.getToolTipInfo(this, url);
+        getToolTipInfo(this, url);
       }
       $('.tooltip').mouseenter(callGetToolTipInfo);
     "
-    return js_code.html_safe if options[:only_code]
-    javascript_tag(js_code)
   end
-
-  def show_checklist?(issue)
-    RedmineAgile.use_checklist? && issue.checklists.any? && User.current.allowed_to?(:view_checklists, issue.project)
-  rescue
-    false
-  end
-
 
 end

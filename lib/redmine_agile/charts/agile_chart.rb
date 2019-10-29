@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,12 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'SVG/Graph/TimeSeries'
+require 'SVG/Graph/Line'
+require 'SVG/Graph/Plot'
+require 'SVG/Graph/Bar'
+
 module RedmineAgile
   class AgileChart
     include Redmine::I18n
     include Redmine::Utils::DateCalculation
-
-    attr_reader :line_colors
 
     def initialize(data_scope, options={})
       @data_scope = data_scope
@@ -32,32 +35,23 @@ module RedmineAgile
       @step_x_labels = @period_count > 18 ? @period_count / 12 + 1 : 1
       @fields = chart_fields_by_period
       @weekend_periods = weekend_periods
-      @estimated_unit = options[:estimated_unit] || 'hours'
-      @line_colors = {}
     end
 
-    def data
-      { :title => '', :y_title => '', :labels => [], :datasets => [] }
+    def render
     end
 
-    def self.data(data_scope, options = {})
-      new(data_scope, options).data
+    def self.render(data_scope, options={})
+      self.new(data_scope, options).render
     end
 
-    protected
+  protected
 
     def current_date_period
-      date_period = (@date_to <= Date.today ? @period_count : (@period_count - (@date_to - Date.today).to_i / @scale_division - 1) + 1).round
-      @current_date_period ||= date_period > 0 ? date_period : 0
+      @current_date_period ||= (@date_to < Date.today ? @period_count - 1 : ( @period_count - (@date_to - Date.today).to_i / @scale_division - 1) + 1 ).round
     end
 
     def due_date_period
-      due_date = (@due_date && @due_date > @date_from) ? @due_date : @date_from
-      @due_date_period ||= (@due_date ? @period_count - (@date_to - due_date).to_i / @scale_division - 1 : @period_count - 1) + 1
-    end
-
-    def date_short_period?
-      (@date_to - @date_from).to_i <= 31
+      @due_date_period ||= (@due_date ? @period_count - (@date_to - @due_date).to_i / @scale_division - 1: @period_count - 1) + 1
     end
 
     def date_effort(issues, effort_date)
@@ -65,38 +59,28 @@ module RedmineAgile
       total_left = 0
       total_done = 0
       issues.each do |issue|
-        done_ratio_details = issue.journals.map(&:details).flatten.select { |detail| 'done_ratio' == detail.prop_key }
-        details_today_or_earlier = done_ratio_details.select { |a| a.journal.created_on.localtime.to_date <= effort_date }
+        done_ratio_details = issue.journals.map(&:details).flatten.select {|detail| 'done_ratio' == detail.prop_key }
+        details_today_or_earlier = done_ratio_details.select {|a| a.journal.created_on.localtime.to_date <= effort_date }
 
-        last_done_ratio_change = details_today_or_earlier.sort_by { |a| a.journal.created_on }.last
+        last_done_ratio_change = details_today_or_earlier.sort_by {|a| a.journal.created_on }.last
         ratio = if issue.closed? && issue.closed_on.localtime.to_date <= effort_date
-                  100
-                elsif last_done_ratio_change
-                  last_done_ratio_change.value
-                elsif (done_ratio_details.size > 0) || (issue.closed? && issue.closed_on > effort_date)
-                  0
-                else
-                  issue.done_ratio.to_i
-                end
-
-        if @estimated_unit == 'hours'
-          cumulative_left += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
-          total_left += (issue.estimated_hours.to_f * (100 - ratio.to_f) / 100.0)
-          total_done += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
+          100
+        elsif last_done_ratio_change
+          last_done_ratio_change.value
+        elsif (done_ratio_details.size > 0) || (issue.closed? && issue.closed_on > effort_date)
+          0
         else
-          cumulative_left += (issue.story_points.to_f * ratio.to_f / 100.0)
-          total_left += (issue.story_points.to_f * (100 - ratio.to_f) / 100.0)
-          total_done += (issue.story_points.to_f * ratio.to_f / 100.0)
+          issue.done_ratio.to_i
         end
+
+        cumulative_left += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
+        total_left += (issue.estimated_hours.to_f * (100 - ratio.to_f) / 100.0)
+        total_done += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
       end
       [total_left, cumulative_left, total_done]
     end
 
-    def use_subissue_done_ratio
-      !Setting.respond_to?(:parent_issue_done_ratio) || Setting.parent_issue_done_ratio == 'derived' || Setting.parent_issue_done_ratio.nil?
-    end
-
-    private
+  private
 
     def scope_by_created_date
       @data_scope.
@@ -117,31 +101,13 @@ module RedmineAgile
         count
     end
 
-    # options
-    # color    - Line color in RGB format (e.g '255,255,255') (random)
-    # fill     - Fille background under line (false)
-    # dashed   - Draw dached line (solid)
-    # nopoints - Doesn't show points on line (false)
-
-    def dataset(dataset_data, label, options = {})
-      color = options[:color] || [rand(255), rand(255), rand(255)].join(',')
-      dataset_color = "rgba(#{color}, 1)"
-      {
-        :type => (options[:type] || 'line'),
-        :data => dataset_data,
-        :label => label,
-        :fill => (options[:fill] || false),
-        :backgroundColor => "rgba(#{color}, 0.2)",
-        :borderColor => dataset_color,
-        :borderDash => (options[:dashed] ? [5, 5] : []),
-        :borderWidth => (options[:dashed] ? 1.5 : 2),
-        :pointRadius => (options[:nopoints] ? 0 : 3),
-        :pointBackgroundColor => dataset_color
-      }
+    def data_points(data)
+      data.inject([]) { |result, var|  result << [result.size, var]}.flatten
     end
 
     def chart_periods
-      raise "Dates can't be blank" if [@date_to, @date_from].any?(&:blank?)
+      raise Exception "Dates can't be blank" if [@date_to, @date_from].any?(&:blank?)
+
       period_count = (@date_to.to_date + 1 - @date_from.to_date).to_i
       scale_division = period_count > 31 ? period_count / 31.0 : 1
 
@@ -160,7 +126,7 @@ module RedmineAgile
 
     def issues_avg_count_by_period(issues_scope)
       count_by_date = {}
-      issues_scope.each {|x, y| count_by_date[x.localtime.to_date] = count_by_date[x.localtime.to_date].to_i + y }
+      issues_scope.each{|x, y| count_by_date[x.localtime.to_date] = count_by_date[x.localtime.to_date].to_i + y}
       data = [0] * @period_count
       count_by_date.each do |x, y|
         next if x.to_date > @date_to.to_date
@@ -178,11 +144,11 @@ module RedmineAgile
         if @scale_division >= 365
           d.year
         elsif @scale_division >= 13
-          month_abbr_name(d.at_beginning_of_week.to_time.month) + ' ' + d.at_beginning_of_week.to_time.year.to_s
+          month_abbr_name(d.at_beginning_of_week.to_time.month) + " " + d.at_beginning_of_week.to_time.year.to_s
         elsif @scale_division >= 7
-          d.at_beginning_of_week.to_time.day.to_s + ' ' + month_name(d.at_beginning_of_week.to_time.month)
+          d.at_beginning_of_week.to_time.day.to_s + " " + month_name(d.at_beginning_of_week.to_time.month)
         else
-          d.to_time.day.to_s + ' ' + month_name(d.to_time.month)
+          d.to_time.day.to_s + " " + month_name(d.to_time.month)
         end
       end
     end
@@ -209,14 +175,14 @@ module RedmineAgile
       @chart_dates_by_period ||= @period_count.times.inject([]) do |accum, m|
         period_date = ((@date_to.to_date - 1 - m * @scale_division) + 1)
         accum << if m == 0 || m == @period_count - 1
-                   period_date.to_date
-                 elsif @scale_division >= 13
-                   period_date.at_beginning_of_week.to_date
-                 elsif @scale_division >= 7
-                   period_date.at_beginning_of_week.to_date
-                 else
-                   period_date.to_date
-                 end
+          period_date.to_date
+        elsif @scale_division >= 13
+          period_date.at_beginning_of_week.to_date
+        elsif @scale_division >= 7
+          period_date.at_beginning_of_week.to_date
+        else
+          period_date.to_date
+        end
       end.reverse
     end
 
@@ -224,29 +190,5 @@ module RedmineAgile
       l('date.abbr_month_names')[month]
     end
 
-    def trendline(y_values)
-      size = y_values.size
-      x_values = (1..size).to_a
-      sum_x = 0
-      sum_y = 0
-      sum_xx = 0
-      sum_xy = 0
-      y_values.zip(x_values).each do |y, x|
-        sum_xy += x * y
-        sum_xx += x * x
-        sum_x  += x
-        sum_y  += y
-      end
-
-      slope = 1.0 * ((size * sum_xy) - (sum_x * sum_y)) / ((size * sum_xx) - (sum_x * sum_x))
-      intercept = 1.0 * (sum_y - (slope * sum_x)) / size
-
-      line_values = x_values.map { |x| predict(x, slope, intercept) }
-      line_values.select { |val| val >= 0 }
-    end
-
-    def predict(x, slope, intercept)
-      slope * x + intercept
-    end
   end
 end

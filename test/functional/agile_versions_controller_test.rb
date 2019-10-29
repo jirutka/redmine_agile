@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,10 +47,10 @@ class AgileVersionsControllerTest < ActionController::TestCase
            :queries
 
   def setup
-
+    
     @project_1 = Project.find(1)
     @project_3 = Project.find(5)
-
+    
     EnabledModule.create(:project => @project_1, :name => 'agile')
     EnabledModule.create(:project => @project_3, :name => 'agile')
 
@@ -58,24 +58,24 @@ class AgileVersionsControllerTest < ActionController::TestCase
   end
 
   def test_get_index
-    compatible_request :get, :index, :project_id => @project_1
+    get :index, :project_id => @project_1
     assert_response :success
-    assert_match /Version planning/, @response.body
+    assert_template :index
   end
 
   def test_get_load
-    compatible_xhr_request :get, :load, :version_type => 'backlog', :version_id => '3', :project_id => 'ecookbook'
+    xhr :get, :load, :version_type => "backlog", :version_id => "3", :project_id => "ecookbook"
     assert_response :success
   end
 
   def test_get_autocomplete_id
-    compatible_xhr_request :get, :autocomplete, :project_id => 'ecookbook', :q => '#3'
+    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"#3"
     assert_response :success
     assert_match "Error 281",  @response.body
   end
 
   def test_get_autocomplete_text
-    compatible_xhr_request :get, :autocomplete, :project_id => 'ecookbook', :q => 'error'
+    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"error"
     assert_response :success
     assert_match "Error 281",  @response.body
   end

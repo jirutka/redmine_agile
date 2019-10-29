@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ class AgileChartsController < ApplicationController
 
   menu_item :agile
 
-  before_action :find_optional_project, :only => [:show, :render_chart]
-  before_action :find_optional_version, :only => [:render_chart, :select_version_chart]
+  before_filter :find_optional_project, :only => [:show, :render_chart]
+  before_filter :find_optional_version, :only => [:render_chart, :select_version_chart]
 
   helper :issues
   helper :journals
@@ -71,25 +71,33 @@ class AgileChartsController < ApplicationController
       @issues = Issue.visible.where(@query.statement)
       options = {:date_from => @query.date_from, :date_to => @query.date_to}
     end
+
     render_data(options)
   end
 
   def select_version_chart
+
   end
 
-  private
+private
 
-  def render_data(options = {})
+  def render_data(options={})
     case @chart
-    when 'work_burndown_hours'
-      data = RedmineAgile::WorkBurndownChart.data(@issues, options.merge(:estimated_unit => 'hours'))
-    when 'work_burndown_sp'
-      data = RedmineAgile::WorkBurndownChart.data(@issues, options.merge(:estimated_unit => 'story_points'))
+    when "work_burndown"
+      data = RedmineAgile::WorkBurndownChart.render(@issues, options)
     else
-      data = RedmineAgile::BurndownChart.data(@issues, options)
+      data = RedmineAgile::BurndownChart.render(@issues, options)
     end
-    return render :json => data if data
-    raise ActiveRecord::RecordNotFound
+    if data
+      headers["Content-Type"] = "image/svg+xml"
+      send_data(data, :type => "image/svg+xml", :disposition => "inline")
+    else
+      raise ActiveRecord::RecordNotFound
+    end
+
+  # rescue Exception => e
+  #   logger.error "RedmineAgile: Chart rendering Error -  #{e.message}" if logger && logger.error
+  #   render :nothing => true, :status => 500, :content_type => 'text/html'
   end
 
   def find_optional_version
@@ -99,6 +107,7 @@ class AgileChartsController < ApplicationController
   end
 
   def retrieve_charts_query
+
     if params[:set_filter] || session[:agile_charts_query].nil? || session[:agile_charts_query][:project_id] != (@project ? @project.id : nil)
       # Give it a name, required to be valid
       @query = AgileChartsQuery.new(:name => "_")

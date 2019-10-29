@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
-# http://www.redmineup.com/
+# Copyright (C) 2011-2015 RedmineCRM
+# http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,8 +28,6 @@ module RedmineAgile
           :partial => "agile_charts/agile_charts",
           :locals => context })
       end
-      render_on :view_issues_form_details_bottom, :partial => "issues/agile_data_fields"
-      render_on :view_issues_show_details_bottom, :partial => "issues/issue_story_points"
     end
   end
 end

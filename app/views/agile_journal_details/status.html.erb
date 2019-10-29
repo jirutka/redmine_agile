@@ -8,7 +8,6 @@
       <th>#</th>
       <th><%= l(:field_created_on) %></th>
       <th><%= l(:field_status) %></th>
-      <th><%= l(:field_duration) %></th>
       <th><%= l(:field_author) %></th>
   </tr></thead>
   <% @statuses.each_with_index do |status, index| %>
@@ -17,7 +16,6 @@
       <td class="index"><%= index + 1 %></td>
       <td class="name"><%= format_time(status.journal.created_on) %></td>
       <td><%= issue_status.name %></td>
-      <td><%= event_duration(status, @statuses[index + 1]) %></td>
       <td><%= status.journal.user.name %></td>
   </tr>
   <% end %>
