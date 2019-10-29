@@ -20,6 +20,10 @@
 class AgileQuery < Query
   unloadable
 
+  VISIBILITY_PRIVATE = 0
+  VISIBILITY_ROLES   = 1
+  VISIBILITY_PUBLIC  = 2
+
   attr_reader :truncated
 
   self.queried_class = Issue
@@ -59,6 +63,18 @@ class AgileQuery < Query
 
   def is_private?
     !is_public?
+  end
+
+  def visibility=(value)
+    is_public = (value == VISIBILITY_PUBLIC)
+  end
+
+  def visibility
+    if is_public?
+      VISIBILITY_PUBLIC
+    else
+      VISIBILITY_PRIVATE
+    end
   end
 
   def build_from_params(params)

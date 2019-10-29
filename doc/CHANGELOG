@@ -4,6 +4,14 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2014 RedmineCRM
 http://www.redminecrm.com/
 
+== 2014-09-28 v1.3.3
+
+* German translation (Jan Schulz-Hofen)
+* Assignable users on agile board sidebar
+* Fixed bug with saving boards for non admin roles for Redmine 2.3
+* Fixed bug with authors swimlanes
+* Fixed bug in swimlanes with empty versions list
+
 == 2014-06-27 v1.3.2
 
 * Default desc sorting for priority swimlanes

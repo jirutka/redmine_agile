@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-AGILE_VERSION_NUMBER = '1.3.2'
+AGILE_VERSION_NUMBER = '1.3.3'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do

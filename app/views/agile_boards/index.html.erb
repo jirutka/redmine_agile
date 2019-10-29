@@ -74,7 +74,7 @@
 
 <% content_for :sidebar do %>
   <%= render :partial => 'issues_links' %>
-  <% if @project && @project.users.any? %>
+  <% if @project && @project.assignable_users.any? %>
     <%= render :partial => 'members' %>
   <% end %>
   <%= render :partial => 'agile_charts/agile_charts' %>
