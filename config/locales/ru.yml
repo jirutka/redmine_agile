@@ -1,6 +1,7 @@
 # Russian strings go here for Rails i18n
 ru:
   label_agile: Agile
+  label_backlog: Backlog
   label_agile_board: Доска задач
   label_agile_board_plural: Доски задач
   label_agile_board_thumbnails: Превью
@@ -108,10 +109,18 @@ ru:
 
   #1.3.13
   label_agile_last_comment: Последний комментарий
+  label_agile_esitmate_units: Использовать для оценки
+  label_agile_trackers_for_sp: Трекеры для Story points
+  label_agile_story_points: Story points
+  field_story_points: Story points
+  label_agile_charts_number_of_story_points: Кол-во story points
   label_agile_board_columns: Столбцы доски
   lable_agile_wip_limit_exceeded: Превышен лимит по задачам в данном столбце
   label_agile_wip_limit: Ограничение по кол-ву задач в столбце
-  label_agile_add_new_issue: + НОВАЯ ЗАДАЧА
+  label_agile_add_new_issue: '+ НОВАЯ ЗАДАЧА'
   label_agile_allow_create_cards: Создавать новые задачи на доске
-  label_agile_auto_аssign_on_move: Автоназначение при перетаскивании
+  label_agile_auto_assign_on_move: Автоназначение при перетаскивании
   text_agile_create_issue_error: Произошла ошибка при создании задачи
+  label_agile_inline_comment: Комментирование с доски
+  label_agile_hours: Часы
+  field_color: Цвет

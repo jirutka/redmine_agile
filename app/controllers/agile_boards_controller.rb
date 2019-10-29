@@ -80,16 +80,20 @@ class AgileBoardsController < ApplicationController
       @issue.safe_attributes = params[:issue]
     end
     saved = params[:issue] && params[:issue].inject(true) do |total, attribute|
-       total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
+      if @issue.attributes.include?(attribute.first)
+        total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
+      else
+        total &&= true
+      end
     end
     call_hook(:controller_agile_boards_update_before_save, { :params => params, :issue => @issue})
     @update = true
     if saved && @issue.save
       call_hook(:controller_agile_boards_update_after_save, { :params => params, :issue => @issue})
-      AgileRank.transaction do
-        Issue.eager_load(:agile_rank).find(params[:positions].keys).each do |issue|
-          issue.agile_rank.position = params[:positions][issue.id.to_s]['position']
-          issue.agile_rank.save
+      AgileData.transaction do
+        Issue.eager_load(:agile_data).find(params[:positions].keys).each do |issue|
+          issue.agile_data.position = params[:positions][issue.id.to_s]['position']
+          issue.agile_data.save
         end
       end if params[:positions]
 
@@ -120,7 +124,7 @@ class AgileBoardsController < ApplicationController
   private
 
   def auto_assign_on_move?
-    RedmineAgile.auto_аssign_on_move? && @issue.assigned_to.nil? &&
+    RedmineAgile.auto_assign_on_move? && @issue.assigned_to.nil? &&
       !params[:issue].keys.include?('assigned_to_id') &&
       @issue.status_id != params[:issue]['status_id'].to_i
   end

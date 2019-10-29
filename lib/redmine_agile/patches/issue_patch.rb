@@ -18,7 +18,7 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 require_dependency 'issue'
-require_dependency 'agile_rank'
+require_dependency 'agile_data'
 
 module RedmineAgile
   module Patches
@@ -28,27 +28,33 @@ module RedmineAgile
         base.send(:include, InstanceMethods)
         base.class_eval do
           unloadable
-          has_one :agile_rank, :dependent => :destroy
-          scope :sorted_by_rank, lambda {eager_load(:agile_rank).
-                                   order("COALESCE(#{AgileRank.table_name}.position, 999999)")}
-          alias_method_chain :agile_rank, :default
+          has_one :agile_data, :dependent => :destroy
+          scope :sorted_by_rank, lambda {eager_load(:agile_data).
+                                   order("COALESCE(#{AgileData.table_name}.position, 999999)")}
+          safe_attributes 'agile_data_attributes', :if => lambda {|issue, user| issue.new_record? || user.allowed_to?(:edit_issues, issue.project) && RedmineAgile.use_story_points?}
+          accepts_nested_attributes_for :agile_data, :allow_destroy => true
+          alias_method_chain :agile_data, :default
         end
       end
 
       module InstanceMethods
-        def agile_rank_with_default
-          agile_rank_without_default || build_agile_rank
+        def agile_data_with_default
+          agile_data_without_default || build_agile_data
         end
 
         def day_in_state
           change_time = journals.joins(:details).where(:journals => {:journalized_id => id, :journalized_type => "Issue"}, :journal_details => {:prop_key => 'status_id'}).order("created_on DESC").first
-          change_time.created_on 
-        rescue 
+          change_time.created_on
+        rescue
           self.created_on
         end
 
         def last_comment
           journals.where("notes <> ''").order("#{Journal.table_name}.id ASC").last
+        end
+
+        def story_points
+          @story_points ||= agile_data.story_points
         end
 
         def sub_issues

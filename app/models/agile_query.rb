@@ -31,10 +31,11 @@ class AgileQuery < Query
     QueryColumn.new(:estimated_hours, :sortable => "#{Issue.table_name}.estimated_hours"),
     QueryColumn.new(:done_ratio, :sortable => "#{Issue.table_name}.done_ratio"),
     QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state),
-    QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileRank.table_name}.position", :caption => :field_parent_issue),
+    QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileData.table_name}.position", :caption => :field_parent_issue),
     QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id"),
     QueryColumn.new(:relations, :caption => :label_related_issues),
-    QueryColumn.new(:last_comment, :caption => :label_agile_last_comment)
+    QueryColumn.new(:last_comment, :caption => :label_agile_last_comment),
+    QueryColumn.new(:story_points, :caption => :label_agile_story_points)
   ]
 
   if RedmineAgile.use_checklist?
@@ -75,7 +76,7 @@ class AgileQuery < Query
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues checklists last_comment).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues checklists last_comment story_points).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -403,7 +404,7 @@ class AgileQuery < Query
       scope = scope.eager_load(:checklists)
     end
 
-    if order_option.detect {|x| x.match("agile_ranks.position")}
+    if order_option.detect {|x| x.match("agile_data.position")}
       scope = scope.sorted_by_rank
     end
 
@@ -460,6 +461,9 @@ class AgileQuery < Query
         if has_column_name?(:estimated_hours)
           s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
         end
+        if has_column_name?(:story_points)
+          s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
+        end
         s
       end
     else
@@ -485,6 +489,7 @@ class AgileQuery < Query
         end
         s
       end
+      s
     end
   end
 
@@ -494,6 +499,10 @@ class AgileQuery < Query
 
   def issue_count_by_estimated_hours
     @issue_count_by_estimated_hours ||= issue_scope.group("#{Issue.table_name}.status_id").sum("estimated_hours")
+  end
+
+  def issue_count_by_story_points
+    @issue_count_by_story_points ||= issue_scope.group("#{Issue.table_name}.status_id").sum("#{AgileData.table_name}.story_points")
   end
 
   def issue_board(options={})
@@ -557,7 +566,8 @@ private
                  :tracker,
                  :priority,
                  :category,
-                 :fixed_version).
+                 :fixed_version,
+                 :agile_data).
       where(statement).
       where(condition_for_status)
   end

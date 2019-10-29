@@ -74,9 +74,16 @@ module RedmineAgile
           issue.done_ratio.to_i
         end
 
-        cumulative_left += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
-        total_left += (issue.estimated_hours.to_f * (100 - ratio.to_f) / 100.0)
-        total_done += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
+        if RedmineAgile.use_story_points?
+          cumulative_left += (issue.story_points.to_f * ratio.to_f / 100.0)
+          total_left += (issue.story_points.to_f * (100 - ratio.to_f) / 100.0)
+          total_done += (issue.story_points.to_f * ratio.to_f / 100.0)
+        else
+          cumulative_left += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
+          total_left += (issue.estimated_hours.to_f * (100 - ratio.to_f) / 100.0)
+          total_done += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
+        end
+
       end
       [total_left, cumulative_left, total_done]
     end
@@ -108,7 +115,6 @@ module RedmineAgile
 
     def chart_periods
       raise Exception "Dates can't be blank" if [@date_to, @date_from].any?(&:blank?)
-
       period_count = (@date_to.to_date + 1 - @date_from.to_date).to_i
       scale_division = period_count > 31 ? period_count / 31.0 : 1
 

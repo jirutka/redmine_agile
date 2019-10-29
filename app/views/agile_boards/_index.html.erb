@@ -64,14 +64,7 @@
 <% end %>
 
 <% content_for :sidebar do %>
- 
-  <%= render :partial => 'upgrade_to_pro' %>
- 
-  <%= render :partial => 'issues_links' %>
-  <% if @project && @project.assignable_users.any? %>
-    <%= render :partial => 'members' %>
-  <% end %>
-  <%= render :partial => 'agile_charts/agile_charts' %>
+  <%= render :partial => 'issues/sidebar' %>
 <% end %>
 
 <% html_title l(:label_agile_board) %>
@@ -91,3 +84,5 @@
     });
   </script>
 <% end %>
+
+<%= context_menu issues_context_menu_path %>

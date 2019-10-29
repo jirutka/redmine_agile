@@ -1,6 +1,8 @@
 # English strings go here for Rails i18n
 en:
   label_agile: Agile
+  label_gantt: Gantt
+  label_backlog: Backlog
   label_agile_board: Agile board
   label_agile_board_plural: Agile boards
   label_agile_board_thumbnails: Thumbnails
@@ -108,10 +110,18 @@ en:
 
   #1.3.13
   label_agile_last_comment: Last comment
+  label_agile_esitmate_units: Estimate units
+  label_agile_trackers_for_sp: Trackers for story points
+  label_agile_story_points: Story points
+  field_story_points: Story points
+  label_agile_charts_number_of_story_points: Number of story points
   label_agile_board_columns: Board columns
   lable_agile_wip_limit_exceeded: Work-in-progress limit exceeded
   label_agile_wip_limit: Work-in-progress limit
-  label_agile_add_new_issue: + ADD NEW ISSUE
-  label_agile_allow_create_cards: Allow create card
-  label_agile_auto_аssign_on_move: Auto assign on move
+  label_agile_add_new_issue: '+ ADD NEW ISSUE'
+  label_agile_allow_create_cards: Card creation
+  label_agile_auto_assign_on_move: Auto assign on move
   text_agile_create_issue_error: An error occurred while creating the task
+  label_agile_inline_comment: Inline comment
+  label_agile_hours: Hours
+  field_color: Color

@@ -53,6 +53,7 @@ class AgileVersionsQueryTest < ActiveSupport::TestCase
         @query.project = Project.find(2)
     @backlog_version = Version.find(7)
     @current_version = Version.find(5)
+    User.current = User.find(1) #because issues selected according permissions
   end
 
   def test_backlog_version

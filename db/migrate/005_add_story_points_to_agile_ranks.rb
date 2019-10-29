@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class AgileRank < ActiveRecord::Base
-  unloadable
-  belongs_to :issue
+class AddStoryPointsToAgileRanks < ActiveRecord::Migration
+  def change
+    add_column :agile_data, :story_points, :integer
+  end
 end

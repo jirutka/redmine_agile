@@ -4,6 +4,72 @@
 #admin-menu a.agile { background-image: url(../images/agile.png);}
 .icon-fullscreen { background-image:  url(../images/fullscreen.png); }
 
+#top-menu a.agile-boards {
+  background-position: 0% 40%;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 3px;
+  background-image: url(../images/agile.png);
+}
+
+#top-menu a.all-issues {
+  background-position: 0% 40%;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 3px;
+  background-image: url(../../../images/table_multiple.png);
+}
+
+#top-menu a.issues-backlog {
+  background-position: 0% 40%;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 3px;
+  background-image: url(../../../images/document.png);
+}
+
+#top-menu a.issues-gantt {
+  background-position: 0% 40%;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 3px;
+  background-image: url(../images/gantt.png);
+}
+
+.issue-card.context-menu-selection {
+  background-color: #FFB779 !important;
+}
+
+.issue-card.context-menu-selection:hover {
+  background-color: #FFB779 !important;
+}
+
+.priority-icon {
+  float: right;
+  width: 16px;
+  height: 16px;
+}
+
+.priority-immediate {
+  background-image: url(../images/immediate.png);
+}
+.priority-urgent {
+  background-image: url(../images/urgent.png);
+}
+.priority-high {
+  background-image: url(../images/high.png);
+}
+.priority-normal {
+  background-image: url(../images/normal.png);
+}
+.priority-low {
+  background-image: url(../images/low.png);
+}
+
 /**********************************************************************/
 /* FULLSCREEN
 /**********************************************************************/
@@ -41,6 +107,7 @@ html.agile-board-fullscreen .icon-fullscreen {
 
 div.agile-board.autoscroll {
   overflow: visible;
+  position: relative;
 }
 
 /**********************************************************************/
@@ -54,6 +121,22 @@ table.options tr > td {
   text-align: left;
   width: 200px;
   float: left;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+.card-fields .floating label span {
+  width: 110px;
+  text-overflow: ellipsis;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.card-fields .floating .wp_input{
+  width: 50px;
+  padding: 1px 5px !important;
 }
 
 /**********************************************************************/
@@ -112,7 +195,7 @@ table.list.issues-board tbody tr:hover {background-color: white;}
 table.issues-board td.issue-status-col.closed {background-color: #FAFAFA;}
 
 table.issues-board tr.group.swimlane {height: 30px;}
-table.issues-board tr.group.swimlane td {border-top: 0px;}
+table.issues-board tr.group.swimlane td {border-top: 0px;border-bottom: 1px solid #ccc;}
 
 table.issues-board tbody td,
 table.issues-board tbody tr.issue:hover td {border: 0px}
@@ -141,7 +224,7 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.f
 .issues-board td.issue-status-col.closed .issue-card.closed-issue {float: left;}
 .issues-board td.issue-status-col.closed.collapse .issue-card.float-left {float: left; position: relative;}
 .issue-card.closed-issue {white-space: nowrap; display: inline-block;}
-.issue-card .tip{ position: fixed;}
+.issue-card .tip{ position: fixed; white-space: normal; }
 
 .issue-card:not(.context-menu-selection) .attributes,
 .issue-card:not(.context-menu-selection) span.hours  {color: #888;}
@@ -177,6 +260,7 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.f
 .issue-card table.progress {
   float: none;
   margin-top: 5px;
+  width: 100%;
 }
 
 .issue-card table.progress td {
@@ -313,10 +397,8 @@ table.list.issues tr.issue:not(.context-menu-selection).bk-gray td.id a {backgro
   bottom: 2px;
   border: 1px solid #ddd;
   background-color: white;
-  width: 18px;
-  /*width: 39px;*/
   height: 17px;
-  padding: 1px 0px 0px 1px;
+  padding: 1px 1px 0px 1px;
   margin: 0px;
   display: none;
 }
@@ -325,6 +407,9 @@ table.list.issues tr.issue:not(.context-menu-selection).bk-gray td.id a {backgro
   float: left;
 }
 
+.issue-card:hover div.quick-edit-card.hidden{
+  display: none;
+}
 .issue-card:hover div.quick-edit-card {
   display: block;
   cursor: default;
@@ -407,10 +492,23 @@ table.issues-board tbody td.over_wp_limit {background-color: #FFF6F6;}
 
 .add-issue .new-card__input{
   outline: none;
-  width: 100%;  
+  width: 100%;
   border: 0px;
   background: transparent;
   position: relative;
   text-align: center;
 }
 table.issues-board tbody td.over_wp_limit {background-color: #FFF6F6;}
+
+.lock {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  opacity: 0.9;
+}
+
+.agile-board-fullscreen .lock{
+  position: fixed;
+}

@@ -64,7 +64,7 @@ module RedmineAgile
         if session[:agile_query] && !session[:agile_query][:id] && !params[:project_id]
           @query = AgileQuery.new(get_query_attributes_from_session)
         end
-        
+
         @query ||= AgileQuery.find_by_id(session[:agile_query][:id]) if session[:agile_query][:id]
         @query ||= AgileQuery.new(get_query_attributes_from_session)
         @query.project = @project
@@ -105,9 +105,9 @@ module RedmineAgile
 
     def get_query_attributes_from_session
       attributes = {
-        :name => "_", 
-        :filters => session[:agile_query][:filters], 
-        :group_by => session[:agile_query][:group_by], 
+        :name => "_",
+        :filters => session[:agile_query][:filters],
+        :group_by => session[:agile_query][:group_by],
         :column_names => session[:agile_query][:column_names],
         :color_base => session[:agile_query][:color_base]
       }

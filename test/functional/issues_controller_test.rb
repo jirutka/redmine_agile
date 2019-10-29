@@ -55,4 +55,55 @@ class IssuesControllerTest < ActionController::TestCase
     @request.session[:user_id] = 1
   end
 
+  def test_new_issue_with_sp_value
+    with_agile_settings "estimate_units" => "story_points" do
+      get :new, :project_id => 1
+      assert_response :success
+      assert_select 'input#issue_agile_data_attributes_story_points'
+    end
+  end
+
+  def test_new_issue_without_sp_value
+    with_agile_settings "estimate_units" => "hours" do
+      get :new, :project_id => 1
+      assert_response :success
+      assert_select 'input#issue_agile_data_attributes_story_points', :count => 0
+    end
+  end
+
+  def test_create_issue_with_sp_value
+    with_agile_settings "estimate_units" => "story_points" do
+      assert_difference 'Issue.count' do
+        post :create, :project_id => 1, :issue => {
+          :subject => 'issue with sp',
+          :tracker_id => 3,
+          :status_id => 1,
+          :priority_id => IssuePriority.first.id,
+          :agile_data_attributes => {:story_points => 50}
+        }
+      end
+      issue = Issue.last
+      assert_equal 'issue with sp', issue.subject
+      assert_equal 50, issue.story_points
+    end
+  end
+
+  def test_post_issue_journal_story_points
+    with_agile_settings "estimate_units" => "story_points" do
+      put :update, :id => 1, :issue => {:agile_data_attributes => {:story_points => 100 }}
+      issue = Issue.find(1)
+      assert_equal 100, issue.story_points
+      sp_history = JournalDetail.where(:property => 'attr', :prop_key => 'story_points', :journal_id => issue.journals).last
+      assert sp_history
+      assert_equal 100, sp_history.value.to_i
+    end
+  end
+
+  def test_show_issue_with_story_points
+    with_agile_settings "estimate_units" => "story_points" do
+      get :show, :id => 1
+      assert_response :success
+      assert_select '.attributes', :text => /Story points/, :count => 0
+    end
+  end
 end

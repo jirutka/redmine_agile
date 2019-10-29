@@ -139,6 +139,7 @@ module RedmineAgile
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 3,
+    :agile_data_attributes => { :story_points => 10 }
     },
     {
     :project_id => 2,

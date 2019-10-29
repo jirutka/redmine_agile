@@ -17,19 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module RedmineAgile
-  module Hooks
-    class ViewsIssuesHook < Redmine::Hook::ViewListener
-      def view_issues_sidebar_issues_bottom(context={})
-        context[:controller].send(:render_to_string, {
-          :partial => 'agile_boards/issues_sidebar',
-          :locals => context }) +
-        context[:controller].send(:render_to_string, {
-          :partial => "agile_charts/agile_charts",
-          :locals => context })
-      end
-      render_on :view_issues_form_details_bottom, :partial => "issues/agile_data_fields"
-      render_on :view_issues_show_details_bottom, :partial => "issues/issue_story_points"
-    end
+class RenameAgileRanks < ActiveRecord::Migration
+  def up
+    remove_index :agile_ranks, :issue_id
+    remove_index :agile_ranks, :position
+
+    rename_table :agile_ranks, :agile_data
+
+    add_index :agile_data, :issue_id
+    add_index :agile_data, :position
+  end
+
+  def down
+    remove_index :agile_data, :issue_id
+    remove_index :agile_data, :position
+
+    rename_table :agile_data, :agile_ranks
+
+    add_index :agile_ranks, :issue_id
+    add_index :agile_ranks, :position
   end
 end

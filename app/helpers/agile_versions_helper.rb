@@ -42,4 +42,13 @@ module AgileVersionsHelper
   def estimated_hours(issue)
     "%.2fh" % issue.estimated_hours.to_f
   end
+
+  def estimated_value(issue)
+    return (issue.story_points || 0) if RedmineAgile.use_story_points?
+    issue.estimated_hours.to_f || 0
+  end
+
+  def estimated_unit
+    RedmineAgile.use_story_points? ? 'sp' : 'h'
+  end
 end

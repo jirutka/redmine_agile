@@ -129,6 +129,7 @@
         changeHtmlNumber(elem, value);
       });
     };
+
     this.successSortable = function(oldStatusId, newStatusId, oldSwimLaneId, newSwimLaneId) {
       clearErrorMessage();
     };
@@ -180,7 +181,7 @@
             self.backSortable($column);
             return;
           }
-          
+          $('.lock').show();
           if ($column.hasClass("closed")){
             $item.addClass("float-left")
           }
@@ -219,6 +220,9 @@
             error: function(xhr, status, error) {
               self.errorSortable($oldColumn, xhr.responseText);
               $(that).sortable( "cancel" );
+            },
+            complete: function(){
+              $('.lock').hide();
             }
           });
         }
@@ -255,6 +259,7 @@
         tolerance: 'pointer',
         drop: function(event, ui) {
           var $self = $(this);
+          $('.lock').show();
           $.ajax({
             url: self.routes.update_agile_board_path,
             type: "PUT",
@@ -269,7 +274,14 @@
               $self.replaceWith(data);
             },
             error:function(xhr, status, error) {
-              alert(error);
+              var alertMessage = parseErrorResponse(xhr.responseText);
+              if (alertMessage) {
+                setErrorMessage(alertMessage);
+                $self.find("p.assigned-user").remove();
+              }
+            },
+            complete: function(){
+              $('.lock').hide();
             }
           });
           $self.find("p.info").show();
@@ -300,25 +312,31 @@
     }
 
     this.saveInlineComment = function(node, url){
+      var node = node;
       var comment = $(node).siblings("textarea").val();
+      if (comment.trim() === "") return false;
+      $(node).prop('disabled', true);
+      $('.lock').show();
       var card = $(node).parents(".issue-card");
-      if (comment != ""){
-        $.ajax({
-          url: url,
-          type: "PUT",
-          dataType: "html",
-          data: { issue: { notes: comment } },
-          success: function(data, status, xhr){
-            $(card).replaceWith(data);
-          },
-          error: function(xhr, status, error){
-            var alertMessage = parseErrorResponse(xhr.responseText);
-            if (alertMessage) {
-              setErrorMessage(alertMessage);
-            }
+      $.ajax({
+        url: url,
+        type: "PUT",
+        dataType: "html",
+        data: { issue: { notes: comment } },
+        success: function(data, status, xhr){
+          $(card).replaceWith(data);
+        },
+        error: function(xhr, status, error){
+          var alertMessage = parseErrorResponse(xhr.responseText);
+          if (alertMessage) {
+            setErrorMessage(alertMessage);
           }
-        })
-      }
+        },
+        complete: function(xhr, status){
+          $(node).prop('disabled', false);
+          $('.lock').hide();
+        }
+      });
     }
 
     this.createIssue = function(url){
@@ -328,12 +346,13 @@
       $('.new-card__input').keyup(function(evt){
         var node = this;
         evt = evt || window.event;
-        if (evt.keyCode == 13 && $(node).val()) {
+        subject = $(node).val().trim();
+        if (evt.keyCode == 13 && subject.length != 0) {
           $.ajax({
             url: url,
             type: "POST",
             data: {
-              subject: $(node).val(),
+              subject: subject,
               status_id: $(node).parents('td').data('id')
             },
             dataType: "html",
@@ -439,7 +458,7 @@
               $tableFixed.hide();
           }
       }
-      
+
       $hideButton.click(function() {
           resizeFixed();
       });
@@ -464,6 +483,21 @@
 
     });
   };
+
+  function contextRightClick(event){
+    var target = $(event.target);
+    var elem = target.parents('.issue-card').first();
+    if (!elem.hasClass('hascontextmenu')) {return;}
+    event.preventDefault();
+    if (!contextMenuIsSelected(elem)) {
+      contextMenuUnselectAll();
+      contextMenuAddSelection(elem);
+      contextMenuSetLastSelected(elem);
+    }
+    contextMenuShow(event);
+  }
+
+  $(document).contextmenu(contextRightClick);
 })();
 
 function parseErrorResponse(responseText){
@@ -552,18 +586,20 @@ function observeIssueSearchfield(fieldId, url) {
 
 function recalculateHours() {
   var backlogSum = 0;
+  var unit = $("#backlog_version_header").data('estimated-unit');
+
   $('.versions-planning-board td:nth-child(2) .issue-card').each(function(i, elem){
     hours = parseFloat($(elem).data('estimated-hours'));
     backlogSum += hours;
   })
-  $('.versions-planning-board .backlog-hours').text('(' + backlogSum.toFixed(2) + 'h)');
+  $('.versions-planning-board .backlog-hours').text('(' + backlogSum.toFixed(2) + unit +')');
 
   var currentSum = 0;
   $('.versions-planning-board td:nth-child(3) .issue-card').each(function(i, elem){
     hours = parseFloat($(elem).data('estimated-hours'));
     currentSum += hours;
   })
-  $('.versions-planning-board .current-hours').text('(' + currentSum.toFixed(2) + 'h)');
+  $('.versions-planning-board .current-hours').text('(' + currentSum.toFixed(2) + unit + ')');
 }
 
 function showInlineCommentNode(quick_comment){
@@ -575,6 +611,7 @@ function showInlineCommentNode(quick_comment){
 }
 
 function showInlineComment(node, url){
+  $(node).parent().toggleClass('hidden');
   var quick_comment = $(node).parents(".fields").children(".quick-comment");
   if ( $(quick_comment).html().trim() != '' ){
     showInlineCommentNode(quick_comment);
@@ -601,8 +638,10 @@ function showInlineComment(node, url){
 function cancelInlineComment(node){
   $(node).parent().hide();
   $(node).parent().siblings(".last_comment").show();
+  $(node).parent().siblings('.quick-edit-card').toggleClass('hidden');
   return false;
 }
+
 
 $(document).ready(function(){
   $('table.issues-board').StickyHeader();

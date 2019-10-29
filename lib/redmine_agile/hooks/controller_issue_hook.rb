@@ -19,17 +19,22 @@
 
 module RedmineAgile
   module Hooks
-    class ViewsIssuesHook < Redmine::Hook::ViewListener
-      def view_issues_sidebar_issues_bottom(context={})
-        context[:controller].send(:render_to_string, {
-          :partial => 'agile_boards/issues_sidebar',
-          :locals => context }) +
-        context[:controller].send(:render_to_string, {
-          :partial => "agile_charts/agile_charts",
-          :locals => context })
+    class ControllerIssueHook < Redmine::Hook::ViewListener
+
+      def controller_issues_edit_before_save(context={})
+        return false unless context[:issue].project.module_enabled?(:agile)
+        # return false unless context[:issue].color
+        old_value = Issue.find(context[:issue].id)
+        # save changes for story points to journal
+        old_sp = old_value.story_points
+        new_sp = context[:issue].story_points
+        if !((new_sp == old_sp) || context[:issue].current_journal.blank?)
+          context[:issue].current_journal.details << JournalDetail.new(:property => 'attr',
+          :prop_key => 'story_points',
+          :old_value => old_sp,
+          :value => new_sp)
+        end
       end
-      render_on :view_issues_form_details_bottom, :partial => "issues/agile_data_fields"
-      render_on :view_issues_show_details_bottom, :partial => "issues/issue_story_points"
     end
   end
 end

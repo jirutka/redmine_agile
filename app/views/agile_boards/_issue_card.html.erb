@@ -1,4 +1,4 @@
-<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue.assigned_to.login, :color_base => @query.respond_to?(:color_base) && @query.color_base) if issue.assigned_to %>">
+<div id="issue-<%= issue.id %>" class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue.assigned_to.login, :color_base => @query.respond_to?(:color_base) && @query.color_base) if issue.assigned_to %>">
     <% if issue.closed? && RedmineAgile.hide_closed_issues_data? %>
       <span class="fields">
          <div class="tooltip">
@@ -11,15 +11,17 @@
       </span>
     <% else %>
       <span class="fields">
-          <% if User.current.allowed_to?(:edit_issues, @project, :global => true) %>
+          <% if User.current.allowed_to?(:edit_issues, @project, :global => true) && RedmineAgile.allow_inline_comments?  %>
             <div class="quick-edit-card">
-              <%# link_to image_tag("/images/edit.png"), edit_issue_path(issue), :class => "", :style => "margin-right: 3px;", :title => l(:button_edit) %>
-              <%= link_to image_tag("/images/comment.png", :alt => "Edit"), "#", :onclick => "showInlineComment(this, '#{j(agile_inline_comment_path(:id => issue))}'); return false;", :title => l(:label_comment_add) %>
+              <%= link_to image_tag("/images/magnifier.png", :alt => "Edit"), "#", :onclick => "quick_view_show_dialog(#{issue.id}); return false;" %>
+              <%= link_to image_tag("/images/edit.png"), edit_issue_path(issue), :class => "", :style => "margin-right: 3px;", :title => l(:button_edit) %>
+              <%= link_to image_tag("/images/comment.png", :alt => "Edit"), "#", :onclick => "showInlineComment(this, '#{j(agile_inline_comment_path(:id => issue))}'); return false;", :title => l(:label_comment_add), :class => 'add-comment' %>
             </div>
           <% end %>
           <% if @query.has_column_name?(:project) %>
             <p class="project">
               <%= issue.project.name %>
+              <span class="priority-icon priority-<%= issue.priority.name.downcase %>"></span>
             </p>
           <% end %>
           <p class="issue-id <%= 'without-tracker' if @query.has_column_name?(:tracker).blank? %>">
@@ -74,7 +76,7 @@
             <% end %>
           <% end %>
           <!-- Check list -->
-          <% if show_checklist?(issue) && @query.has_column_name?(:checklists) %>
+          <% if @query.has_column_name?(:checklists) && show_checklist?(issue) %>
             <div class="checklist" id="checklist_<%= issue.id %>">
               <ul id="checklist_items">
                 <% issue.checklists.each do |checklist_item| %>
@@ -87,7 +89,7 @@
             </div>
           <% end %>
           <% if @query.has_column_name?(:assigned_to) %>
-            <p class="info" style="<%= 'display: none;' unless issue.assigned_to %>">
+            <p class="info assigned-user" style="<%= 'display: none;' unless issue.assigned_to %>">
               <span class="user"><%= avatar(issue.assigned_to, :size => "14").to_s.html_safe + " " + link_to_user(issue.assigned_to) if issue.assigned_to %></span>
             </p>
           <% end %>
@@ -103,7 +105,7 @@
               </span>
             </em>
           <% end %>
-          <% if User.current.allowed_to?(:edit_issues, @project, :global => true) %>
+          <% if User.current.allowed_to?(:edit_issues, @project, :global => true) && RedmineAgile.allow_inline_comments? %>
             <div class="quick-comment">
             </div>
           <% end %>
@@ -124,6 +126,8 @@
     if ($('html').hasClass('agile-board-fullscreen')) {
       $(".issue-card[data-id=<%= issue.id %>]").removeClass("hascontextmenu");
     };
+
+    $("table.issues-board thead").html("<%=escape_javascript render_board_headers(@query.board_statuses) %>");
   </script>
 
   <% if @error_msg %>

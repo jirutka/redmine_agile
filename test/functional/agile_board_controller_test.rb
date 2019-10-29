@@ -73,7 +73,6 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_select ".issue-card", issues.count
     assert_select ".issue-card span.fields p.issue-id strong", issues.count
     assert_select ".issue-card span.fields p.name a", issues.count
-    assert_select ".issue-card .quick-edit-card a"
   end
 
   def test_get_index_truncated
@@ -202,8 +201,8 @@ class AgileBoardsControllerTest < ActionController::TestCase
     xhr :put, :update, :id => first_issue_id, :issue => { :status_id => status_id }, :positions => positions
     assert_response :success
     assert_equal status_id, Issue.find(first_issue_id).status_id
-    assert_equal first_pos, Issue.find(first_issue_id).agile_rank.position
-    assert_equal second_pos, Issue.find(second_issue_id).agile_rank.position
+    assert_equal first_pos, Issue.find(first_issue_id).agile_data.position
+    assert_equal second_pos, Issue.find(second_issue_id).agile_data.position
     # check js code for update board header
     assert_match '$("table.issues-board thead").html(', @response.body
   end
@@ -218,8 +217,8 @@ class AgileBoardsControllerTest < ActionController::TestCase
     xhr :put, :update, :id => first_issue_id, :issue => { :fixed_version_id => fixed_version_id }, :positions => positions
     assert_response :success
     assert_equal fixed_version_id, Issue.find(first_issue_id).fixed_version_id
-    assert_equal first_pos, Issue.find(first_issue_id).agile_rank.position
-    assert_equal second_pos, Issue.find(second_issue_id).agile_rank.position
+    assert_equal first_pos, Issue.find(first_issue_id).agile_data.position
+    assert_equal second_pos, Issue.find(second_issue_id).agile_data.position
   end
 
   def test_put_update_assigned
@@ -241,7 +240,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       closed_status = IssueStatus.where(:is_closed => true).pluck(:id)
       closed_issues = Issue.where(:status_id => closed_status)
       project = closed_issues.first.project
-      
+
       # get :index, agile_query_params.merge(:f_status => closed_status)
       if Redmine::VERSION.to_s > '2.4'
         get :index, agile_query_params.merge(:f_status => closed_status)
@@ -455,10 +454,56 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_select 'span.last-comment', :text => text_comment.truncate(100)
   end if Redmine::VERSION.to_s > '2.4'
 
+  def test_show_sp_value_on_issue_cart
+    with_agile_settings "estimate_units" => "story_points" do
+      issues = @project_1.issues.open.first(3)
+      issues.each do |issue|
+        issue.agile_data.story_points = issue.id * 10
+        issue.save
+      end
+      params = agile_query_params.merge(:c => ['story_points'])
+      get :index, params
+      IssueStatus.where(:id => @project_1.issues.open.joins(:status).pluck(:status_id).uniq).each do |status|
+        sp_sum = @project_1.issues.eager_load(:agile_data).where(:status_id => status.id).sum("#{AgileData.table_name}.story_points")
+        assert_select "th[data-column-id='#{status.id}'] span.hours", :text =>"#{sp_sum}sp"
+      end
+      issues.each do |issue|
+        assert_select ".issue-card[data-id='#{issue.id}'] span.fields p.issue-id span.hours", :text =>"(#{issue.story_points}sp)"
+      end
+      # check story_points in available_columns for query
+      assert_select 'input[value="story_points"]'
+    end
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_show_sp_with_estimated_hours_on_issue_cart
+    with_agile_settings "estimate_units" => "story_points" do
+      issues = @project_1.issues.open.first(3)
+      issues.each do |issue|
+        issue.agile_data.story_points = issue.id * 10
+        issue.estimated_hours = issue.id * 2
+        issue.save
+      end
+      params = agile_query_params.merge(:c => ['story_points', 'estimated_hours'])
+      get :index, params
+      # in a header show only story_points!
+      IssueStatus.where(:id => @project_1.issues.open.joins(:status).pluck(:status_id).uniq).each do |status|
+        sp_sum = @project_1.issues.eager_load(:agile_data).where(:status_id => status.id).sum("#{AgileData.table_name}.story_points")
+        assert_select "th[data-column-id='#{status.id}'] span.hours", :text =>"#{sp_sum}sp"
+      end
+      # in a card show and estimated hours and story points
+      issues.each do |issue|
+        assert_select ".issue-card[data-id='#{issue.id}'] span.fields p.issue-id span.hours",
+        :text =>"(#{"%.2fh" % issue.estimated_hours.to_f}/#{issue.story_points}sp)"
+      end
+    end if Redmine::VERSION.to_s > '2.4'
+  end
+
   def test_quick_add_comment_button
-    get :index, agile_query_params
-    assert_response :success
-    assert_select '.quick-edit-card img[alt="Edit"]'
+    with_agile_settings 'allow_inline_comments' => 1 do
+      get :index, agile_query_params
+      assert_response :success
+      assert_select '.quick-edit-card img[alt="Edit"]'
+    end
   end if Redmine::VERSION.to_s > '2.4'
 
   def test_quick_add_comment_form
@@ -467,19 +512,19 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_select 'textarea'
     assert_select 'button'
   end if Redmine::VERSION.to_s > '2.4'
-  
+
   def test_quick_add_comment_update
     issue = @project_1.issues.open.first
     put :update, {:issue => {:notes => 'new comment!!!'}, :id => issue }
     assert_response :success
     assert_select ".last_comment", :text => 'new comment!!!'
   end if Redmine::VERSION.to_s > '2.4'
-  
+
   
   def test_card_for_new_issue
   with_agile_settings "allow_create_card" => 1 do
   statuses = IssueStatus.all
-  get :index, { 
+  get :index, {
   "set_filter"=>"1", :project_id => @project_1, :f_status => statuses.map(&:id) }
   assert_select '.add-issue input.new-card__input', 0
   end
@@ -487,7 +532,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   
 
   def test_on_auto_assign_on_move
-    with_agile_settings "auto_аssign_on_move" => "1" do
+    with_agile_settings "auto_assign_on_move" => "1" do
       issue = Issue.find(1)
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
@@ -499,7 +544,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   end
 
   def test_off_auto_assign_on_move
-    with_agile_settings "auto_аssign_on_move" => "0" do
+    with_agile_settings "auto_assign_on_move" => "0" do
       issue = Issue.find(1)
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
@@ -511,7 +556,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   end
 
   def test_off_auto_assign_on_move_by_sorting
-    with_agile_settings "auto_аssign_on_move" => "1" do
+    with_agile_settings "auto_assign_on_move" => "1" do
       issue = Issue.find(1)
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => issue.status_id}, :id => 1 }

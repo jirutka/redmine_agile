@@ -21,7 +21,7 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class AgileRankTest < ActiveSupport::TestCase
+class AgileDataTest < ActiveSupport::TestCase
   fixtures :projects,
            :users,
            :roles,
@@ -49,19 +49,19 @@ class AgileRankTest < ActiveSupport::TestCase
   # Replace this with your real tests.
   def test_save_color
     issue = Issue.find(1)
-    issue.agile_rank.position = 1
+    issue.agile_data.position = 1
     assert issue.save
     issue.reload
-    assert_equal 1, issue.agile_rank.position
+    assert_equal 1, issue.agile_data.position
   end
 
   def test_delete_color
     issue = Issue.find(1)
-    issue.agile_rank.position = 1
+    issue.agile_data.position = 1
     assert issue.save
     issue.reload
-    agile_rank = issue.agile_rank
+    agile_data = issue.agile_data
     assert issue.destroy
-    assert !AgileRank.exists?(agile_rank.id)
+    assert !AgileData.exists?(agile_data.id)
   end
 end

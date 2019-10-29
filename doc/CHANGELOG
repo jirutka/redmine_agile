@@ -4,6 +4,17 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2016 RedmineCRM
 http://www.redminecrm.com/
 
+== 2015-02-09 v1.4.0
+
+* Story points estimation
+* Card assignment error messages
+* Cleanup WIP limits option styles
+* Highligh inline created cards
+* Inline comments board lock
+* Fixed version planning access right
+* Fixed unicode letters in locale files
+* Fixed performance issues with board rendering
+
 == 2015-01-20 v1.3.13
 
 * Inline issue creation

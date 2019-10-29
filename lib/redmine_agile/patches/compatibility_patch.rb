@@ -54,7 +54,7 @@ class AgileQuery < Query
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id day_in_state last_comment).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id day_in_state last_comment story_points).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
