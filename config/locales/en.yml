@@ -25,6 +25,7 @@ en:
   label_agile_charts_cumulative_flow: Cumulative flow
   label_agile_charts_trackers_cumulative_flow: Trackers cumulative flow
   label_agile_charts_issues_velocity: Velocity
+  label_agile_charts_cycle_time: Cycle time
   label_agile_charts_lead_time: Lead time
   label_agile_charts_average_lead_time: Average lead time
   label_agile_chart_plural: Agile charts
@@ -145,10 +146,75 @@ en:
   label_agile_year: Year
   label_cards_search: Search by subject
 
+  field_agile_sprint: Sprint
+  field_end_date: End date
+  label_agile_sprints_on: Activate sprints by default
+  label_agile_sprint: Sprint
+  label_agile_sprint_plural: Sprints
+  label_agile_sprint_name: Name
+  label_agile_sprint_description: Description
+  label_agile_sprint_status: Status
+  label_agile_sprint_start_date: Start date
+  label_agile_sprint_end_date: End date
+  label_agile_sprint_new: New sprint
+  label_agile_sprint_status_open: Open
+  label_agile_sprint_status_active: Active
+  label_agile_sprint_status_closed: Closed
+  label_agile_sprint_duration: Duration
+  label_agile_sprint_duration_select: <<Select duration>>
+  label_agile_sprint_duration_week_1: 1 week
+  label_agile_sprint_duration_week_2: 2 weeks
+  label_agile_sprint_duration_week_3: 3 weeks
+  label_agile_sprint_duration_week_4: 4 weeks
+  label_agile_sprint_errors_crossed: Sprint dates are cross another existed sprint
+  label_agile_sprint_errors_end_more_start: End date should be more than start date
+  label_agile_sprint_default_chart: Сhart
+  label_agile_sprint_chart_units: Estimation
+  label_agile_chart_for_sprint: "For sprint: %{sprint}"
+
   label_agile_charts: Charts
+  label_agile_chart_burndown: Burndown chart
+  label_agile_chart_burnup: Burnup chart
+  label_agile_chart_units: Units
 
   label_agile_planning_board_more: Load more...
   label_agile_version_query_new: New Agile versions query
   label_agile_version_my_boards: My agile version boards
   label_agile_version_board_plural: Agile version boards
   label_agile_version_board_edit: Edit agile version board
+
+  label_agile_edit_issue: Edit issue
+
+  label_agile_board_type: Board type
+  label_agile_board_type_kanban: Kanban board
+  label_agile_board_type_scrum: Scrum board
+  label_agile_board_totals: Totals
+  label_agile_board_totals_story_points: Story points
+  label_agile_board_totals_hours: Hours
+  label_agile_board_totals_spent_time: Spent time
+  label_agile_board_totals_percent_done: Percent done
+  label_agile_board_totals_velocity: Velocity
+  label_agile_board_totals_interval: Interval
+  label_agile_board_totals_remaining: Remaining
+
+  label_agile_sprint_list_active: Active sprints
+  label_agile_sprint_list_open: Future sprints
+
+  label_agile_mixed_trackers: Mixed trackers
+  label_agile_moving_average: Moving average
+
+  label_agile_board_backlog: Backlog
+  label_agile_board_backlog_column: Backlog column
+  label_agile_board_search_backlog_issues: Search backlog issues
+  label_agile_version_plural: Versions
+  label_agile_sprint_add: Add sprint
+  label_agile_version_add: Add version
+
+  label_agile_sprint_query_new: New agile sprints query
+  label_agile_sprint_my_boards: My agile sprint boards
+  label_agile_sprint_board_plural: Agile sprint boards
+  label_agile_sprint_board_edit: Edit agile sprint board
+  field_sprint: Sprint
+  label_agile_no_sprint_issues: Issues without sprint
+  field_closed_sprints: Closed sprints
+  field_closed_versions: Closed versions

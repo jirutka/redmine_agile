@@ -29,7 +29,7 @@ module RedmineAgile
         @graph_title = l(:label_agile_charts_work_burndown_sp)
       end
 
-      @line_colors = { :work => '0,153,0', :ideal => '102,102,102', :total => '0,153,0' }
+      @line_colors = { work: '0,153,0', ideal: '102,102,102', total: '0,153,0' }
     end
 
     protected
@@ -40,11 +40,11 @@ module RedmineAgile
 
       if @estimated_unit == 'hours'
         all_issues = data_scope.where("#{Issue.table_name}.estimated_hours IS NOT NULL").
-                     eager_load([:journals, :status, { :journals => { :details => :journal } }])
+                     eager_load([:journals, :status, { journals: { details: :journal } }])
         cumulative_total_hours = data_scope.sum("#{Issue.table_name}.estimated_hours").to_f
       else
         all_issues = data_scope.where("#{AgileData.table_name}.story_points IS NOT NULL").
-                     joins(:agile_data).eager_load([:journals, :status, { :journals => { :details => :journal } }])
+                     joins(:agile_data).eager_load([:journals, :status, { journals: { details: :journal } }])
         cumulative_total_hours = data_scope.joins(:agile_data).sum("#{AgileData.table_name}.story_points").to_f
       end
 

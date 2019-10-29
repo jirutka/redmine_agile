@@ -79,23 +79,47 @@ module RedmineAgile
         [l(:field_priority), "priority"],
         [l(:label_spent_time), "spent_time"],
         [l(:field_assigned_to), "user"]]
-      if (@project && @project.children.any?) || !@project
-        color_base << [l(:field_project), 'project']
-      end
-      options_for_select(color_base.compact,
-        selected)
+      color_base << [l(:field_project), 'project'] if (@project && @project.children.any?) || !@project
+      options_for_select(color_base.compact, selected)
     end
 
-    def options_charts_for_select(selected, options={})
-      options_for_select([[l(:label_agile_charts_issues_burndown), "issues_burndown"],
-        [l(:label_agile_charts_work_burndown_sp), "work_burndown_sp"],
-        [l(:label_agile_charts_work_burndown_hours), "work_burndown_hours"],
-        nil].compact,
-        selected)
+    def options_charts_for_select(selected)
+      container = []
+      RedmineAgile::Charts::AGILE_CHARTS.each { |k, v| container << [l(v[:name]), k] }
+      selected_chart = RedmineAgile::Charts.chart_by_alias(selected) || selected
+      options_for_select(container, selected_chart)
+    end
+
+    def grouped_options_charts_for_select(selected)
+      grouped_options = {}
+      container = []
+
+      RedmineAgile::Charts::AGILE_CHARTS.each do |chart, value|
+        if RedmineAgile::Charts::CHARTS_WITH_UNITS.include?(chart)
+          group = l(value[:name])
+          grouped_options[group] = []
+          value[:aliases].each do |alias_name|
+            grouped_options[group] << ["#{group} (#{l(RedmineAgile::Charts.chart_unit_label_by(alias_name))})", alias_name]
+          end
+        else
+          container << [l(value[:name]), chart]
+        end
+      end
+
+      selected_chart = RedmineAgile::Charts.chart_by_alias(selected) || selected
+      grouped_options_for_select(grouped_options, selected_chart) + options_for_select(container, selected_chart)
+    end
+
+    def options_chart_units_for_select(selected = nil)
+      container = []
+      RedmineAgile::Charts::CHART_UNITS.each { |k, v| container << [l(v), k] }
+      selected_unit = RedmineAgile::Charts::CHART_UNIT_BY_ALIAS[selected] || selected
+      options_for_select(container, selected_unit)
     end
 
     def render_agile_chart(chart_name, issues_scope)
-      render :partial => "agile_charts/chart", :locals => {:chart => chart_name, :issues_scope => issues_scope}
+      render partial: "agile_charts/chart",
+             locals: { chart: chart_name, issues_scope: issues_scope, chart_unit: params[:chart_unit] }
     end
 
     def upgrade_to_pro_agile_chart_link(chart_name, query = @query, current_chart = @chart)
@@ -107,26 +131,23 @@ module RedmineAgile
     private
 
     def get_query_attributes_from_session
-      attributes = {
-        :name => "_",
-        :filters => session[:agile_query][:filters],
-        :group_by => session[:agile_query][:group_by],
-        :column_names => session[:agile_query][:column_names],
-        :color_base => session[:agile_query][:color_base]
-      }
+      attributes = { name: '_',
+                     filters: session[:agile_query][:filters],
+                     group_by: session[:agile_query][:group_by],
+                     column_names: session[:agile_query][:column_names],
+                     color_base: session[:agile_query][:color_base] }
       (attributes[:options] = session[:agile_query][:options] || {}) if Redmine::VERSION.to_s > '2.4'
       attributes
     end
 
     def save_qeury_attribures_to_session(query)
-      session[:agile_query] = {:project_id => query.project_id,
-                                 :filters => query.filters,
-                                 :group_by => query.group_by,
-                                 :color_base => (query.respond_to?(:color_base) && query.color_base),
-                                 :column_names => query.column_names}
+      session[:agile_query] = { project_id: query.project_id,
+                                filters: query.filters,
+                                group_by: query.group_by,
+                                color_base: (query.respond_to?(:color_base) && query.color_base),
+                                column_names: query.column_names }
       (session[:agile_query][:options] = query.options) if Redmine::VERSION.to_s > '2.4'
     end
-
   end
 end
 

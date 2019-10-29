@@ -11,10 +11,9 @@
       </span>
     <% else %>
       <span class="fields">
-          <% if User.current.allowed_to?(:edit_issues, @project, :global => true) && RedmineAgile.allow_inline_comments?  %>
+          <% if User.current.allowed_to?(:edit_issues, @project, :global => true) %>
             <div class="quick-edit-card">
-              <%# link_to image_tag("/images/edit.png"), edit_issue_path(issue), :class => "", :style => "margin-right: 3px;", :title => l(:button_edit) %>
-              <%= link_to image_tag("/images/comment.png", :alt => "Edit"), "#", :onclick => "showInlineComment(this, '#{j(agile_inline_comment_path(:id => issue))}'); return false;", :title => l(:label_comment_add), :class => 'add-comment' %>
+              <%= link_to image_tag("/images/comment.png", alt: 'Comment'), '#', onclick: "showInlineComment(this, '#{j(agile_inline_comment_path(:id => issue))}'); return false;", title: l(:label_comment_add), class: 'add-comment' if RedmineAgile.allow_inline_comments? %>
             </div>
           <% end %>
           <% if @query.has_column_name?(:project) %>

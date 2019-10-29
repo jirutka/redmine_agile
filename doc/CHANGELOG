@@ -4,6 +4,41 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2019 RedmineUP
 http://www.redmineup.com/
 
+== 2019-10-22 v1.5.0
+
+* Agile sprints
+* New Backlog tab
+* Board types: Scrum and Kanban
+* New lead time chart
+* Totals for board and swimlanes 
+* Added board units
+* Added board default chart 
+* Fixed chart caclulation bug
+* Fixed custom field js error
+
+== 2019-06-14 v1.4.12
+
+* Fixed light version Redmine 4.0.3+ bug
+* Fixed swilanes sorting
+* Fixed version planing Load more bug 
+
+== 2019-05-15 v1.4.11
+
+* Fixed compatibility issues
+
+== 2019-04-25 v1.4.10
+
+* Fixed light version compatibility bug 
+
+== 2019-04-15 v1.4.9
+
+* Redmine 4.0.3 support
+* Agile chart units setting
+* Charts end date fixes
+* Fixed expand all board bug
+* Fixed interval size for old user sessions
+* Fixed charts with current interval 
+
 == 2019-02-08 v1.4.8
 
 * Added new Version planner

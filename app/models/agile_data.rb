@@ -20,5 +20,6 @@
 class AgileData < ActiveRecord::Base
   unloadable
   belongs_to :issue
+
   validates :story_points, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :allow_nil => true, :message => :invalid}
 end

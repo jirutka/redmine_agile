@@ -53,6 +53,24 @@ table.options tr > td {
   white-space: nowrap;
 }
 
+.agile_options_field {
+  display: inline-block;
+  min-width: 30%;
+}
+
+.agile_options_label {
+  display: inline-block;
+  min-width: 100px;
+}
+
+.selected_sprint {
+  font-size: 14px;
+}
+
+.selected_sprint > select {
+  font-size: 14px;
+}
+
 .card-fields .floating {
   text-align: left;
   width: 200px;
@@ -74,6 +92,13 @@ table.options tr > td {
   width: 50px;
   padding: 1px 5px !important;
 }
+
+.card-fields .floating .wp_input:not(:focus) {
+    background-color: transparent;
+    border-color: transparent;
+    font-size: 90%;
+}
+
 
 /**********************************************************************/
 /* ISSUES SIDEBAR
@@ -128,6 +153,7 @@ table.list.issues-board th {overflow: hidden; text-overflow: ellipsis;}
   background-color: #ffffdd;
 }
 
+table.issues-board .issue-status-col.empty { padding-bottom: 30px }
 table.issues-board td.issue-status-col.closed {background-color: #FAFAFA;}
 
 table.issues-board tr.group.swimlane {height: 30px;}
@@ -364,6 +390,10 @@ table.list.issues tr.issue:not(.context-menu-selection).bk-gray td.id a {backgro
   width: 100%;
 }
 
+.issue-card .quick-edit {
+  margin-right: 3px;
+}
+
 .issue-card .last-comment{
   font-style: italic;
 }
@@ -500,7 +530,7 @@ table.list.issues-board.sticky {
 }
 
 .planning-board .column-header {
-  display: flex;
+  display: block;
   justify-content: space-between;
   align-items: center;
   min-height: 28px;
@@ -530,6 +560,49 @@ table.list.issues-board.sticky {
 .planning-board .closed-issue p.name a, .planning-board .closed-issue p.issue-id {
   color: #999;
   text-decoration: line-through;
+}
+
+.issue-edit-modal {
+  min-height: initial !important;
+}
+
+.modal-action-button {
+  height: 28px;
+}
+
+.agile_sprint_list .spring_column { text-align: center; }
+
+.controller-agile_boards .query-totals {
+  margin-top: -2.3em;
+}
+
+.agile-board-fullscreen .controller-agile_boards .query-totals {
+  margin: 0px;
+  position: fixed;
+  top: 0px;
+  background: inherit;
+  left: 0;
+  right: 0;
+  padding-right: 32px;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+.backlog-column-header {
+  min-width: 15%;
+  border-right: solid 3px #d7d7d7;
+}
+
+.issue-backlog-search { padding: 5px 5px 0px 5px; }
+.issue-backlog-search input#search {
+  max-width: 100%;
+}
+
+.issues-board .backlog-column-header { background-color: #e1f1f8; }
+
+.issues-board .issue-backlog-col {
+  background: #e1f1f8;
+  border-right: solid 3px #d7d7d7 !important;
 }
 
 html {

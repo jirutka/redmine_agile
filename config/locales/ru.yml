@@ -26,6 +26,7 @@ ru:
   label_agile_charts_cumulative_flow: Накопительный поток
   label_agile_charts_trackers_cumulative_flow: Накопительный поток треккеров
   label_agile_charts_issues_velocity: Скорость закрытия задач
+  label_agile_charts_cycle_time: Цикл задачи
   label_agile_charts_lead_time: Цикл задачи
   label_agile_charts_average_lead_time: Средний цикл задачи
   label_agile_chart_plural: Диаграммы
@@ -133,6 +134,32 @@ ru:
   field_duration: Продолжительность
   label_cards_search: Поиск по теме
 
+  field_agile_sprint: Спринт
+  field_end_date: Дата окончания
+  label_agile_sprints_on: Активировать спринты по умолчанию
+  label_agile_sprint: Спринт
+  label_agile_sprint_plural: Спринты
+  label_agile_sprint_name: Название
+  label_agile_sprint_description: Описание
+  label_agile_sprint_status: Статус
+  label_agile_sprint_start_date: Дата начала
+  label_agile_sprint_end_date: Дата окончания
+  label_agile_sprint_new: Новый спринт
+  label_agile_sprint_status_open: Открытый
+  label_agile_sprint_status_active: Активный
+  label_agile_sprint_status_closed: Закрытый
+  label_agile_sprint_duration: Продолжительность
+  label_agile_sprint_duration_select: <<Выберите>>
+  label_agile_sprint_duration_week_1: 1 неделя
+  label_agile_sprint_duration_week_2: 2 недели
+  label_agile_sprint_duration_week_3: 3 недели
+  label_agile_sprint_duration_week_4: 4 недели
+  label_agile_sprint_errors_crossed: Выбранные даты пересекают другой спринт
+  label_agile_sprint_errors_end_more_start: Дата окончания должна быть больше даты начала
+  label_agile_sprint_default_chart: График
+  label_agile_sprint_chart_units: Единицы
+  label_agile_chart_for_sprint: "Для спринта: %{sprint}"
+
   label_agile_interval_size: Размер интервала
   label_agile_day: День
   label_agile_week: Неделя
@@ -141,9 +168,44 @@ ru:
   label_agile_year: Год
 
   label_agile_charts: Диаграммы
+  label_agile_chart_units: Тип
 
   label_agile_planning_board_more: Загрузить еще...
   label_agile_version_query_new: Новый запрос версий
   label_agile_version_my_boards: Мои доски версий
   label_agile_version_board_plural: Доски версий
   label_agile_version_board_edit: Редактировать доску версий
+
+  label_agile_edit_issue: Изменить задачу
+
+
+  label_agile_board_type: Тип доски
+  label_agile_board_type_kanban: Kanban доска
+  label_agile_board_type_scrum: Scrum доска
+  label_agile_board_totals: Итоги
+  label_agile_board_totals_story_points: Story points
+  label_agile_board_totals_hours: Часы
+  label_agile_board_totals_spent_time: Потраченное время
+  label_agile_board_totals_percent_done: Готовность (%)
+  label_agile_board_totals_velocity: Скорость закрытия
+
+  label_agile_sprint_list_active: Активные спринты
+  label_agile_sprint_list_open: Следующие спринты
+
+  label_agile_moving_average: Скользящая средняя
+
+  label_agile_board_backlog: Backlog
+  label_agile_board_backlog_column: Backlog column
+  label_agile_board_search_backlog_issues: Поиск backlog задач
+  label_agile_version_plural: Версии
+  label_agile_sprint_add: Добавить спринт
+  label_agile_version_add: Добавить версию
+
+  label_agile_sprint_query_new: Новый запрос спринтов
+  label_agile_sprint_my_boards: Мои доски спринтов
+  label_agile_sprint_board_plural: Доски спринтов
+  label_agile_sprint_board_edit: Редактировать доску спринтов
+  field_sprint: Спринт
+  label_agile_no_sprint_issues: Задачи без спринта
+  field_closed_sprints: Закрытые спринты
+  field_closed_versions: Закрытые версии

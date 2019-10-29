@@ -149,6 +149,4 @@ module AgileBoardsHelper
   rescue
     false
   end
-
-
 end

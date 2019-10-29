@@ -63,6 +63,16 @@ module RedmineAgile
       }
     end
 
+    def self.data(data_scope, options = {})
+      if options[:chart_unit] == Charts::UNIT_HOURS
+        WorkBurndownChart.new(data_scope, options.merge(estimated_unit: ESTIMATE_HOURS)).data
+      elsif options[:chart_unit] == Charts::UNIT_STORY_POINTS
+        WorkBurndownChart.new(data_scope, options.merge(estimated_unit: ESTIMATE_STORY_POINTS)).data
+      else
+        super
+      end
+    end
+
     protected
 
     def ideal_effort(start_remaining)

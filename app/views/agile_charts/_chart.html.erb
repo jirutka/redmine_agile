@@ -6,7 +6,7 @@
   <div class="agile-chart-container">
     <canvas id="agile-chart"></canvas>
     <div style="clear: both;"></div>
-  <div>
+  </div>
 <% end %>
 
 <%= javascript_tag do %>
@@ -27,7 +27,7 @@
 
     if (document.getElementById("agile-chart")) {
       $.getJSON(<%= raw url_for(controller: 'agile_charts', action: 'render_chart', project_id: @project,
-                                chart: chart, version_id: @version, query_id: @query.try(:id)).to_json %>, function(data){
+                                chart: chart, version_id: @version, query_id: @query.try(:id), chart_unit: chart_unit).to_json %>, function(data){
 
         Chart.defaults.global.defaultFontColor = 'black';
         Chart.defaults.global.defaultFontFamily = '"Arial", sans-serif';
@@ -40,14 +40,22 @@
         };
 
       new Chart(document.getElementById("agile-chart").getContext("2d"), {
-        type: 'bar',
+        type: data['type'] || 'bar',
         data: chartData,
         options: {
           tooltips: {
-            onlyShowForDatasetIndex: data['show_tooltips']
+            onlyShowForDatasetIndex: data['show_tooltips'],
+            callbacks: chartTooltipCallbacks(data['type'])
           },
           maintainAspectRatio: false,
-          legend: { position: 'right' },
+          legend: {
+            position: 'right',
+            labels: {
+              filter: function(legendItem, chartData) {
+                if (legendItem.text) { return true }
+              }
+            }
+          },
           title: {
             display: true,
             fontSize: 16,
@@ -71,8 +79,15 @@
             }],
             xAxes: [{
               ticks: {
-                  autoSkip: true,
-                  maxRotation: 0
+                autoSkip: true,
+                maxRotation: 0,
+                userCallback: function(value, index, values) {
+                  if (data['type'] == 'scatter') {
+                    return data['labels'][value]
+                  } else {
+                    return value
+                  }
+                }
               }
             }]
             },

@@ -52,7 +52,8 @@ class AgileChartsControllerTest < ActionController::TestCase
 
     EnabledModule.create(project: @project, name: 'agile')
 
-    @charts = %w(issues_burndown work_burndown_sp work_burndown_hours)
+    @charts = RedmineAgile::Charts::AGILE_CHARTS.keys
+    @charts_with_units = RedmineAgile::Charts::CHARTS_WITH_UNITS
   end
 
   def test_get_show
@@ -62,6 +63,14 @@ class AgileChartsControllerTest < ActionController::TestCase
 
   def test_charts_by_default_params
     @charts.each { |chart| check_chart(chart: chart, project_id: @project.identifier) }
+  end
+
+  def test_charts_with_chart_unit
+    @charts_with_units.each do |chart|
+      RedmineAgile::Charts::CHART_UNITS.each do |chart_unit, label|
+        check_chart chart: chart, project_id: @project.identifier, chart_unit: chart_unit
+      end
+    end
   end
 
   def test_charts_by_different_time_intervals
@@ -112,6 +121,14 @@ class AgileChartsControllerTest < ActionController::TestCase
     end
   end
 
+  def test_charts_with_version_and_chart_unit
+    @charts_with_units.each do |chart|
+      RedmineAgile::Charts::CHART_UNITS.each do |chart_unit, label|
+        should_get_render_chart chart: chart, version_id: 2, chart_unit: chart_unit
+      end
+    end
+  end
+
   def test_issues_burndown_chart_when_first_issue_later_then_due_date
     new_version = Version.create!(name: 'Some new vesion', effective_date: (Date.today - 10.days), project_id: @project.id)
     new_version.fixed_issues << Issue.create!(
@@ -122,7 +139,7 @@ class AgileChartsControllerTest < ActionController::TestCase
       start_date: Date.today
     )
 
-    should_get_render_chart chart: 'issues_burndown', project_id: @project.identifier, version_id: new_version.id
+    should_get_render_chart chart: RedmineAgile::Charts::BURNDOWN_CHART, project_id: @project.identifier, version_id: new_version.id
   end
 
   private
@@ -141,6 +158,9 @@ class AgileChartsControllerTest < ActionController::TestCase
     json = ActiveSupport::JSON.decode(response.body)
     assert_kind_of Hash, json
     assert_equal parameters[:chart], json['chart']
+    if parameters[:chart_unit]
+      assert_equal parameters[:chart_unit], json['chart_unit']
+    end
   end
 
   def check_chart(parameters = {})

@@ -1,5 +1,5 @@
 <div class="contextual">
-  <%= link_to l(:label_agile_charts), @project ? project_agile_charts_path(project_id: @project) : agile_charts_path, class: 'icon icon-stats' %>
+  <%= link_to l(:label_agile_charts), @project ? project_agile_charts_path(project_id: @project) : agile_charts_path, class: 'icon icon-stats agile_charts_link', onclick: 'chartLinkGenerator();' %>
   <% if !@query.new_record? && @query.editable_by?(User.current) %>
     <%= link_to l(:button_edit), edit_agile_query_path(@query), class: 'icon icon-edit' %>
     <%= delete_link agile_query_path(@query) %>
@@ -7,42 +7,40 @@
 </div>
 
 <% html_title(@query.new_record? ? l(:label_agile_board) : @query.name) %>
-<h2>
-  <%= @query.new_record? ? l(:label_agile_board) : h(@query.name) %>
-  <span class="live_search">
-    <%= text_field_tag(:search, '', :id => 'agile_live_search', :class => 'live_search_field', :placeholder => l(:label_cards_search)) %>
-  </span>
-</h2>
+<%= form_tag({ controller: 'agile_boards', action: 'index', project_id: @project }, method: :get, id: 'query_form', onsubmit: 'DisableNullFields()') do %>
+  <h2>
+    <%= @query.new_record? ? l(:label_agile_board) : h(@query.name) %>
+      <span class="live_search">
+        <%= text_field_tag(:search, '', :id => 'agile_live_search', :class => 'live_search_field', :placeholder => l(:label_cards_search)) %>
+      </span>
+  </h2>
 
-<%= form_tag({ :controller => 'agile_boards', :action => 'index', :project_id => @project },
-            :method => :get, :id => 'query_form', :onsubmit => 'DisableNullFields()') do %>
   <div id="query_form_with_buttons" class="hide-when-print">
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">
       <fieldset id="filters" class="collapsible <%= @query.new_record? ? "" : "collapsed" %>">
-        <legend onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
+        <legend onclick="toggleFieldset(this);" class="icon icon-collapsed"><%= l(:label_filter_plural) %></legend>
         <div style="<%= @query.new_record? ? "" : "display: none;" %>">
           <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
         </div>
       </fieldset>
       <fieldset id="options" class="collapsible collapsed">
-        <legend onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
+        <legend onclick="toggleFieldset(this);" class="icon icon-collapsed"><%= l(:label_options) %></legend>
         <div style="display: none;">
-          <table class="options">
-            <% if Redmine::VERSION.to_s > '2.4' %>
-              <tr>
-                <td>
-                  <%= l(:label_agile_board_columns) %>
-                </td>
-                <td class="card-fields">
-                  <%= render_board_fields_status(@query) %>
-                </td>
-              </tr>
-            <% end %>
+          <table class="options agile_options">
             <tr>
-              <td><%= l(:label_agile_fields) %></td>
-              <td class="card-fields">
-                <%= render_board_fields_selection(@query) %>
+              <td colspan="2">
+                <fieldset class="card-fields">
+                  <legend><%= l(:label_agile_board_columns) %></legend>
+                  <%= render_board_fields_status(@query) %>
+                </fieldset>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <fieldset class="card-fields">
+                  <legend><%= l(:label_agile_fields) %></legend>
+                  <%= render_board_fields_selection(@query) %>
+                </fieldset>
               </td>
             </tr>
           </table>
@@ -59,7 +57,8 @@
 
 <%= error_messages_for 'query' %>
 <% if @query.valid? %>
-  <% if @issues.empty? || @board_columns.empty? %>
+  <% empty_data = @issues.empty? || @board_columns.empty? %>
+  <% if empty_data %>
     <p class="nodata"><%= l(:label_no_data) %></p>
   <% else %>
     <% if @query.truncated %>
@@ -82,18 +81,18 @@
 
 <% html_title l(:label_agile_board) %>
 <% content_for :header_tags do %>
-  <%= javascript_include_tag "redmine_agile", :plugin => 'redmine_agile' %>
-  <%= javascript_include_tag "jquery.ui.touch-punch.js", :plugin => 'redmine_agile' %>
+  <%= javascript_include_tag "redmine_agile", plugin: 'redmine_agile' %>
+  <%= javascript_include_tag "jquery.ui.touch-punch.js", plugin: 'redmine_agile' %>
   <%= stylesheet_link_tag 'context_menu' %>
-  <%= stylesheet_link_tag "redmine_agile.css", :plugin => "redmine_agile", :media => "print" %>
+  <%= stylesheet_link_tag "redmine_agile.css", plugin: "redmine_agile", media: "print" %>
 <% end %>
-<% if User.current.allowed_to?(:edit_issues, @project, :global => true) %>
+<% if User.current.allowed_to?(:edit_issues, @project, global: true) %>
   <script type="text/javascript">
     var agileBoard = new AgileBoard({
       project_id: '<%= @project && @project.id %>',
       update_agile_board_path: '<%= escape_javascript update_agile_board_path %>',
       issues_path: '<%= escape_javascript issues_path %>',
-      create_issue_path: '<%= escape_javascript(agile_create_issue_path(:project_id => @project)) if @project %>'
+      create_issue_path: '<%= escape_javascript(agile_create_issue_path(project_id: @project)) if @project %>'
     });
   </script>
 <% end %>

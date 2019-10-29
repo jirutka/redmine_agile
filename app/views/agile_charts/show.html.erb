@@ -3,7 +3,6 @@
 <h2><%= @query.new_record? ? l(:label_agile_chart_plural) : h(@query.name) %></h2>
 <% html_title(@query.new_record? ? l(:label_agile_chart_plural) : @query.name) %>
 
-
 <%= form_tag({ :controller => 'agile_charts', :action => 'show', :project_id => @project },
             :method => :get, :id => 'query_form') do %>
   <div id="query_form_with_buttons" class="hide-when-print">
@@ -21,7 +20,11 @@
           <table>
             <tr>
               <td><label for='chart'><%= l(:label_agile_chart) %></label></td>
-              <td><%= select_tag('chart', options_charts_for_select(@chart)) %></td>
+              <td><%= select_tag 'chart', options_charts_for_select(@chart), onchange: "toggleChartUnit($(this).val(), 'chart-unit-row');" %></td>
+              <td id="chart-unit-row">
+                <label for='chart_unit'><%= l(:label_agile_chart_units) %></label>
+                <%= select_tag 'chart_unit', options_chart_units_for_select(@query.chart_unit) %>
+              </td>
             </tr>
             <tr id="interval-size">
               <td><%= l(:label_agile_interval_size) %></td>
@@ -55,7 +58,9 @@
 <% end %>
 
 <%= javascript_tag do %>
+  var chartsWithUnits = <%= raw RedmineAgile::Charts::CHARTS_WITH_UNITS.to_json %>
   $(document).ready(function() {
+    toggleChartUnit($('#chart').val(), 'chart-unit-row');
     /* Hide chart_period checkbox so that it couldn't be unchecked */
     hideChartPeriodCheckbox();
   });

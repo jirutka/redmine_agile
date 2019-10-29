@@ -1,5 +1,3 @@
-# encoding: utf-8
-#
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
@@ -19,14 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module AgileChartsHelper
-  def render_agile_charts_breadcrumb
-    links = []
-    links << link_to(l(:label_project_all), project_id: nil, issue_id: nil)
-    links << link_to(h(@project), project_id: @project, issue_id: nil) if @project
-    if @version
-      links << @version.visible? ? link_to(@version.name, version_path(@version)) : @version.name
+module RedmineAgile
+  module Patches
+    module IssuesControllerPatch
+      def self.included(base) # :nodoc:
+        base.class_eval do
+        end
+      end
     end
-    breadcrumb links
   end
+end
+
+unless IssuesController.included_modules.include?(RedmineAgile::Patches::IssuesControllerPatch)
+  IssuesController.send(:include, RedmineAgile::Patches::IssuesControllerPatch)
 end

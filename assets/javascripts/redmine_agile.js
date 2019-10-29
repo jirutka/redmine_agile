@@ -61,6 +61,7 @@
         start: function(event, ui) {
           var $item = $(ui.item);
           $item.attr('oldColumnId', $item.parent().data('version-id'));
+          $item.attr('oldSprintId', $item.parent().data('sprint-id'));
           $item.attr('oldPosition', $item.index());
         },
         stop: function(event, ui) {
@@ -68,6 +69,7 @@
           var $column = $item.parents('.column-issues');
           var issue_id = $item.data('id');
           var version_id = $column.attr('data-version-id');
+          var sprint_id = $column.attr('data-sprint-id');
           var positions = {};
           var oldId = $item.attr('oldColumnId');
           var $oldColumn = $('.ui-sortable[data-version-id="' + oldId + '"]');
@@ -86,7 +88,10 @@
             url: self.routes.update_agile_board_path,
             type: 'PUT',
             data: {
-              issue: { fixed_version_id: version_id || "" },
+              issue: {
+                fixed_version_id: version_id || "",
+                sprint_id: sprint_id || ""
+              },
               positions: positions,
               id: issue_id
             },
@@ -107,7 +112,8 @@
     hasChange: function($item){
       var column = $item.parents('.column-issues');
       return $item.attr('oldColumnId') != column.data('version-id') || // Checks a version change
-             $item.attr('oldPosition') != $item.index();
+             $item.attr('oldSprintId') != column.data('sprint-id') || // Checks a sprint change;
+             $item.attr('oldPosition') != $item.index()
     },
 
   }
@@ -172,6 +178,7 @@
           var oldSwimLaneId = $item.attr('oldSwimLaneId');
           var oldSwimLaneField = $item.attr('oldSwimLaneField');
           var $oldColumn = $('.ui-sortable[data-id="' + oldStatusId + '"]');
+          var $sprintField = $('#sprint_id');
 
           if(!self.hasChange($item)){
             self.backSortable($column);
@@ -199,6 +206,17 @@
               id: issue_id
             }
           params['issue'][swimLaneField] = swimLaneId;
+
+
+          if ($sprintField) {
+            if (oldStatusId == '' && newStatusId != '') {
+              params['issue'].sprint_id = $sprintField.val();
+            }
+            if (oldStatusId != '' && newStatusId == '') {
+              delete(params['issue'].status_id)
+              params['issue'].sprint_id = '';
+            }
+          }
 
           $.ajax({
             url: self.routes.update_agile_board_path,
@@ -571,6 +589,19 @@ function recalculateHours() {
   });
 }
 
+function recalculateSprintHours() {
+  var unit = $(".planning-board").data('estimated-unit');
+
+  $('.sprint-column').each(function(i, elem){
+    var versionEstimationSum = 0;
+    $(elem).find('.issue-card').each(function(j, issue){
+      hours = parseFloat($(issue).data('estimated-hours'));
+      versionEstimationSum += hours;
+    });
+    $(elem).find('.sprint-estimate').text('(' + versionEstimationSum.toFixed(2) + unit + ')');
+  });
+}
+
 function showInlineCommentNode(quick_comment){
   if(quick_comment){
     $(quick_comment).siblings(".last_comment").hide();
@@ -686,7 +717,44 @@ function linkableAttributeFields() {
   progress_label.html(linkGenerator('/done_ratio', progress_label.html()));
 };
 
+function chartLinkGenerator() {
+  var filter_values = $("#query_form").serialize();
+  event.preventDefault();
+  window.location.href = $('.agile_charts_link').prop('href') + '?' + filter_values;
+}
+
 function hideChartPeriodCheckbox() {
   $("#cb_chart_period").hide();
   $("label[for=cb_chart_period]").removeAttr("for");
+};
+
+function toggleChartUnit(chart, target) {
+  var showTarget = chartsWithUnits.indexOf(chart) > -1;
+  $('#' + target).toggle(showTarget);
+};
+
+function updateVersionAgileChart(url) {
+  $.ajax(url + '&chart=' + $('#chart_by_select').val() + '&chart_unit=' + $('#chart_unit').val());
+};
+
+function chartTooltipCallbacks(chartType) {
+  if (chartType === 'scatter') {
+    return scatterChartTooltipCallbacks()
+  } else {
+    return {}
+  }
+};
+
+function scatterChartTooltipCallbacks() {
+  return {
+    title: function (tooltipItem, data) {
+      return data.labels[tooltipItem[0].xLabel] || '';
+    },
+    label: function (tooltipItem, data) {
+      var label = data.datasets[tooltipItem.datasetIndex].label || '';
+      if (label) { label += ': ' }
+      label += tooltipItem.yLabel;
+      return label;
+    }
+  }
 };

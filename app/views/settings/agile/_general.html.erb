@@ -11,7 +11,7 @@
 
 <p>
   <label><%= l(:label_agile_esitmate_units) %></label>
-  <%= select_tag 'settings[estimate_units]', options_for_select(RedmineAgile::ESTIMATE_UNITS.map{ |eu| [l("label_agile_#{eu}"), eu] }, 
+  <%= select_tag 'settings[estimate_units]', options_for_select(RedmineAgile::ESTIMATE_UNITS.map{ |eu| [l("label_agile_#{eu}"), eu] },
     RedmineAgile.estimate_units), :onchange => "toggleTrackerForSP(this); return false" %>
   <script type="text/javascript">
     function toggleTrackerForSP (node) {
@@ -30,7 +30,7 @@
 </div>
 <p>
   <label><%= l(:label_agile_default_chart) %></label>
-  <%= select_tag 'settings[default_chart]', options_charts_for_select(RedmineAgile.default_chart) %>
+  <%= select_tag 'settings[default_chart]', grouped_options_charts_for_select(RedmineAgile.default_chart) %>
 </p>
 
 <p>

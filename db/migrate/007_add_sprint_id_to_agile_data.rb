@@ -1,5 +1,3 @@
-# encoding: utf-8
-#
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
@@ -19,14 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module AgileChartsHelper
-  def render_agile_charts_breadcrumb
-    links = []
-    links << link_to(l(:label_project_all), project_id: nil, issue_id: nil)
-    links << link_to(h(@project), project_id: @project, issue_id: nil) if @project
-    if @version
-      links << @version.visible? ? link_to(@version.name, version_path(@version)) : @version.name
-    end
-    breadcrumb links
+class AddSprintIdToAgileData < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
+  def change
+    add_column :agile_data, :agile_sprint_id, :integer, index: true
   end
 end

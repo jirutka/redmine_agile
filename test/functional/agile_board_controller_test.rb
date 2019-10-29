@@ -556,7 +556,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     with_agile_settings 'allow_inline_comments' => 1 do
       compatible_request :get, :index, agile_query_params
       assert_response :success
-      assert_select '.quick-edit-card img[alt="Edit"]'
+      assert_select '.quick-edit-card img[alt="Comment"]'
     end
   end if Redmine::VERSION.to_s > '2.4'
 

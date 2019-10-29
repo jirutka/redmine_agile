@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'redmine_agile/patches/compatibility/application_controller_patch' if Rails::VERSION::MAJOR < 4
+
 
 require 'redmine_agile/hooks/views_layouts_hook'
 require 'redmine_agile/hooks/views_issues_hook'
@@ -30,6 +30,7 @@ require 'redmine_agile/helpers/agile_helper'
 require 'redmine_agile/charts/agile_chart'
 require 'redmine_agile/charts/burndown_chart'
 require 'redmine_agile/charts/work_burndown_chart'
+require 'redmine_agile/charts/charts'
 
 module RedmineAgile
 
@@ -62,7 +63,7 @@ module RedmineAgile
     end
 
     def default_chart
-      Setting.plugin_redmine_agile['default_chart'] || 'issues_burndown'
+      Setting.plugin_redmine_agile['default_chart'] || Charts::BURNDOWN_CHART
     end
 
     def estimate_units
