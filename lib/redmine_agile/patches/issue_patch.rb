@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -45,6 +45,10 @@ module RedmineAgile
           change_time.created_on 
         rescue 
           self.created_on
+        end
+
+        def last_comment
+          journals.where("notes <> ''").order("#{Journal.table_name}.id ASC").last
         end
 
         def sub_issues

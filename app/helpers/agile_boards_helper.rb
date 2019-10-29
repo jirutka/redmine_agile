@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -30,9 +30,11 @@ module AgileBoardsHelper
   def header_th(name, rowspan = 1, colspan = 1, leaf = nil)
     th_attributes = {}
     if leaf
+      # th_attributes[:style] = ""
       th_attributes[:"data-column-id"] = leaf.id
-      issue_count = leaf.instance_variable_get("@issue_count")
+      issue_count = leaf.instance_variable_get("@issue_count") || 0
       count_tag = " (#{content_tag(:span, issue_count.to_i, :class => 'count')})".html_safe
+
       # estimated hours total
       hours_count = leaf.instance_variable_get("@estimated_hours_sum") || 0
       hours_tag = " #{content_tag(:span, ("%.2fh" % hours_count.to_f).to_s, :class => 'hours', :title => l(:field_estimated_hours))}".html_safe if hours_count > 0
@@ -52,6 +54,18 @@ module AgileBoardsHelper
     query.available_inline_columns.reject(&:frozen?).map do |column|
       label_tag('', check_box_tag('c[]', column.name, query.columns.include?(column)) + column.caption, :class => "floating" )
     end.join(" ").html_safe
+  end
+
+  def render_board_fields_status(query)
+    current_statuses = query.options[:f_status] || IssueStatus.where(:is_closed => false).pluck(:id).map(&:to_s)
+    wp = query.options[:wp] || {}
+    status_tags = IssueStatus.sorted.map do |status|
+      label_tag('', check_box_tag('f_status[]', status.id, current_statuses.include?(status.id.to_s)
+      ) + status.to_s, :class => 'floating')
+    end.join(' ').html_safe
+    hidden_field_tag('f[]', 'status_id').html_safe +
+      hidden_field_tag('op[status_id]', "=").html_safe +
+      status_tags
   end
 
   def render_issue_card_hours(query, issue)
@@ -101,14 +115,23 @@ module AgileBoardsHelper
     ''
   end
 
-  def init_agile_tooltip_info
-    javascript_tag "function callGetToolTipInfo()
+  def init_agile_tooltip_info(options={})
+    js_code = "function callGetToolTipInfo()
       {
         var url = '#{issue_tooltip_url}';
-        getToolTipInfo(this, url);
+        agileBoard.getToolTipInfo(this, url);
       }
       $('.tooltip').mouseenter(callGetToolTipInfo);
     "
+    return js_code.html_safe if options[:only_code]
+    javascript_tag(js_code)
   end
+
+  def show_checklist?(issue)
+    issue.checklists.count > 0 && User.current.allowed_to?(:view_checklists, issue.project) && RedmineAgile.use_checklist?
+  rescue
+    false
+  end
+
 
 end

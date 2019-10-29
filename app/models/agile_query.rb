@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -33,8 +33,13 @@ class AgileQuery < Query
     QueryColumn.new(:day_in_state, :caption => :label_agile_day_in_state),
     QueryColumn.new(:parent, :groupable => "#{Issue.table_name}.parent_id", :sortable => "#{AgileRank.table_name}.position", :caption => :field_parent_issue),
     QueryColumn.new(:assigned_to, :sortable => lambda {User.fields_for_order_statement}, :groupable => "#{Issue.table_name}.assigned_to_id"),
-    QueryColumn.new(:relations, :caption => :label_related_issues)
+    QueryColumn.new(:relations, :caption => :label_related_issues),
+    QueryColumn.new(:last_comment, :caption => :label_agile_last_comment)
   ]
+
+  if RedmineAgile.use_checklist?
+    self.available_columns << QueryColumn.new(:checklists, :caption => :label_checklist_plural)
+  end
 
   scope :visible, lambda {|*args|
     user = args.shift || User.current
@@ -62,12 +67,15 @@ class AgileQuery < Query
 
   def initialize(attributes=nil, *args)
     super attributes
-    self.filters ||= { 'status_id' => {:operator => "o", :values => [""]} }
+    unless Redmine::VERSION.to_s > '2.4'
+      self.filters ||= { 'status_id' => {:operator => "*", :values => [""]} }
+    end
+    self.filters ||= { }
     @truncated = false
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(day_in_state tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id sub_issues checklists last_comment).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -114,6 +122,9 @@ class AgileQuery < Query
     self.column_names = params[:c] || (params[:query] && params[:query][:column_names])
     self.color_base = params[:color_base] || (params[:query] && params[:query][:color_base])
     self.draw_relations = params[:draw_relations] || (params[:query] && params[:query][:draw_relations])
+    if params[:f_status] || params[:wp]
+      self.options = options.merge({ :f_status => params[:f_status], :wp => params[:wp] })
+    end
     self
   end
 
@@ -149,8 +160,10 @@ class AgileQuery < Query
     principals.sort!
     users = principals.select {|p| p.is_a?(User)}
 
-    add_available_filter "status_id",
-      :type => :list_status, :values => IssueStatus.sorted.collect{|s| [s.name, s.id.to_s] }
+    unless Redmine::VERSION.to_s > '2.4'
+      add_available_filter "status_id",
+        :type => :list_status, :values => IssueStatus.sorted.collect{|s| [s.name, s.id.to_s] }
+    end
 
     if project.nil?
       project_values = []
@@ -363,9 +376,15 @@ class AgileQuery < Query
     end
   end
 
+  def condition_for_status
+    if Redmine::VERSION.to_s > '2.4'
+      return {:status_id => options[:f_status] || IssueStatus.where(:is_closed => false)}
+    end
+    '1=1'
+  end
+
   def issues(options={})
     order_option = [group_by_sort_order, options[:order]].flatten.reject(&:blank?)
-
     scope = issue_scope.
       joins(:status).
       eager_load((options[:include] || []).uniq).
@@ -379,37 +398,93 @@ class AgileQuery < Query
     if has_column?(:author)
       scope = scope.preload(:author)
     end
-    if order_option.detect {|x| x.match("agile_ranks.position")}
-      scope = scope.sorted_by_rank 
+
+    if has_column_name?(:checklists)
+      scope = scope.eager_load(:checklists)
     end
-    
+
+    if order_option.detect {|x| x.match("agile_ranks.position")}
+      scope = scope.sorted_by_rank
+    end
+
+    if has_column_name?(:last_comment)
+      journal_comment = Journal.joins(:issue).where("#{Journal.table_name}.notes <> ''").
+        where(:issues => {:id => issues_ids(scope)}).order("#{Journal.table_name}.id ASC")
+      @last_comments = {}
+
+      journal_comment.each do |lc|
+        @last_comments[lc.journalized_id] = lc
+      end
+    end
+
+    if has_column_name?(:day_in_state)
+      @journals_for_state = Journal.joins(:details).where(
+        :journals => {
+          :journalized_id => issues_ids(scope),
+          :journalized_type => "Issue"
+        },
+        :journal_details => {:prop_key => 'status_id'}).order("created_on DESC")
+    end
+
+
     scope
   rescue ::ActiveRecord::StatementInvalid => e
     raise StatementInvalid.new(e.message)
   end
 
+  def issues_ids(scope)
+    @issues_ids ||= scope.map{|issue| (issue.id rescue nil)}
+  end
+
+  def journals_for_state
+    @journals_for_state
+  end
+
+  def issue_last_comment(issue, options = {})
+    return unless has_column_name?(:last_comment) || options[:inline_adding]
+    return issue.last_comment unless @last_comments
+    @last_comments[issue.id]
+  end
+
   def board_statuses
-    status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
-    status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
-    statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
-    result_statuses = case status_filter_operator
-    when "o"
-      statuses.where(:is_closed => false).sorted
-    when "c"
-      statuses.where(:is_closed => true).sorted
-    when "="
-      statuses.where(:id => status_filter_values).sorted
-    when "!"
-      statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
-    else
-      statuses.sorted
-    end
-    result_statuses.map do |s|
-      s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-      if has_column_name?(:estimated_hours)
-        s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+    if Redmine::VERSION.to_s > '2.4'
+      statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+      status_filter_values = (options[:f_status] if options)
+      if status_filter_values
+        result_statuses = statuses.where(:id => status_filter_values)
+      else
+        result_statuses = statuses.where(:is_closed => false)
       end
-      s
+      result_statuses.sorted.map do |s|
+        s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+        if has_column_name?(:estimated_hours)
+          s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+        end
+        s
+      end
+    else
+      status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
+      status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
+      statuses = IssueStatus.where(:id => Tracker.eager_load(:issues => [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+      result_statuses = case status_filter_operator
+      when "o"
+        statuses.where(:is_closed => false).sorted
+      when "c"
+        statuses.where(:is_closed => true).sorted
+      when "="
+        statuses.where(:id => status_filter_values).sorted
+      when "!"
+        statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
+      else
+        statuses.sorted
+      end
+      result_statuses.map do |s|
+        s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+        if has_column_name?(:estimated_hours)
+          s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+        end
+        s
+      end
     end
   end
 
@@ -483,7 +558,8 @@ private
                  :priority,
                  :category,
                  :fixed_version).
-      where(statement)
+      where(statement).
+      where(condition_for_status)
   end
 
 

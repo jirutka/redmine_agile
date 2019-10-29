@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.3.12'
+AGILE_VERSION_NUMBER = '1.3.13'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do
@@ -49,7 +49,7 @@ Redmine::Plugin.register :redmine_agile do
     permission :manage_public_agile_queries, {:agile_queries => [:new, :create, :edit, :update, :destroy]}, :require => :member
     permission :manage_agile_verions, {:agile_versions => [:index, :update]}
     permission :add_agile_queries, {:agile_queries => [:new, :create, :edit, :update, :destroy]}, :require => :loggedin
-    permission :view_agile_queries, {:agile_boards => [:index], :agile_queries => :index}
+    permission :view_agile_queries, {:agile_boards => [:index, :create_issue], :agile_queries => :index}
     permission :view_agile_charts, {:agile_charts => [:show, :render_chart, :select_version_chart]}
   end
 end

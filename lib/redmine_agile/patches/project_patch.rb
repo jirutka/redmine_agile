@@ -18,16 +18,22 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 module RedmineAgile
-  module Hooks
-    class ViewsIssuesHook < Redmine::Hook::ViewListener
-      def view_issues_sidebar_issues_bottom(context={})
-        context[:controller].send(:render_to_string, {
-          :partial => 'agile_boards/issues_sidebar',
-          :locals => context }) +
-        context[:controller].send(:render_to_string, {
-          :partial => "agile_charts/agile_charts",
-          :locals => context })
+  module Patches
+
+    module ProjectPatch
+      def self.included(base)
+        base.class_eval do
+          unloadable
+          acts_as_colored
+          safe_attributes 'agile_color_attributes',
+            :if => lambda {|project, user| user.allowed_to?(:edit_project, project) && user.allowed_to?(:view_agile_queries, project) && RedmineAgile.use_colors?}
+        end
       end
     end
+
   end
+end
+
+unless Project.included_modules.include?(RedmineAgile::Patches::ProjectPatch)
+  Project.send(:include, RedmineAgile::Patches::ProjectPatch)
 end

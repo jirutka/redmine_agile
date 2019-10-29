@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ class AgileBoardsHelperTest < ActiveSupport::TestCase
     super
     set_language_if_valid('en')
     User.current = nil
+    EnabledModule.create(:project => Project.find(1), :name => 'issue_tracking') if RedmineAgile.use_checklist?
   end
 
   def test_time_in_state
@@ -44,4 +45,14 @@ class AgileBoardsHelperTest < ActiveSupport::TestCase
     assert_equal "", time_in_state(nil)
     assert_equal "", time_in_state("string")
   end
+
+  def test_show_checklist
+    issue1 = Issue.find(1)
+    checklist = issue1.checklists.create(:subject => 'TEST1', :position => 1)
+    User.current = User.find(1)
+    
+    assert show_checklist?(issue1), "Not allowed show checklist for first issue"
+    assert !show_checklist?(Issue.find(3)), "Allowed show checklist for issue without checklist"
+  
+  end if RedmineAgile.use_checklist?
 end

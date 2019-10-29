@@ -11,10 +11,11 @@
       </thead>
           <tr style="text-align: center;white-space: nowrap;" class="issue <%= cycle('odd', 'even') %>">
           <% @board_columns.each do |column| %>
-            <td class="issue-status-col <%= 'closed' if column.is_closed? %>" data-id="<%= column.id %>">
-            <% @issue_board[[column.id]].to_a.each do |issue| %>
-              <%= render :partial => 'issue_card', :locals => {:issue => issue} %>
-            <% end %>
+            <td class="issue-status-col <%= 'closed' if column.is_closed? %> <%= 'collapse' if RedmineAgile.hide_closed_issues_data? %> <%= column.wp_class if column.respond_to?(:wp_class) %>" data-id="<%= column.id %>">
+              <% @issue_board[[column.id]].to_a.each do |issue| %>
+                <%= render :partial => 'issue_card', :locals => {:issue => issue} %>
+              <% end %>
+              <%= render(:partial => 'add_issue_card') unless column.is_closed? %>
             </td>
 
             <% end %>

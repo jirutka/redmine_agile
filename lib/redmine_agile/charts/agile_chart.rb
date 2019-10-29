@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -51,7 +51,8 @@ module RedmineAgile
     end
 
     def due_date_period
-      @due_date_period ||= (@due_date ? @period_count - (@date_to - @due_date).to_i / @scale_division - 1: @period_count - 1) + 1
+      due_date = (@due_date && @due_date > @date_from) ? @due_date : @date_from
+      @due_date_period ||= (@due_date ? @period_count - (@date_to - due_date).to_i / @scale_division - 1: @period_count - 1) + 1
     end
 
     def date_effort(issues, effort_date)

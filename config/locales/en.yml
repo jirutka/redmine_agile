@@ -34,7 +34,7 @@ en:
   label_agile_date_from: From
   label_agile_date_to: To
   label_agile_chart_dates: Chart intervals
-  label_agile_weighed_ideal_work_remaining: Weighed ideal
+  label_agile_weighed_ideal_work_remaining: Weighted ideal
   label_agile_status_colors: Status colors
   label_agile_charts_burnup: Issues burnup
   label_agile_charts_number_of_days: Number of days
@@ -58,7 +58,7 @@ en:
   label_agile_color_based_on: Colored by
   label_agile_color_no_colors: No colors
   label_agile_manage_colors: Manage colors
-  label_agile_fullscreen: Fullscreen
+  label_agile_fullscreen: Full screen
   label_agile_no_version_issues: Issues without version
   label_agile_charts_work_burnup: Work burnup
   label_agile_completed: Completed
@@ -80,7 +80,7 @@ en:
   label_agile_color_blue: Blue
   label_agile_color_turquoise: Turquoise
   label_agile_color_lightgreen: Light green
-  label_agile_color_yellow: Yello
+  label_agile_color_yellow: Yellow
   label_agile_color_orange: Orange
   label_agile_color_red: Red
   label_agile_color_purple: Purple
@@ -101,6 +101,17 @@ en:
   label_agile_upgrade_to_pro: Upgrade to PRO version to use this features
 
   label_agile_day_in_state:  In status
+
   #1.3.10
   label_agile_hide_closed_issues_data: Hide closed issues data
   project_module_agile: Agile
+
+  #1.3.13
+  label_agile_last_comment: Last comment
+  label_agile_board_columns: Board columns
+  lable_agile_wip_limit_exceeded: Work-in-progress limit exceeded
+  label_agile_wip_limit: Work-in-progress limit
+  label_agile_add_new_issue: + ADD NEW ISSUE
+  label_agile_allow_create_cards: Allow create card
+  label_agile_auto_аssign_on_move: Auto assign on move
+  text_agile_create_issue_error: An error occurred while creating the task

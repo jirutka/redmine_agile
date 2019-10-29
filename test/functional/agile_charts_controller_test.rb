@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -121,6 +121,17 @@ class AgileChartsControllerTest < ActionController::TestCase
     get :render_chart, :chart => "average_lead_time"
     assert_response :success
     assert_equal 'image/svg+xml', @response.content_type
+  end
+
+  def test_issues_burndown_chart_when_first_issue_later_then_due_date
+    @project_1 = Project.find(1)
+    EnabledModule.create(:project => @project_1, :name => 'agile')
+    @request.session[:user_id] = 1
+    new_version = Version.create!(:name => "Some new vesion", :effective_date => (Date.today - 10.days), :project_id => @project_1.id)
+    issue = Issue.create!(:project_id => 1, :tracker_id => 1, :subject => 'test_issues_burndown_chart_when_first_issue_later_then_due_date', :author_id => 2, :start_date => Date.today)
+    new_version.fixed_issues << issue
+    get :render_chart, :chart => "issues_burndown", :project_id => 1, :version_id => new_version.id
+    assert_response :success
   end
 
 

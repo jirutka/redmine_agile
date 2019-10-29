@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@ class AgileBoardsController < ApplicationController
 
   menu_item :agile
 
-  before_filter :find_issue, :only => [:update, :issue_tooltip]
-  before_filter :find_optional_project, :only => [:index]
+  before_filter :find_issue, :only => [:update, :issue_tooltip, :inline_comment]
+  before_filter :find_optional_project, :only => [:index, :create_issue]
 
   helper :issues
   helper :journals
@@ -54,15 +54,6 @@ class AgileBoardsController < ApplicationController
       @issues = @query.issues
       @issue_board = @query.issue_board
       @board_columns = @query.board_statuses
-      
-      if @query.has_column_name?(:day_in_state)
-        @journals_for_state = Journal.joins(:details).where(
-          :journals => {
-            :journalized_id => @issues.map{|issue| (issue.id rescue nil)}, 
-            :journalized_type => "Issue"
-          }, 
-          :journal_details => {:prop_key => 'status_id'}).order("created_on DESC") 
-      end
 
       respond_to do |format|
         format.html { render :template => 'agile_boards/index', :layout => !request.xhr? }
@@ -81,8 +72,13 @@ class AgileBoardsController < ApplicationController
   def update
     (render_403; return false) unless @issue.editable?
     retrieve_agile_query_from_session
+    old_status = @issue.status
     @issue.init_journal(User.current)
-    @issue.safe_attributes = params[:issue]
+    if auto_assign_on_move?
+      @issue.safe_attributes = params[:issue].merge({ :assigned_to_id => User.current.id })
+    else
+      @issue.safe_attributes = params[:issue]
+    end
     saved = params[:issue] && params[:issue].inject(true) do |total, attribute|
        total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
     end
@@ -96,6 +92,9 @@ class AgileBoardsController < ApplicationController
           issue.agile_rank.save
         end
       end if params[:positions]
+
+      @inline_adding = params[:issue][:notes] || nil
+
       respond_to do |format|
         format.html { render(:partial => 'issue_card', :locals => {:issue => @issue}, :status => :ok, :layout => nil) }
       end
@@ -103,13 +102,27 @@ class AgileBoardsController < ApplicationController
       respond_to do |format|
         messages = @issue.errors.full_messages
         messages = [l(:text_agile_move_not_possible)] if messages.empty?
-        format.html { render :json => messages, :status => :fail, :layout => nil }
+        format.html {
+          render :json => messages, :status => :fail, :layout => nil
+        }
       end
     end
   end
 
   def issue_tooltip
     render :partial => 'issue_tooltip'
+  end
+
+  def inline_comment
+    render 'inline_comment', :layout => nil
+  end
+
+  private
+
+  def auto_assign_on_move?
+    RedmineAgile.auto_аssign_on_move? && @issue.assigned_to.nil? &&
+      !params[:issue].keys.include?('assigned_to_id') &&
+      @issue.status_id != params[:issue]['status_id'].to_i
   end
 
 end

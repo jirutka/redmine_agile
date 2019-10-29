@@ -102,6 +102,16 @@ ru:
   label_agile_upgrade_to_pro: 'Обновитесь до PRO версии чтобы:'
 
   #1.3.10
-  label_agile_hide_closed_issues_data: Скрывать данные закрытых задач 
+  label_agile_hide_closed_issues_data: Скрывать данные закрытых задач
   label_agile_day_in_state: В статусе
   project_module_agile: Agile
+
+  #1.3.13
+  label_agile_last_comment: Последний комментарий
+  label_agile_board_columns: Столбцы доски
+  lable_agile_wip_limit_exceeded: Превышен лимит по задачам в данном столбце
+  label_agile_wip_limit: Ограничение по кол-ву задач в столбце
+  label_agile_add_new_issue: + НОВАЯ ЗАДАЧА
+  label_agile_allow_create_cards: Создавать новые задачи на доске
+  label_agile_auto_аssign_on_move: Автоназначение при перетаскивании
+  text_agile_create_issue_error: Произошла ошибка при создании задачи

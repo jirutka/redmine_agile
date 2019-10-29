@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ class AgileQuery < Query
   end
 
   def card_columns
-    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id day_in_state).include?(c.name.to_s)}
+    self.inline_columns.select{|c| !%w(tracker thumbnails description assigned_to done_ratio spent_hours estimated_hours project id day_in_state last_comment).include?(c.name.to_s)}
   end
 
   def visible?(user=User.current)
@@ -273,6 +273,14 @@ class AgileQuery < Query
     raise StatementInvalid.new(e.message)
   end
 
+  # for compatibility with upper versions
+  def issue_last_comment(issue_id, options = {})
+    nil
+  end
+
+  def journals_for_state
+    nil
+  end
 
   def board_statuses
     status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)

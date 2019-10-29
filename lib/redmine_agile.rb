@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -38,7 +38,6 @@ module RedmineAgile
   ISSUES_PER_COLUMN = 10
   TIME_REPORTS_ITEMS = 1000
   BOARD_ITEMS = 500
-
   class << self
     def time_reports_items_limit
       by_settigns = Setting.plugin_redmine_agile['time_reports_items_limit'].to_i
@@ -79,12 +78,24 @@ module RedmineAgile
       Setting.plugin_redmine_agile['exclude_weekends'].to_i > 0
     end
 
+    def auto_аssign_on_move?
+      Setting.plugin_redmine_agile['auto_аssign_on_move'].to_i > 0
+    end
+
     def status_colors?
       false
           end
 
     def hide_closed_issues_data?
       Setting.plugin_redmine_agile['hide_closed_issues_data'].to_i > 0
+    end
+
+    def use_checklist?
+      @@chcklist_plugin_installed ||= (Redmine::Plugin.installed?(:redmine_checklists))
+    end
+
+    def allow_create_card?
+      false
     end
 
   end

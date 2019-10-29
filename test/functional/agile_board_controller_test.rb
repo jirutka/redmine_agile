@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2015 RedmineCRM
+# Copyright (C) 2011-2016 RedmineCRM
 # http://www.redminecrm.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -73,6 +73,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_select ".issue-card", issues.count
     assert_select ".issue-card span.fields p.issue-id strong", issues.count
     assert_select ".issue-card span.fields p.name a", issues.count
+    assert_select ".issue-card .quick-edit-card a"
   end
 
   def test_get_index_truncated
@@ -85,8 +86,23 @@ class AgileBoardsControllerTest < ActionController::TestCase
     end
   end
 
+  def test_limit_for_truncated
+    expected_issues = Issue.where(:project_id => [@project_1] + Project.where(:parent_id => @project_1.id).to_a,
+      :status_id => IssueStatus.where(:is_closed => false))
+    with_agile_settings "board_items_limit" => (expected_issues.count + 1) do
+      get :index, agile_query_params.merge({:f_status => IssueStatus.where(:is_closed => false).pluck(:id)})
+      assert_response :success
+      assert_template :index
+      assert_select 'div#content p.warning', 0
+    end
+  end if Redmine::VERSION.to_s > '2.4'
+
   def test_get_index_with_filters
-    get :index, agile_query_params.merge({:op => {:status_id => "!"}, :v => {:status_id => ["1"]}})
+    if Redmine::VERSION.to_s > '2.4'
+      get :index, agile_query_params.merge({:f_status => IssueStatus.where("id != 1").pluck(:id)})
+    else
+      get :index, agile_query_params.merge({:op => {:status_id => "!"}, :v => {:status_id => ["1"]}})
+    end
     assert_response :success
     assert_template :index
     expected_issues = Issue.where(:project_id => [@project_1] + Project.where(:parent_id => @project_1.id).to_a,
@@ -188,6 +204,8 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_equal status_id, Issue.find(first_issue_id).status_id
     assert_equal first_pos, Issue.find(first_issue_id).agile_rank.position
     assert_equal second_pos, Issue.find(second_issue_id).agile_rank.position
+    # check js code for update board header
+    assert_match '$("table.issues-board thead").html(', @response.body
   end
 
   def test_put_update_version
@@ -220,9 +238,17 @@ class AgileBoardsControllerTest < ActionController::TestCase
 
   def test_short_card_for_closed_issue
     with_agile_settings "hide_closed_issues_data" => "1" do
-      closed_issues = Issue.where(:status_id => IssueStatus.where(:is_closed => true))
+      closed_status = IssueStatus.where(:is_closed => true).pluck(:id)
+      closed_issues = Issue.where(:status_id => closed_status)
       project = closed_issues.first.project
-      get :index, agile_query_params.merge("f"=>[""])
+      
+      # get :index, agile_query_params.merge(:f_status => closed_status)
+      if Redmine::VERSION.to_s > '2.4'
+        get :index, agile_query_params.merge(:f_status => closed_status)
+      else
+        get :index, agile_query_params.merge("f"=>[""])
+      end
+
       assert_response :success
       assert_template :index
       assert_select '.closed-issue', project.issues.where(:status_id => IssueStatus.where(:is_closed => true)).count
@@ -241,9 +267,12 @@ class AgileBoardsControllerTest < ActionController::TestCase
 
   def test_empty_node_for_tooltip
     with_agile_settings "hide_closed_issues_data" => "1" do
-      closed_issues = Issue.where(:status_id => IssueStatus.where(:is_closed => true))
-      project = closed_issues.first.project
-      get :index, agile_query_params.merge("f"=>[""])
+      closed_status = IssueStatus.where(:is_closed => true).pluck(:id)
+      if Redmine::VERSION.to_s > '2.4'
+        get :index, agile_query_params.merge(:f_status => closed_status)
+      else
+        get :index, agile_query_params.merge("f"=>[""])
+      end
       assert_select "span.tip", {:text => ""}
     end
   end
@@ -289,12 +318,13 @@ class AgileBoardsControllerTest < ActionController::TestCase
     issue_id = issue2.id
     xhr :put, :update, :id => issue_id, :issue => {:assigned_to_id => assigned_to_id}
     assert_response :success
+    issue2.reload
+    assert_equal assigned_to_id, issue2.assigned_to_id
   end
 
   def test_index_with_relations_relates
     create_issue_relation
-    
-    get :index, agile_query_params.merge(:op => {:status_id => "*", :relates => "*"}, :f => ["relates"])
+    get :index, agile_query_params.merge(:f_status => IssueStatus.pluck(:id), :op => {:status_id => "*", :relates => "*"}, :f => ["relates"])
     assert_response :success
     assert_template :index
     assert_equal [1, 7, 8], assigns[:issues].map(&:id).sort
@@ -303,7 +333,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   def test_index_with_relations_blocked
     create_issue_relation
 
-    get :index, agile_query_params.merge(:op => {:status_id => "*", :blocked => "*"}, :f => ["blocked"])
+    get :index, agile_query_params.merge(:f_status => IssueStatus.pluck(:id), :op => {:status_id => "*", :blocked => "*"}, :f => ["blocked"])
     assert_response :success
     assert_template :index
     assert_equal [2, 11], assigns[:issues].map(&:id).sort
@@ -327,7 +357,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     put :update, {:issue => {:status_id => 2}, :id => 1 }
     issue.reload
     assert_response :success
-    assert_equal 2, issue.status_id 
+    assert_equal 2, issue.status_id
     assert_select 'p.attributes', /0.hours/
   end if Redmine::VERSION.to_s > '2.4'
 
@@ -349,6 +379,148 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_select 'thead tr th span.hours', {:count => 1, :text => "10.00h"} #status_id == 2
   end if Redmine::VERSION.to_s > '2.4'
 
+  def test_get_index_with_checklist
+    # global board
+    issue1 = issue_with_checklist
+
+    get :index, agile_query_params.merge(:c => ["checklists"], :project_id => nil)
+    assert_response :success
+    # check checklist nodes
+    assert_select "#checklist_#{issue1.id}"
+    issue1.checklists.each do |checklist|
+      assert_select "#checklist_item_#{checklist.id}", :text => checklist.subject
+    end
+  end if RedmineAgile.use_checklist?
+
+  def test_get_index_without_checklist
+    issue1 = issue_with_checklist
+    get :index, :c => []
+    assert_response :success
+    # check checklist nodes
+    assert_select "#checklist_#{issue1.id}", :count => 0
+    issue1.checklists.each do |checklist|
+      assert_select "#checklist_item_#{checklist.id}", :count => 0
+    end
+
+  end if RedmineAgile.use_checklist?
+
+  def test_get_index_with_project_with_checklist
+    issue1 = issue_with_checklist
+    get :index, agile_query_params.merge(:c => ["checklists"], :project_id => issue1.project)
+    assert_response :success
+    # check checklist nodes
+    assert_select "#checklist_#{issue1.id}"
+    issue1.checklists.each do |checklist|
+      assert_select "#checklist_item_#{checklist.id}", :text => checklist.subject
+    end
+  end if RedmineAgile.use_checklist?
+
+  def test_get_index_with_project_without_checklist
+    issue1 = issue_with_checklist
+    get :index, agile_query_params.merge(:project_id => issue1.project, :c => [])
+    assert_response :success
+    # check checklist nodes
+    assert_select "#checklist_#{issue1.id}", :count => 0
+    issue1.checklists.each do |checklist|
+      assert_select "#checklist_item_#{checklist.id}", :count => 0
+    end
+  end if RedmineAgile.use_checklist?
+
+  def test_get_index_check_quick_edit_without_permission
+    role = Role.find(2)
+    role.permissions << :veiw_issues
+    role.permissions << :view_agile_queries
+    role.permissions.delete(:edit_issues)
+    role.save
+    @request.session[:user_id] = 3
+
+    get :index, :project_id => @project_1
+    issues = Issue.where(:project_id => [@project_1],
+      :status_id => IssueStatus.where(:is_closed => false))
+    assert_response :success
+    assert_select ".issue-card", assigns[:issues].count
+    assert_select ".issue-card .quick-edit-card a", :count => 0
+  end
+
+  def test_last_comment_on_issue_cart
+    issue = @project_1.issues.open.first
+    text_comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus in blandit ex. Donec vitae urna quis tortor tempor mollis."
+    comment = Journal.new(:notes => text_comment, :user_id => 1)
+    issue.journals << comment
+    params = agile_query_params.merge(:c => ["project", "last_comment"], :group_by => "parent")
+    get :index, params
+    assert_response :success
+    assert_select 'span.last-comment', :text => text_comment.truncate(100)
+    put :update, {:issue => {:status_id => 2}, :id => issue.id }
+    assert_select 'span.last-comment', :text => text_comment.truncate(100)
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_quick_add_comment_button
+    get :index, agile_query_params
+    assert_response :success
+    assert_select '.quick-edit-card img[alt="Edit"]'
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_quick_add_comment_form
+    get :inline_comment, :id => @project_1.issues.open.first
+    assert_response :success
+    assert_select 'textarea'
+    assert_select 'button'
+  end if Redmine::VERSION.to_s > '2.4'
+  
+  def test_quick_add_comment_update
+    issue = @project_1.issues.open.first
+    put :update, {:issue => {:notes => 'new comment!!!'}, :id => issue }
+    assert_response :success
+    assert_select ".last_comment", :text => 'new comment!!!'
+  end if Redmine::VERSION.to_s > '2.4'
+  
+  
+  def test_card_for_new_issue
+  with_agile_settings "allow_create_card" => 1 do
+  statuses = IssueStatus.all
+  get :index, { 
+  "set_filter"=>"1", :project_id => @project_1, :f_status => statuses.map(&:id) }
+  assert_select '.add-issue input.new-card__input', 0
+  end
+  end if Redmine::VERSION.to_s > '2.4'
+  
+
+  def test_on_auto_assign_on_move
+    with_agile_settings "auto_аssign_on_move" => "1" do
+      issue = Issue.find(1)
+      assert_equal nil, issue.assigned_to
+      put :update, {:issue => {:status_id => 2}, :id => 1 }
+      issue.reload
+      assert_response :success
+      assert_equal 2, issue.status_id
+      assert_equal User.current, issue.assigned_to
+    end
+  end
+
+  def test_off_auto_assign_on_move
+    with_agile_settings "auto_аssign_on_move" => "0" do
+      issue = Issue.find(1)
+      assert_equal nil, issue.assigned_to
+      put :update, {:issue => {:status_id => 2}, :id => 1 }
+      issue.reload
+      assert_response :success
+      assert_equal 2, issue.status_id
+      assert_not_equal User.current, issue.assigned_to
+    end
+  end
+
+  def test_off_auto_assign_on_move_by_sorting
+    with_agile_settings "auto_аssign_on_move" => "1" do
+      issue = Issue.find(1)
+      assert_equal nil, issue.assigned_to
+      put :update, {:issue => {:status_id => issue.status_id}, :id => 1 }
+      issue.reload
+      assert_response :success
+      assert_not_equal User.current, issue.assigned_to
+    end
+  end
+
   private
 
   def agile_query_params
@@ -362,5 +534,12 @@ class AgileBoardsControllerTest < ActionController::TestCase
     IssueRelation.create!(:relation_type => "blocks", :issue_from => Issue.find(1), :issue_to => Issue.find(11))
     IssueRelation.create!(:relation_type => "blocks", :issue_from => Issue.find(12), :issue_to => Issue.find(2))
   end
+
+  def issue_with_checklist
+    issue1 = Issue.find(1)
+    chk1 = issue1.checklists.create(:subject => 'TEST1', :position => 1)
+    chk2 = issue1.checklists.create(:subject => 'TEST2', :position => 2)
+    issue1
+  end if RedmineAgile.use_checklist?
 
 end
