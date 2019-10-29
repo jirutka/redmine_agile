@@ -73,7 +73,7 @@ if ENV["UI_TESTS"]
       last_user = all(:css, '.assignable-user').last
       issue = Issue.find(first_issue['data-id'].to_i)
       user = User.find(last_user['data-id'].to_i)
-      assert_equal nil, issue.reload.assigned_to
+      assert_nil issue.reload.assigned_to
       last_user.drag_to(first_issue)
       wait_for_ajax
       assert_equal user, issue.reload.assigned_to

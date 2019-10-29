@@ -152,7 +152,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   def test_get_index_with_filter_on_two_parent_id
     create_subissue
     issue2 = Issue.generate!
-    child2 =  issue2.generate_child!
+    child2 = Issue.generate!(:parent_issue_id => issue2.id)
 
     get :index, agile_query_params.merge({
       :op => {:parent_issue_id => '='},
@@ -480,6 +480,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       get :index, params
       IssueStatus.where(:id => @project_1.issues.open.joins(:status).pluck(:status_id).uniq).each do |status|
         sp_sum = @project_1.issues.eager_load(:agile_data).where(:status_id => status.id).sum("#{AgileData.table_name}.story_points")
+        next unless sp_sum.to_i > 0
         assert_select "th[data-column-id='#{status.id}'] span.hours", :text =>"#{sp_sum}sp"
       end
       issues.each do |issue|
@@ -503,6 +504,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       # in a header show only story_points!
       IssueStatus.where(:id => @project_1.issues.open.joins(:status).pluck(:status_id).uniq).each do |status|
         sp_sum = @project_1.issues.eager_load(:agile_data).where(:status_id => status.id).sum("#{AgileData.table_name}.story_points")
+        next unless sp_sum.to_i > 0
         assert_select "th[data-column-id='#{status.id}'] span.hours", :text =>"#{sp_sum}sp"
       end
       # in a card show and estimated hours and story points
@@ -554,7 +556,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       user = issue.project.users.first
       @request.session[:user_id] = user.id
 
-      assert_equal nil, issue.assigned_to
+      assert_nil issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
       issue.reload
       assert_response :success
@@ -570,7 +572,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       user = issue.project.users.first
       @request.session[:user_id] = user.id
 
-      assert_equal nil, issue.assigned_to
+      assert_nil issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
       issue.reload
       assert_response :success
@@ -587,7 +589,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       user = issue.project.users.first
       @request.session[:user_id] = user.id
 
-      assert_equal nil, issue.assigned_to
+      assert_nil issue.assigned_to
       put :update, {:issue => {:status_id => issue.status_id}, :id => 1 }
       issue.reload
       assert_response :success
@@ -633,7 +635,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     issue.fixed_version = current_version
     issue.save
     assert assigns[:issues].all?{ |i| i.fixed_version != current_version }
-    # check set filter for current version 
+    # check set filter for current version
     assert_match 'addFilter("fixed_version_id", "=", ["current_version"])', response.body
   end if Redmine::VERSION.to_s > '2.4'
 

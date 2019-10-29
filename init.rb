@@ -19,7 +19,7 @@
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.4.3'
+AGILE_VERSION_NUMBER = '1.4.4'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do
@@ -42,7 +42,7 @@ Redmine::Plugin.register :redmine_agile do
                               :after => :gantt,
                               :param => :project_id
 
-  menu :admin_menu, :agile, {:controller => 'settings', :action => 'plugin', :id => "redmine_agile"}, :caption => :label_agile
+  menu :admin_menu, :agile, {:controller => 'settings', :action => 'plugin', :id => "redmine_agile"}, :caption => :label_agile, :html => {:class => 'icon'}
 
   project_module :agile do
     permission :manage_public_agile_queries, {:agile_queries => [:new, :create, :edit, :update, :destroy]}, :require => :member

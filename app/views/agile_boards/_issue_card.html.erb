@@ -1,4 +1,4 @@
-<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue.assigned_to.login, :color_base => @query.respond_to?(:color_base) && @query.color_base) if issue.assigned_to %>">
+<div class="issue-card hascontextmenu <%= agile_color_class(issue, :color_base => @query.respond_to?(:color_base) && @query.color_base) %> <%= class_for_closed_issue(issue) %>" data-id="<%= issue.id %>" style="<%= agile_user_color(issue.assigned_to, :color_base => @query.respond_to?(:color_base) && @query.color_base) if issue.assigned_to %>">
     <% if issue.closed? && RedmineAgile.hide_closed_issues_data? %>
       <span class="fields">
          <div class="tooltip">

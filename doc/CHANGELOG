@@ -4,6 +4,15 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2017 RedmineUP
 http://www.redmineup.com/
 
+== 2017-07-06 v1.4.4
+
+* Redmine 3.4 support 
+* Color attribute for users
+* Agile board <Current version> query filter
+* Added initional state for status and assignee history 
+* Chinese translation update
+* Fixed checklist items order
+
 == 2017-03-20 v1.4.3
 
 * Added assignee, status and % done history urls

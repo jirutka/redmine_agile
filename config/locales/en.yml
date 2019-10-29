@@ -127,3 +127,5 @@ en:
   label_agile_inline_comment: Inline comment
   label_agile_hours: Hours
   field_color: Color
+
+  field_duration: Duration

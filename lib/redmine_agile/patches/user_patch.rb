@@ -17,14 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class CreateIssueStatusOrders < ActiveRecord::Migration
-  def change
-    create_table :issue_status_orders do |t|
-      t.integer :issue_id
-      t.integer :position
+module RedmineAgile
+  module Patches
+
+    module UserPatch
+      def self.included(base)
+        base.class_eval do
+          unloadable
+          acts_as_colored
+          safe_attributes 'agile_color_attributes',
+                          :if => lambda {|user, current_user| (current_user.admin? || (user.new_record? && current_user.anonymous? && Setting.self_registration?)) && RedmineAgile.use_colors? }
+        end
+      end
     end
 
-    add_index :issue_status_orders, :issue_id
-    add_index :issue_status_orders, :position
   end
+end
+
+unless User.included_modules.include?(RedmineAgile::Patches::UserPatch)
+  User.send(:include, RedmineAgile::Patches::UserPatch)
 end

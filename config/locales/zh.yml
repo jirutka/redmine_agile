@@ -117,7 +117,7 @@ zh:
 
   #1.4.0
   label_agile_esitmate_units: 单元评估
-  label_agile_trackers_for_sp: 追踪 story点
+  label_agile_trackers_for_sp: 追踪故事点
   label_agile_story_points: 故事要点
   field_story_points: 故事要点
   label_agile_charts_number_of_story_points: 故事要点数量

@@ -22,6 +22,13 @@ require 'SVG/Graph/Bar'
 module SVG
   module Graph
     class AgileBarWithTrendline < Bar
+      attr_accessor :top_font
+
+      def initialize(config)
+        @top_font = 1
+        super(config)
+      end
+
       def draw_data
         minvalue = min_value
         fieldwidth = field_width

@@ -23,6 +23,7 @@ class AgileQuery < Query
   attr_reader :truncated
 
   self.queried_class = Issue
+  self.view_permission = :view_issues if Redmine::VERSION.to_s >= '3.4'
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{Issue.table_name}.id", :default_order => 'desc', :caption => :label_agile_issue_id),
@@ -404,7 +405,7 @@ class AgileQuery < Query
     end
 
     if has_column_name?(:checklists)
-      scope = scope.eager_load(:checklists)
+      scope = scope.preload(:checklists)
     end
 
     if order_option.detect {|x| x.match("agile_data.position")}
@@ -565,7 +566,7 @@ class AgileQuery < Query
 
   def statement
     if values_for('fixed_version_id') == ['current_version'] && project
-      version = project.shared_versions.open.order(:effective_date).first
+      version = current_version
       # substitute id for current version
       filters['fixed_version_id'][:values] = [version.id.to_s] if version
     end
@@ -592,5 +593,10 @@ private
       where(condition_for_status)
   end
 
+  def current_version
+    project.shared_versions.open.where("LOWER(#{Version.table_name}.name) NOT LIKE LOWER(?)", 'backlog').
+                                 where('effective_date >= ? OR effective_date IS NULL', Date.today).
+                                 order("#{Version.table_name}.created_on DESC, #{Version.table_name}.effective_date ASC").first
+  end
 
 end

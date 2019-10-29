@@ -33,7 +33,6 @@ require 'redmine_agile/charts/agile_chart'
 require 'redmine_agile/charts/burndown_chart'
 require 'redmine_agile/charts/work_burndown_chart'
 
-
 module RedmineAgile
 
   ISSUES_PER_COLUMN = 10

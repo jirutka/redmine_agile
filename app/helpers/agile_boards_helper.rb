@@ -24,7 +24,7 @@ module AgileBoardsHelper
     ''
       end
 
-  def agile_user_color(login, options={})
+  def agile_user_color(user, options={})
   end
 
   def header_th(name, rowspan = 1, colspan = 1, leaf = nil)

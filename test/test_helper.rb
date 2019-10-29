@@ -42,7 +42,7 @@ def log_user(login, password)
   User.anonymous
   get "/logout"
   get "/login"
-  assert_equal nil, session[:user_id]
+  assert_nil session[:user_id]
   assert_response :success
   assert_template "account/login"
   post "/login", :username => login, :password => password

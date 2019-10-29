@@ -17,14 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class CreateIssueStatusOrders < ActiveRecord::Migration
-  def change
-    create_table :issue_status_orders do |t|
-      t.integer :issue_id
-      t.integer :position
+module RedmineAgile
+  module Hooks
+    class ViewsUsersHook < Redmine::Hook::ViewListener
+      preferences_hook = Redmine::VERSION.to_s > '2.5' ? :view_users_form_preferences : :view_users_form
+      render_on preferences_hook, :partial => 'users/user_color_form'
     end
-
-    add_index :issue_status_orders, :issue_id
-    add_index :issue_status_orders, :position
   end
 end
