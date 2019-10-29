@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2016 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ module RedmineAgile
     protected
 
     def calc_burndown_data
-      if !Setting.respond_to?(:parent_issue_done_ratio) || Setting.parent_issue_done_ratio == 'derived' || Setting.parent_issue_done_ratio.nil?
+      if use_subissue_done_ratio && @estimated_unit == 'hours'
         data_scope = @data_scope.
           where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1")
       else

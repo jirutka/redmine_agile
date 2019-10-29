@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2016 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,16 +19,16 @@
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.4.1'
+AGILE_VERSION_NUMBER = '1.4.3'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do
   name "Redmine Agile plugin (#{AGILE_VERSION_TYPE})"
-  author 'RedmineCRM'
+  author 'RedmineUP'
   description 'Scrum and Agile project management plugin for redmine'
   version AGILE_VERSION_NUMBER
-  url 'http://redminecrm.com'
-  author_url 'mailto:support@redminecrm.com'
+  url 'http://redmineup.com/pages/plugins/agile'
+  author_url 'mailto:support@redmineup.com'
 
   requires_redmine :version_or_higher => '2.3'
 

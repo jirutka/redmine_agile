@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2016 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ module AgileBoardsHelper
       th_attributes[:"data-column-id"] = leaf.id
       issue_count = leaf.instance_variable_get("@issue_count") || 0
       count_tag = " (#{content_tag(:span, issue_count.to_i, :class => 'count')})".html_safe
+      
 
       # estimated hours total
       story_points_count = leaf.instance_variable_get("@story_points") || 0

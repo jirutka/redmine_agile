@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2016 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -550,24 +550,32 @@ class AgileBoardsControllerTest < ActionController::TestCase
     with_agile_settings "auto_assign_on_move" => "1" do
       @request.session[:user_id] = 2
       issue = Issue.find(1)
+
+      user = issue.project.users.first
+      @request.session[:user_id] = user.id
+
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
       issue.reload
       assert_response :success
       assert_equal 2, issue.status_id
-      assert_equal User.current, issue.assigned_to
+      assert_equal user, issue.assigned_to
     end
   end
 
   def test_off_auto_assign_on_move
     with_agile_settings "auto_assign_on_move" => "0" do
       issue = Issue.find(1)
+
+      user = issue.project.users.first
+      @request.session[:user_id] = user.id
+
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
       issue.reload
       assert_response :success
       assert_equal 2, issue.status_id
-      assert_not_equal User.current, issue.assigned_to
+      assert_nil issue.assigned_to
     end
   end
 
@@ -575,13 +583,59 @@ class AgileBoardsControllerTest < ActionController::TestCase
     with_agile_settings "auto_assign_on_move" => "1" do
       @request.session[:user_id] = 2
       issue = Issue.find(1)
+
+      user = issue.project.users.first
+      @request.session[:user_id] = user.id
+
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => issue.status_id}, :id => 1 }
       issue.reload
       assert_response :success
-      assert_not_equal User.current, issue.assigned_to
+      assert_nil issue.assigned_to
     end
   end
+
+  def test_option_for_select_current_version
+    @request.session[:user_id] = 1
+    get :index, { :project_id => @project_1 }
+    assert_response :success
+    assert_match 'current_version', response.body
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_filter_by_current_version
+    @request.session[:user_id] = 1
+    get :index, { :project_id => @project_1,
+      "v" => { "fixed_version_id" => ["current_version"] },
+      "set_filter" => "1", "f" => ["fixed_version_id"],
+      "op" => {"fixed_version_id"=>"=" }
+    }
+    assert_response :success
+    current_version = @project_1.shared_versions.order(:effective_date).first
+    issue = @project_1.issues.first
+    issue.fixed_version = current_version
+    issue.save
+    assert assigns[:issues].all?{ |i| i.fixed_version == current_version }
+  end if Redmine::VERSION.to_s > '2.4'
+
+  def test_filter_by_current_version_closed
+    @request.session[:user_id] = 1
+    current_version = @project_1.shared_versions.order(:effective_date).first
+    current_version.status = 'closed'
+    current_version.save
+
+    get :index, { :project_id => @project_1,
+      "v" => { "fixed_version_id" => ["current_version"] },
+      "set_filter" => "1", "f" => ["fixed_version_id"],
+      "op" => {"fixed_version_id"=>"=" }
+    }
+    assert_response :success
+    issue = @project_1.issues.first
+    issue.fixed_version = current_version
+    issue.save
+    assert assigns[:issues].all?{ |i| i.fixed_version != current_version }
+    # check set filter for current version 
+    assert_match 'addFilter("fixed_version_id", "=", ["current_version"])', response.body
+  end if Redmine::VERSION.to_s > '2.4'
 
   private
 

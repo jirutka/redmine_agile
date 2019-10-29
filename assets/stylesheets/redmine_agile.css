@@ -7,6 +7,9 @@
 /**********************************************************************/
 /* FULLSCREEN
 /**********************************************************************/
+html {
+  overflow-y: inherit !important;
+}
 html.agile-board-fullscreen {
   overflow: hidden;
 }
@@ -119,8 +122,8 @@ table.list.versions-planning-board .header-hours {
 table.list.issues-board {table-layout: fixed;}
 table.list.issues-board th {overflow: hidden; text-overflow: ellipsis;}
 
-table.list.issues-board tbody tr,
-table.list.issues-board tbody tr:hover {background-color: white;}
+.agile-board table.list.issues-board tbody tr,
+.agile-board table.list.issues-board tbody tr:hover {background-color: white;}
 
 .assignable-user.draggable-active {
   padding: 5px;
@@ -134,7 +137,7 @@ table.issues-board tr.group.swimlane {height: 30px;}
 table.issues-board tr.group.swimlane td {border-top: 0px;border-bottom: 1px solid #ccc;}
 
 table.issues-board tbody td,
-table.issues-board tbody tr.issue:hover td {border: 0px}
+table.issues-board tbody tr.issue:hover td {border: 0px; vertical-align: top;}
 
 table.issues-board.minimize-closed td.issue-status-col.closed .issue-card {
   width: 10px;

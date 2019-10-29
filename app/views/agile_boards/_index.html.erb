@@ -9,7 +9,7 @@
 <% html_title(@query.new_record? ? l(:label_agile_board) : @query.name) %>
 
 <%= form_tag({ :controller => 'agile_boards', :action => 'index', :project_id => @project },
-            :method => :get, :id => 'query_form') do %>
+            :method => :get, :id => 'query_form', :onsubmit => 'DisableNullFields()') do %>    
   <div id="query_form_with_buttons" class="hide-when-print">
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">

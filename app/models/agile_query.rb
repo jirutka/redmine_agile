@@ -1,8 +1,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2016 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class AgileQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{Issue.table_name}.id", :default_order => 'desc', :caption => :label_agile_issue_id),
-    QueryColumn.new(:project, :groupable => "#{Issue.table_name}.project_id"),
+    QueryColumn.new(:project, :groupable => "#{Issue.table_name}.project_id", :sortable => "#{Project.table_name}.id"),
     QueryColumn.new(:tracker, :sortable => "#{Tracker.table_name}.position", :groupable => true),
     QueryColumn.new(:estimated_hours, :sortable => "#{Issue.table_name}.estimated_hours"),
     QueryColumn.new(:done_ratio, :sortable => "#{Issue.table_name}.done_ratio"),
@@ -208,9 +208,12 @@ class AgileQuery < Query
     ) unless role_values.empty?
 
     if versions.any?
+      fixed_versions = []
+      fixed_versions << ["<< #{l(:label_current_version)} >>", 'current_version']
+      versions.sort.each{ |s| fixed_versions << ["#{s.project.name} - #{s.name}", s.id.to_s] }
       add_available_filter "fixed_version_id",
         :type => :list_optional,
-        :values => versions.sort.collect{|s| ["#{s.project.name} - #{s.name}", s.id.to_s] }
+        :values => fixed_versions
     end
 
     if categories.any?
@@ -429,12 +432,12 @@ class AgileQuery < Query
 
 
     scope
-  rescue ::ActiveRecord::StatementInvalid => e
-    raise StatementInvalid.new(e.message)
+    rescue ::ActiveRecord::StatementInvalid => e
+      raise StatementInvalid.new(e.message)
   end
 
   def issues_ids(scope)
-    @issues_ids ||= scope.map{|issue| (issue.id rescue nil)}
+    @issues_ids ||= scope.map(&:id)
   end
 
   def journals_for_state
@@ -535,6 +538,9 @@ class AgileQuery < Query
         op = (operator == "!p" ? 'NOT IN' : 'IN')
         comp = (operator == "=!p" ? '<>' : '=')
         "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name}, #{Issue.table_name} relissues WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}' AND #{IssueRelation.table_name}.#{target_join_column} = relissues.id AND relissues.project_id #{comp} #{value.first.to_i})"
+      when "*o", "!o"
+        op = (operator == "!o" ? 'NOT IN' : 'IN')
+        "#{Issue.table_name}.id #{op} (SELECT DISTINCT #{IssueRelation.table_name}.#{join_column} FROM #{IssueRelation.table_name}, #{Issue.table_name} relissues WHERE #{IssueRelation.table_name}.relation_type = '#{self.class.connection.quote_string(relation_type)}' AND #{IssueRelation.table_name}.#{target_join_column} = relissues.id AND relissues.status_id IN (SELECT id FROM #{IssueStatus.table_name} WHERE is_closed=#{self.class.connection.quoted_false}))"
       end
 
     if relation_options[:sym] == field && !options[:reverse]
@@ -555,6 +561,20 @@ class AgileQuery < Query
 
   def draw_relations=(arg)
     options[:draw_relations] = (arg == '0' ? '0' : nil)
+  end
+
+  def statement
+    if values_for('fixed_version_id') == ['current_version'] && project
+      version = project.shared_versions.open.order(:effective_date).first
+      # substitute id for current version
+      filters['fixed_version_id'][:values] = [version.id.to_s] if version
+    end
+    clauses = super
+    if version
+      # return string for correct value in a select on a form
+      filters['fixed_version_id'][:values] = ['current_version']
+    end
+    clauses
   end
 
 private

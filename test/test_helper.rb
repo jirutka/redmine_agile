@@ -3,8 +3,8 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2016 RedmineCRM
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -178,7 +178,7 @@ module RedmineAgile
     :category_id => 1,
     :description => "Unable to print recipes",
     :tracker_id => 3,
-    :assigned_to_id => 1,
+    :assigned_to_id => 2,
     :author_id => 3,
     :status_id => 2,
     :start_date => 1.day.ago.to_date.to_s(:db),
