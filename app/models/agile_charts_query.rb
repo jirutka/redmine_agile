@@ -167,6 +167,20 @@ class AgileChartsQuery < AgileQuery
   end
 
 private
+
+  def issue_scope
+    Issue.visible.
+      eager_load(:status,
+                 :project,
+                 :assigned_to,
+                 :tracker,
+                 :priority,
+                 :category,
+                 :fixed_version,
+                 :agile_data).
+      where(statement)
+  end
+
   def validate_query_dates
     if (self.date_from && self.date_to && self.date_from >= self.date_to) ||
        (self.date_from && self.date_to.blank?)

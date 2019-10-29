@@ -1,8 +1,6 @@
 # English strings go here for Rails i18n
 en:
   label_agile: Agile
-  label_gantt: Gantt
-  label_backlog: Backlog
   label_agile_board: Agile board
   label_agile_board_plural: Agile boards
   label_agile_board_thumbnails: Thumbnails
@@ -20,7 +18,8 @@ en:
   #1.1.0
   label_agile_board_default_fields: Default card fields
   label_agile_charts_issues_burndown: Issues burndown
-  label_agile_charts_work_burndown: Work burndown
+  label_agile_charts_work_burndown_hours: Hours burndown
+  label_agile_charts_work_burndown_sp: Story points burndown
   label_agile_charts_number_of_hours: Number of hours
   label_agile_charts_number_of_issues: Number of issues
   label_agile_charts_cumulative_flow: Cumulative flow
@@ -62,7 +61,8 @@ en:
   label_agile_manage_colors: Manage colors
   label_agile_fullscreen: Full screen
   label_agile_no_version_issues: Issues without version
-  label_agile_charts_work_burnup: Work burnup
+  label_agile_charts_work_burnup_hours: Hours burnup
+  label_agile_charts_work_burnup_sp: Story points burnup
   label_agile_completed: Completed
   label_agile_exclude_weekends: Exclude weekends from ideal effort
   label_agile_board_truncated: "The board was truncated because it exceeds the maximum number of items that can be displayed (%{max})"
@@ -110,6 +110,8 @@ en:
 
   #1.3.13
   label_agile_last_comment: Last comment
+
+  #1.4.0
   label_agile_esitmate_units: Estimate units
   label_agile_trackers_for_sp: Trackers for story points
   label_agile_story_points: Story points

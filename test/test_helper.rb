@@ -40,12 +40,22 @@ end
 
 def log_user(login, password)
   User.anonymous
+  get "/logout"
   get "/login"
   assert_equal nil, session[:user_id]
   assert_response :success
   assert_template "account/login"
   post "/login", :username => login, :password => password
   assert_equal login, User.find(session[:user_id]).login
+end
+
+def wait_for_ajax
+  counter = 0
+  while page.execute_script('return $.active').to_i > 0
+    counter += 1
+    sleep(0.1)
+    raise 'AJAX request took longer than 5 seconds.' if counter >= 50
+  end
 end
 
 def credentials(user, password=nil)
@@ -196,7 +206,7 @@ module RedmineAgile
     :estimated_hours => 55,
     },
     # Current Version
-    {          
+    {
     :project_id => 2,
     :priority_id => 2,
     :subject => "Issue 104",
@@ -251,12 +261,12 @@ module RedmineAgile
     :estimated_hours => 8,
     },
     # No Version
-    {       
+    {
     :project_id => 2,
     :priority_id => 2,
     :subject => "Blaa",
     :id => 107,
-    # fixed_version_id =>         
+    # fixed_version_id =>
     :category_id => 3,
     :description => "Unable to print recipes",
     :tracker_id => 2,
@@ -274,7 +284,7 @@ module RedmineAgile
     :priority_id => 2,
     :subject => "No Version Issue 108",
     :id => 108,
-    # fixed_version_id =>         
+    # fixed_version_id =>
     :category_id => 3,
     :description => "No Version Issue 108",
     :tracker_id => 2,
@@ -292,7 +302,7 @@ module RedmineAgile
     :priority_id => 2,
     :subject => "Blaaa",
     :id => 109,
-    # fixed_version_id =>         
+    # fixed_version_id =>
     :category_id => 3,
     :description => "Unable to print recipes",
     :tracker_id => 2,

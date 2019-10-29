@@ -19,8 +19,8 @@
 
 class RenameAgileRanks < ActiveRecord::Migration
   def up
-    remove_index :agile_ranks, :issue_id
-    remove_index :agile_ranks, :position
+    remove_index :agile_ranks, :issue_id if index_exists? :agile_ranks, :issue_id
+    remove_index :agile_ranks, :position if index_exists? :agile_ranks, :position
 
     rename_table :agile_ranks, :agile_data
 

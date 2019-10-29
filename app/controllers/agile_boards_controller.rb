@@ -49,7 +49,6 @@ class AgileBoardsController < ApplicationController
 
   def index
     retrieve_agile_query
-
     if @query.valid?
       @issues = @query.issues
       @issue_board = @query.issue_board

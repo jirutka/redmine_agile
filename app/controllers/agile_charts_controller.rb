@@ -82,8 +82,10 @@ private
 
   def render_data(options={})
     case @chart
-    when "work_burndown"
-      data = RedmineAgile::WorkBurndownChart.render(@issues, options)
+    when "work_burndown_hours"
+      data = RedmineAgile::WorkBurndownChart.render(@issues, options.merge(:estimated_unit => 'hours'))
+    when "work_burndown_sp"
+      data = RedmineAgile::WorkBurndownChart.render(@issues, options.merge(:estimated_unit => 'story_points'))
     else
       data = RedmineAgile::BurndownChart.render(@issues, options)
     end

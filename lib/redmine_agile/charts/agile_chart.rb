@@ -35,6 +35,7 @@ module RedmineAgile
       @step_x_labels = @period_count > 18 ? @period_count / 12 + 1 : 1
       @fields = chart_fields_by_period
       @weekend_periods = weekend_periods
+      @estimated_unit = options[:estimated_unit] || 'hours'
     end
 
     def render
@@ -74,14 +75,14 @@ module RedmineAgile
           issue.done_ratio.to_i
         end
 
-        if RedmineAgile.use_story_points?
-          cumulative_left += (issue.story_points.to_f * ratio.to_f / 100.0)
-          total_left += (issue.story_points.to_f * (100 - ratio.to_f) / 100.0)
-          total_done += (issue.story_points.to_f * ratio.to_f / 100.0)
-        else
+        if @estimated_unit == 'hours'
           cumulative_left += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
           total_left += (issue.estimated_hours.to_f * (100 - ratio.to_f) / 100.0)
           total_done += (issue.estimated_hours.to_f * ratio.to_f / 100.0)
+        else
+          cumulative_left += (issue.story_points.to_f * ratio.to_f / 100.0)
+          total_left += (issue.story_points.to_f * (100 - ratio.to_f) / 100.0)
+          total_done += (issue.story_points.to_f * ratio.to_f / 100.0)
         end
 
       end

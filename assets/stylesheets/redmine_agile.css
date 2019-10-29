@@ -4,72 +4,6 @@
 #admin-menu a.agile { background-image: url(../images/agile.png);}
 .icon-fullscreen { background-image:  url(../images/fullscreen.png); }
 
-#top-menu a.agile-boards {
-  background-position: 0% 40%;
-  background-repeat: no-repeat;
-  padding-left: 20px;
-  padding-top: 2px;
-  padding-bottom: 3px;
-  background-image: url(../images/agile.png);
-}
-
-#top-menu a.all-issues {
-  background-position: 0% 40%;
-  background-repeat: no-repeat;
-  padding-left: 20px;
-  padding-top: 2px;
-  padding-bottom: 3px;
-  background-image: url(../../../images/table_multiple.png);
-}
-
-#top-menu a.issues-backlog {
-  background-position: 0% 40%;
-  background-repeat: no-repeat;
-  padding-left: 20px;
-  padding-top: 2px;
-  padding-bottom: 3px;
-  background-image: url(../../../images/document.png);
-}
-
-#top-menu a.issues-gantt {
-  background-position: 0% 40%;
-  background-repeat: no-repeat;
-  padding-left: 20px;
-  padding-top: 2px;
-  padding-bottom: 3px;
-  background-image: url(../images/gantt.png);
-}
-
-.issue-card.context-menu-selection {
-  background-color: #FFB779 !important;
-}
-
-.issue-card.context-menu-selection:hover {
-  background-color: #FFB779 !important;
-}
-
-.priority-icon {
-  float: right;
-  width: 16px;
-  height: 16px;
-}
-
-.priority-immediate {
-  background-image: url(../images/immediate.png);
-}
-.priority-urgent {
-  background-image: url(../images/urgent.png);
-}
-.priority-high {
-  background-image: url(../images/high.png);
-}
-.priority-normal {
-  background-image: url(../images/normal.png);
-}
-.priority-low {
-  background-image: url(../images/low.png);
-}
-
 /**********************************************************************/
 /* FULLSCREEN
 /**********************************************************************/
@@ -94,6 +28,8 @@ html.agile-board-fullscreen table.list.issues-board {
   left: 0px;
   right: 0px;
 }
+
+html.agile-board-fullscreen table.list.issues-board.sticky { min-height: auto; }
 
 html.agile-board-fullscreen .icon-fullscreen {
   position: fixed;

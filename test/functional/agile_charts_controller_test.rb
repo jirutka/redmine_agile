@@ -67,9 +67,16 @@ class AgileChartsControllerTest < ActionController::TestCase
     assert_equal 'image/svg+xml', @response.content_type
   end
 
-  def test_get_render_chart_work_burndown
+  def test_get_render_chart_work_burndown_sp
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "work_burndown"
+    get :render_chart, :chart => "work_burndown_sp"
+    assert_response :success
+    assert_equal 'image/svg+xml', @response.content_type
+  end
+
+  def test_get_render_chart_work_burndown_hours
+    @request.session[:user_id] = 1
+    get :render_chart, :chart => "work_burndown_hours"
     assert_response :success
     assert_equal 'image/svg+xml', @response.content_type
   end
@@ -81,9 +88,16 @@ class AgileChartsControllerTest < ActionController::TestCase
     assert_equal 'image/svg+xml', @response.content_type
   end
 
-  def test_get_render_chart_work_burnup
+  def test_get_render_chart_work_burnup_sp
     @request.session[:user_id] = 1
-    get :render_chart, :chart => "work_burnup"
+    get :render_chart, :chart => "work_burnup_sp"
+    assert_response :success
+    assert_equal 'image/svg+xml', @response.content_type
+  end
+
+  def test_get_render_chart_work_burnup_hours
+    @request.session[:user_id] = 1
+    get :render_chart, :chart => "work_burnup_hours"
     assert_response :success
     assert_equal 'image/svg+xml', @response.content_type
   end

@@ -17,7 +17,8 @@
 <% end %>
 
 <% content_for :sidebar do %>
-  <%= render :partial => 'issues/sidebar' %>
+  <%= render :partial => 'agile_boards/issues_links' %>
+  <%= render :partial => 'agile_charts/agile_charts' %>
 <% end %>
 
 <% html_title l(:label_agile_version_planning) %>

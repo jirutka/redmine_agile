@@ -22,7 +22,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 require File.expand_path(File.dirname(__FILE__) + '/../../../../test/test_helper')
 
-class CommonViewsTest < ActionDispatch::IntegrationTest
+class RedmineAgile::CommonViewsTest < ActionDispatch::IntegrationTest
   fixtures :projects,
            :users,
            :roles,

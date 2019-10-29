@@ -1,7 +1,6 @@
 # Russian strings go here for Rails i18n
 ru:
   label_agile: Agile
-  label_backlog: Backlog
   label_agile_board: Доска задач
   label_agile_board_plural: Доски задач
   label_agile_board_thumbnails: Превью
@@ -20,7 +19,8 @@ ru:
   #1.1.0
   label_agile_board_default_fields: Поля по умолчанию
   label_agile_charts_issues_burndown: Сгорание задач
-  label_agile_charts_work_burndown: Сгорание времени задач
+  label_agile_charts_work_burndown_hours: Сгорание времени задач (burndown)
+  label_agile_charts_work_burndown_sp: Сгорание story points (burndown)
   label_agile_charts_number_of_hours: Кол-во часов
   label_agile_charts_number_of_issues: Кол-во задач
   label_agile_charts_cumulative_flow: Накопительный поток
@@ -62,7 +62,8 @@ ru:
   label_agile_manage_colors: Настроить цвета
   label_agile_fullscreen: Во весь экран
   label_agile_no_version_issues: Задачи без версии
-  label_agile_charts_work_burnup: Выполнение времени задач
+  label_agile_charts_work_burnup_hours: Выполнение времени задач (burnup)
+  label_agile_charts_work_burnup_sp: Выполнение story points (burnup)
   label_agile_completed: Выполнено
   label_agile_exclude_weekends: Исключать выходные для диаграммы сгорания
   label_agile_board_truncated: "Доска была усечена, поскольку превышено максимальное кол-во элементов, которые могут отображаться (%{max})"
@@ -109,6 +110,8 @@ ru:
 
   #1.3.13
   label_agile_last_comment: Последний комментарий
+
+  #1.4.0
   label_agile_esitmate_units: Использовать для оценки
   label_agile_trackers_for_sp: Трекеры для Story points
   label_agile_story_points: Story points

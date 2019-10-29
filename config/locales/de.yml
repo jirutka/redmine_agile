@@ -1,3 +1,4 @@
+# German strings go here for Rails i18n
 de:
   label_agile: Agiles Projektmanagement
   label_agile_board: Agiles Taskboard
@@ -67,6 +68,58 @@ de:
   label_agile_swimlanes: Swimlanes
   label_agile_minimize_closed: Geschlossene Aufgaben minimieren
   label_agile_fields: Felder für Taskboard-Karten
+  label_agile_default_board: Standard-Taskboard
 
   #1.3.6
   text_agile_move_not_possible: Diese Änderung ist nicht möglich
+
+  #1.3.8
+  label_agile_parent_issue_tracker_id: Übergeordneter Tracker
+  label_agile_sub_issues: Unteraufgaben
+  label_agile_color_green: Grün
+  label_agile_color_blue: Blau
+  label_agile_color_turquoise: Türkis
+  label_agile_color_lightgreen: Hellgrün
+  label_agile_color_yellow: Gelb
+  label_agile_color_orange: Orange
+  label_agile_color_red: Rot
+  label_agile_color_purple: Lila
+  label_agile_color_gray: Grau
+  label_agile_has_sub_issues: Hat Unteraufgaben
+  label_agile_light_free_version: Agile Light freie Version
+  label_agile_link_to_pro: Upgrade auf PRO
+  label_agile_link_to_pro_demo: PRO version live demo
+  label_agile_link_to_more_plugins: Entdecken Sie mehr RedmineCRM plugins
+  label_agile_button_agree: Einverstanden
+  label_agile_license: RedmineCRM Lizenz
+  label_agile_saving_boards: Boards speichern
+  label_agile_horizontal_swim_lines: Horizontale Swimlanes
+  label_agile_board_sub_columns: Board-Unterspalten
+  label_agile_additional_agile_charts: Weitere Agile-Charts
+  label_agile_coloured_issue_cards: Farbige Karten
+  label_agile_4_more_features: 4 weitere Funktionen...
+  label_agile_upgrade_to_pro: Upgrade auf die PRO-Version um die Funktionen zu nutzen
+
+  label_agile_day_in_state: Zeit seit letzter Status-Änderung
+
+  #1.3.10
+  label_agile_hide_closed_issues_data: Daten von geschlossenen Aufgaben ausblenden
+  project_module_agile: Agile
+
+  #1.3.13
+  label_agile_last_comment: Letzter Kommentar
+  label_agile_esitmate_units: Einheit für Schätzungen
+  label_agile_trackers_for_sp: Tracker für Story Points
+  label_agile_story_points: Story Points
+  field_story_points: Story Points
+  label_agile_charts_number_of_story_points: Anzahl an Story Points
+  label_agile_board_columns: Taskboard Spalten
+  lable_agile_wip_limit_exceeded: Work-in-progress Grenze überschritten
+  label_agile_wip_limit: Work-in-progress Grenze
+  label_agile_add_new_issue: + NEUE AUFGABE
+  label_agile_allow_create_cards: Karte für neue Aufgabe
+  label_agile_auto_assign_on_move: Selbst zuweisen bei Taskboard-Karten-Bewegung
+  text_agile_create_issue_error: Die Aufgabe konnte nicht erstellt werden
+  label_agile_inline_comment: Inline-Kommentar
+  label_agile_hours: Stunden
+  field_color: Farbe

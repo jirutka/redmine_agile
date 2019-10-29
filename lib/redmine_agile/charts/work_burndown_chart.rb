@@ -23,33 +23,36 @@ module RedmineAgile
     def initialize(data_scope, options={})
       super data_scope, options
       @style_sheet = "#{Redmine::Utils.relative_url_root}/plugin_assets/redmine_agile/stylesheets/charts/work_burndown.css"
-      if RedmineAgile.use_story_points?
-        @y_title = l(:label_agile_charts_number_of_story_points)
-      else
+      if @estimated_unit == 'hours'
         @y_title = l(:label_agile_charts_number_of_hours)
+        @graph_title = l(:label_agile_charts_work_burndown_hours)
+      else
+        @y_title = l(:label_agile_charts_number_of_story_points)
+        @graph_title = l(:label_agile_charts_work_burndown_sp)
       end
-      @graph_title = l(:label_agile_charts_work_burndown)
     end
 
     protected
 
     def calc_burndown_data
-      unless RedmineAgile.use_story_points?
-        all_issues = @data_scope.
-          where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1").
+      if !Setting.respond_to?(:parent_issue_done_ratio) || Setting.parent_issue_done_ratio == 'derived' || Setting.parent_issue_done_ratio.nil?
+        data_scope = @data_scope.
+          where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1")
+      else
+        data_scope = @data_scope
+      end
+      if @estimated_unit == 'hours'
+        all_issues = data_scope.
           where("#{Issue.table_name}.estimated_hours IS NOT NULL").
           eager_load([:journals, :status, {:journals => {:details => :journal}}])
-        cumulative_total_hours = @data_scope.
-          where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1").
+        cumulative_total_hours = data_scope.
           sum("#{Issue.table_name}.estimated_hours").to_f
       else
-        all_issues = @data_scope.
-          where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1").
+        all_issues = data_scope.
           where("#{AgileData.table_name}.story_points IS NOT NULL").
           joins(:agile_data).
           eager_load([:journals, :status, {:journals => {:details => :journal}}])
-        cumulative_total_hours = @data_scope.
-          where("#{Issue.table_name}.rgt - #{Issue.table_name}.lft = 1").
+        cumulative_total_hours = data_scope.
           joins(:agile_data).
           sum("#{AgileData.table_name}.story_points").to_f
       end

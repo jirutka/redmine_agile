@@ -12,11 +12,11 @@
 
   <% if version_issues.first.fixed_version_id.blank? %>
     <div class="pagination-wrapper">
-    <p class="pagination">
+    <span class="pagination">
         <% pagination_links_full(@issue_pages, @issue_count, :per_page_links => false)  do |text, parameters, options| %>
           <%= link_to text, autocomplete_agile_versions_path(parameters.merge(:q => params[:q], :project_id => @project)), :remote => true %>
         <% end %>
-    </p>
+    </span>
     </div>
   <% end %>
 <% end %>

@@ -4,6 +4,15 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2016 RedmineCRM
 http://www.redminecrm.com/
 
+== 2015-06-20 v1.4.1
+
+* Agile board header height fixed for IE
+* Auto assign user on move card
+* Burndown/burnup charts fixes for story points and hours
+* Context menu for fullscreen board
+* Separate charts for SP and hours
+* Lock board on autorefresh
+
 == 2015-02-09 v1.4.0
 
 * Story points estimation

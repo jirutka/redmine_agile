@@ -109,6 +109,21 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_equal expected_issues.map(&:id).sort, assigns[:issues].map(&:id).sort
   end
 
+  def test_get_index_with_filter_on_assignee_role
+    assignee_params = { :set_filter => '1',
+                        :f => ['assigned_to_role', ''],
+                        :op => { :assigned_to_role => '=' },
+                        :v => { 'assigned_to_role' => ['2'] },
+                        :c => ['assigned_to'],
+                        :project_id => 'ecookbook' }
+    get :index, assignee_params
+    assert_response :success
+    assert_template :index
+    members = Member.joins(:roles).where(:project_id => [@project_1]).where('member_roles.role_id = 2').map(&:user_id).uniq
+    expected_issues = Issue.where(:project_id => [@project_1]).where(:assigned_to_id => members)
+    assert_equal expected_issues.map(&:id).sort, assigns[:issues].map(&:id).sort
+  end if Redmine::VERSION.to_s > '2.4'
+
   def create_subissue
     @issue1 = Issue.find(1)
     @subissue = Issue.create!(
@@ -533,6 +548,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
 
   def test_on_auto_assign_on_move
     with_agile_settings "auto_assign_on_move" => "1" do
+      @request.session[:user_id] = 2
       issue = Issue.find(1)
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => 2}, :id => 1 }
@@ -557,6 +573,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
 
   def test_off_auto_assign_on_move_by_sorting
     with_agile_settings "auto_assign_on_move" => "1" do
+      @request.session[:user_id] = 2
       issue = Issue.find(1)
       assert_equal nil, issue.assigned_to
       put :update, {:issue => {:status_id => issue.status_id}, :id => 1 }
