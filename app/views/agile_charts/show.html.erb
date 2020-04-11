@@ -9,13 +9,13 @@
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">
       <fieldset id="filters" class="collapsible">
-        <legend onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
+        <legend class="icon icon-expended" onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
         <div>
           <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
         </div>
       </fieldset>
       <fieldset class="collapsible">
-        <legend onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
+        <legend class="icon icon-expended" onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
         <div>
           <table>
             <tr>

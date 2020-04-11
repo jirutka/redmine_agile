@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -102,6 +102,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   include(RedmineAgile::AgileBoardsControllerTest::SpecificTestCase) if Redmine::VERSION.to_s > '2.4'
 
   def setup
+    RedmineAgile::TestCase.prepare
     @project_1 = Project.find(1)
     @project_2 = Project.find(5)
     EnabledModule.create(:project => @project_1, :name => 'agile')
@@ -507,7 +508,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   end if Redmine::VERSION.to_s > '2.4'
 
   def test_show_sp_value_on_issue_cart
-    with_agile_settings 'estimate_units' => 'story_points' do
+    with_agile_settings 'estimate_units' => 'story_points', 'story_points_on' => '1' do
       issues = @project_1.issues.open.first(3)
       issues.each do |issue|
         issue.agile_data.story_points = issue.id * 10
@@ -529,27 +530,113 @@ class AgileBoardsControllerTest < ActionController::TestCase
   end if Redmine::VERSION.to_s > '2.4'
 
   def test_show_sp_with_estimated_hours_on_issue_cart
-    with_agile_settings 'estimate_units' => 'story_points' do
+    Setting.stubs(:display_subprojects_issues?).returns(false)
+
+    with_agile_settings 'estimate_units' => 'story_points', 'story_points_on' => '1' do
       issues = @project_1.issues.open.first(3)
       issues.each do |issue|
         issue.agile_data.story_points = issue.id * 10
         issue.estimated_hours = issue.id * 2
         issue.save
       end
-      params = agile_query_params.merge(:c => ['story_points', 'estimated_hours'])
-      compatible_request :get, :index, params
-      # in a header show only story_points!
-      IssueStatus.where(:id => @project_1.issues.open.joins(:status).pluck(:status_id).uniq).each do |status|
-        sp_sum = @project_1.issues.eager_load(:agile_data).where(:status_id => status.id).sum("#{AgileData.table_name}.story_points")
-        next unless sp_sum.to_i > 0
-        assert_select "th[data-column-id='#{status.id}'] span.hours", :text =>"#{sp_sum}sp"
+
+      compatible_request :get, :index, agile_query_params.merge(c: %w(story_points estimated_hours))
+
+      # Should show estimated time and story points in the board header
+      IssueStatus.where(id: @project_1.issues.open.joins(:status).pluck(:status_id).uniq).each do |status|
+        column_issues = @project_1.issues.eager_load(:agile_data).where(status_id: status.id)
+        sp_sum = column_issues.to_a.sum { |issue| issue.story_points.to_i }
+        estimated_hours = column_issues.to_a.sum { |issue| issue.estimated_hours.to_i }
+        values = []
+        values.push('%.2fh' % estimated_hours) if estimated_hours.to_i > 0
+        values.push("#{sp_sum}sp") if sp_sum.to_i > 0
+        if values.present?
+          assert_select "th[data-column-id='#{status.id}'] span.hours", text: values.join('/')
+        end
       end
-      # in a card show and estimated hours and story points
+
+      # Should show estimated time and story points on a card
       issues.each do |issue|
         assert_select ".issue-card[data-id='#{issue.id}'] span.fields p.issue-id span.hours",
-                      :text => "(#{"%.2fh" % issue.estimated_hours.to_f}/#{issue.story_points}sp)"
+                      text: "(#{"%.2fh" % issue.estimated_hours.to_f}/#{issue.story_points}sp)"
       end
-    end if Redmine::VERSION.to_s > '2.4'
+    end
+  end
+
+  def test_index_for_estimated_values_by_default
+    prepare_issues_with_points_and_estimated_hours
+    compatible_request :get, :index
+    should_not_show_estimated_hours
+    should_not_show_story_points
+  end
+
+  def test_index_for_estimated_values_with_enabled_options
+    prepare_issues_with_points_and_estimated_hours
+    compatible_request :get, :index, agile_query_params.merge(c: %w(story_points estimated_hours))
+    should_show_estimated_hours
+    should_not_show_story_points
+  end
+
+  def test_index_for_estimated_values_with_estimate_units
+    with_agile_settings 'estimate_units' => RedmineAgile::ESTIMATE_STORY_POINTS do
+      prepare_issues_with_points_and_estimated_hours
+      compatible_request :get, :index
+      should_not_show_estimated_hours
+      should_not_show_story_points
+    end
+  end
+
+  def test_index_for_estimated_values_with_estimate_units_and_enabled_options
+    with_agile_settings 'estimate_units' => RedmineAgile::ESTIMATE_STORY_POINTS, 'story_points_on' => '1' do
+      prepare_issues_with_points_and_estimated_hours
+      compatible_request :get, :index, agile_query_params.merge(c: %w(story_points estimated_hours))
+      should_show_estimated_hours
+      should_show_story_points
+    end
+  end
+
+  def test_index_for_estimated_values_with_story_points_off
+    with_agile_settings 'story_points_on' => '0' do
+      prepare_issues_with_points_and_estimated_hours
+      compatible_request :get, :index
+      should_not_show_estimated_hours
+      should_not_show_story_points
+    end
+  ensure
+    Setting.plugin_redmine_agile.delete('story_points_on')
+  end
+
+  def test_index_for_estimated_values_with_story_points_off_and_enabled_options
+    with_agile_settings 'story_points_on' => '0' do
+      prepare_issues_with_points_and_estimated_hours
+      compatible_request :get, :index, agile_query_params.merge(c: %w(story_points estimated_hours))
+      should_show_estimated_hours
+      should_not_show_story_points
+    end
+  ensure
+    Setting.plugin_redmine_agile.delete('story_points_on')
+  end
+
+  def test_index_for_estimated_values_with_story_points_on
+    with_agile_settings 'story_points_on' => '1' do
+      prepare_issues_with_points_and_estimated_hours
+      compatible_request :get, :index
+      should_not_show_estimated_hours
+      should_not_show_story_points
+    end
+  ensure
+    Setting.plugin_redmine_agile.delete('story_points_on')
+  end
+
+  def test_index_for_estimated_values_with_story_points_on_and_enabled_options
+    with_agile_settings 'story_points_on' => '1' do
+      prepare_issues_with_points_and_estimated_hours
+      compatible_request :get, :index, agile_query_params.merge(c: %w(story_points estimated_hours))
+      should_show_estimated_hours
+      should_show_story_points
+    end
+  ensure
+    Setting.plugin_redmine_agile.delete('story_points_on')
   end
 
   def test_quick_add_comment_button
@@ -693,4 +780,32 @@ class AgileBoardsControllerTest < ActionController::TestCase
     issue1
   end if RedmineAgile.use_checklist?
 
+  def prepare_issues_with_points_and_estimated_hours
+    issues = @project_1.issues.open.first(3)
+    issues.each do |issue|
+      issue.agile_data.story_points = issue.id * 10
+      issue.estimated_hours = issue.id * 2
+      issue.save
+    end
+  end
+
+  def should_show_estimated_hours
+    assert_select "th span.hours", text: /.+h/
+    assert_select ".issue-card span.fields p.issue-id span.hours", text: /.+h/
+  end
+
+  def should_not_show_estimated_hours
+    assert_select "th span.hours", { count: 0, text: /.+h/ }
+    assert_select ".issue-card span.fields p.issue-id span.hours", { count: 0, text: /.+h/ }
+  end
+
+  def should_show_story_points
+    assert_select "th span.hours", text: /.+sp/
+    assert_select ".issue-card span.fields p.issue-id span.hours", text: /.+sp/
+  end
+
+  def should_not_show_story_points
+    assert_select "th span.hours", { count: 0, text: /.+sp/ }
+    assert_select ".issue-card span.fields p.issue-id span.hours", { count: 0, text: /.+sp/ }
+  end
 end

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -574,7 +574,7 @@ class AgileQuery < Query
         if has_column_name?(:estimated_hours)
           s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
         end
-        if has_column_name?(:story_points)
+        if RedmineAgile.use_story_points? && has_column_name?(:story_points)
           s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
         end
         s

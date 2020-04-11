@@ -168,6 +168,7 @@ en:
   label_agile_sprint_duration_week_4: 4 weeks
   label_agile_sprint_errors_crossed: Sprint dates are cross another existed sprint
   label_agile_sprint_errors_end_more_start: End date should be more than start date
+  label_agile_sprint_errors_open_issues: Sprint with open issues can be closed
   label_agile_sprint_default_chart: Сhart
   label_agile_sprint_chart_units: Estimation
   label_agile_chart_for_sprint: "For sprint: %{sprint}"

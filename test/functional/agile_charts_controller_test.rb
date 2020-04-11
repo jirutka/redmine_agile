@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -61,6 +61,11 @@ class AgileChartsControllerTest < ActionController::TestCase
     should_get_show project_id: @project.identifier
   end
 
+  def test_get_show_with_period
+    should_get_show({ f: ['issue_id', ''], op: { 'issue_id' => '*' } })
+    should_get_show({ f: ['issue_id', ''], op: { 'issue_id' => '*' }, project_id: @project.identifier })
+  end
+
   def test_charts_by_default_params
     @charts.each { |chart| check_chart(chart: chart, project_id: @project.identifier) }
   end
@@ -111,6 +116,12 @@ class AgileChartsControllerTest < ActionController::TestCase
         check_chart params.merge(op: { chart_period: '!*' })
         check_chart params.merge(op: { chart_period: '*' })
       end
+    end
+  end
+
+  def test_render_charts
+    @charts.each do |chart|
+      should_get_render_chart chart: chart, chart_unit: 'issues'
     end
   end
 

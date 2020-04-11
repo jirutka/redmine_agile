@@ -19,7 +19,7 @@
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">
       <fieldset id="filters" class="collapsible <%= @query.new_record? ? "" : "collapsed" %>">
-        <legend onclick="toggleFieldset(this);" class="icon icon-collapsed"><%= l(:label_filter_plural) %></legend>
+        <legend class="icon icon-<%= @query.new_record? ? 'expended' : 'collapsed' %>" onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
         <div style="<%= @query.new_record? ? "" : "display: none;" %>">
           <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
         </div>

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,6 +20,8 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 module AgileSupportHelper
+  include ActionView::Helpers::DateHelper
+
   # Returns a h2 tag and sets the html title with the given arguments
   def title(*args)
     strings = args.map do |arg|
@@ -36,5 +38,33 @@ module AgileSupportHelper
   def event_duration(event, next_event)
     end_time = next_event ? next_event.journal.created_on : Time.now
     distance_of_time_in_words(end_time, event.journal.created_on).html_safe
+  end
+
+  def issue_statuses_to_csv(collector)
+    decimal_separator = l(:general_csv_decimal_separator)
+    encoding = 'utf-8'
+    export = FCSV.generate(:col_sep => l(:general_csv_separator)) do |csv|
+      headers = [ "#",
+                  l(:field_created_on, locale: :en),
+                  l(:field_status, locale: :en),
+                  l(:field_duration, locale: :en),
+                  l(:field_author, locale: :en),
+                  l(:field_assigned_to, locale: :en)
+                  ]
+      csv << headers.collect {|c| Redmine::CodesetUtil.from_utf8(c.to_s, encoding) }
+
+      collector.data.each_with_index do |data, index|
+        issue_status = IssueStatus.where(id: data.status_id).first
+        fields = [index + 1,
+                  format_time(data.journal.created_on),
+                  issue_status.name,
+                  distance_of_time_in_words(data.end_time, data.start_time),
+                  data.journal.user.name,
+                  Principal.where(id: data.assigned_to_id).first.try(:name)
+                  ]
+        csv << fields.collect { |c| Redmine::CodesetUtil.from_utf8(c.to_s, encoding) }
+      end
+    end
+    export
   end
 end

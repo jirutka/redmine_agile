@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ module RedmineAgile
   module Hooks
     class ViewsIssuesHook < Redmine::Hook::ViewListener
       def view_issues_sidebar_issues_bottom(context = {})
-        context[:controller].send(:render_to_string, partial: 'agile_boards/issues_sidebar', locals: context) +
         context[:controller].send(:render_to_string, partial: 'agile_charts/agile_charts', locals: context)
       end
 

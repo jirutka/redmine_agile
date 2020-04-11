@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,6 +22,16 @@ module RedmineAgile
     class ControllerIssueHook < Redmine::Hook::ViewListener
 
       def controller_issues_edit_before_save(context={})
+        add_agile_journal_details(context)
+      end
+
+      def controller_issues_bulk_edit_before_save(context={})
+        add_agile_journal_details(context)
+      end
+
+      private
+
+      def add_agile_journal_details(context)
         return false unless context[:issue].project.module_enabled?(:agile)
         # return false unless context[:issue].color
         old_value = Issue.find(context[:issue].id)

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -68,7 +68,6 @@ class AgileChartsController < ApplicationController
       @chart = params[:chart]
     else
       retrieve_charts_query
-      @query.date_to ||= Date.today
       @issues = Issue.visible
       @issues = @issues.where(@query.statement)
       options = { date_from: @query.date_from,

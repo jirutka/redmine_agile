@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@ class AgileJournalDetailsController < ApplicationController
 
   helper :issues
   helper :agile_support
+  include AgileSupportHelper
 
   def done_ratio
     @done_ratios = @issue.journals.map(&:details).flatten.select {|detail| 'done_ratio' == detail.prop_key }.sort_by {|a| a.journal.created_on }
@@ -32,9 +33,13 @@ class AgileJournalDetailsController < ApplicationController
   end
 
   def status
-    @statuses = @issue.journals.map(&:details).flatten.select {|detail| 'status_id' == detail.prop_key }.sort_by {|a| a.journal.created_on }
-    @statuses.unshift(JournalDetail.new(:property => 'attr', :prop_key => 'status_id', :value => history_initial_value(@statuses) || @issue.status.id,
-                                        :journal => Journal.new(:user => @issue.author, :created_on => @issue.created_on)))
+    @statuses_collector = AgileStatusesCollector.new(@issue)
+    @group = params[:group_by] if params[:group_by].present?
+
+    respond_to do |format|
+      format.html
+      format.csv  { send_data(issue_statuses_to_csv(@statuses_collector), type: 'text/csv; header=present', filename: "issue_#{@issue.id}_statuses.csv") }
+    end
   end
 
   def assignee

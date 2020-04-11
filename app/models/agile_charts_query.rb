@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -102,10 +102,6 @@ class AgileChartsQuery < AgileQuery
 
   def chart_period_filter(params)
     return {} if (params[:fields] || params[:f]).include?('chart_period')
-
-    if sprint = project.agile_sprints.where(id: params[:sprint_id]).first
-      return { 'chart_period' => { operator: '><', values: [sprint.start_date.to_s, sprint.end_date.to_s] }, 'sprint_id' => { operator: '=', values: [sprint.id] } }
-    end
     { 'chart_period' => { operator: 'm', values: [''] } }
   end
 

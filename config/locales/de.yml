@@ -19,13 +19,16 @@ de:
   label_agile_board_default_fields: Standardfelder für Taskboard-Karten
   label_agile_charts_issues_burndown: Burndown nach Aufgaben
   label_agile_charts_work_burndown:  Burndown nach erfassten Zeiten
+  label_agile_charts_work_burndown_sp: Burndown nach Story points
+  label_agile_charts_work_burndown_hours: Burndown nach Stunden
   label_agile_charts_number_of_hours: Stunden
   label_agile_charts_number_of_issues: Anzahl Aufgaben
-  label_agile_charts_cumulative_flow: Cumulative Flow
-  label_agile_charts_trackers_cumulative_flow: Cumulative Flow nach Tracker
+  label_agile_charts_cumulative_flow: Kumulativer Fluss
+  label_agile_charts_trackers_cumulative_flow: Kumulativer Fluss nach Tracker
   label_agile_charts_issues_velocity: Velocity
-  label_agile_charts_lead_time: Lead Time
-  label_agile_charts_average_lead_time: Durchschnittliche Lead Time
+  label_agile_charts_cycle_time: Zyklus
+  label_agile_charts_lead_time: Durchlaufzeit
+  label_agile_charts_average_lead_time: Durchschnittliche Durchlaufzeit
   label_agile_chart_plural: Agile Diagramme
   permission_view_agile_charts: Agile Diagramme ansehen
   label_agile_ideal_work_remaining: Soll
@@ -123,3 +126,108 @@ de:
   label_agile_inline_comment: Inline-Kommentar
   label_agile_hours: Stunden
   field_color: Farbe
+
+  #1.4.0
+  label_agile_esitmate_units: Einheit für Schätzung
+  label_agile_trackers_for_sp: Tracker für Story points
+  label_agile_story_points: Story points
+  field_story_points: Story points
+  label_agile_charts_number_of_story_points: Anzahl Story points
+  label_agile_board_columns: Board Spalten
+  lable_agile_wip_limit_exceeded: Work-in-progress Limit überschritten
+  label_agile_wip_limit: Work-in-progress Limit
+  label_agile_add_new_issue: '+ NEUES TICKET'
+  label_agile_allow_create_cards: Ticket aus Taskboard erstellen
+  label_agile_auto_assign_on_move: Automatische Zuweisung bei
+  text_agile_create_issue_error: Beim Erstellen der Aufgabe ist ein Fehler aufgetreten
+  label_agile_inline_comment: Inline Kommentar
+  label_agile_hours: Stunden
+  field_color: Farbe
+
+  field_duration: Dauer
+
+  field_closed_on_trendline: Closed trendline
+  field_created_on_trendline: Created trendline
+
+  label_agile_sp_values: Story points Werte
+
+  label_agile_interval_size: Interval Größe
+  label_agile_day: Tag
+  label_agile_week: Woche
+  label_agile_month: Monat
+  label_agile_quarter: Quartal
+  label_agile_year: Jahr
+  label_cards_search: Suche nach Thema
+
+  field_agile_sprint: Sprint
+  field_end_date: Enddatum
+  label_agile_sprints_on: Aktiviere Sprints standardmäßig
+  label_agile_sprint: Sprint
+  label_agile_sprint_plural: Sprints
+  label_agile_sprint_name: Name
+  label_agile_sprint_description: Beschreibung
+  label_agile_sprint_status: Status
+  label_agile_sprint_start_date: Startdatum
+  label_agile_sprint_end_date: Enddatum
+  label_agile_sprint_new: Neuer Sprint
+  label_agile_sprint_status_open: Offen
+  label_agile_sprint_status_active: Aktiv
+  label_agile_sprint_status_closed: Geschlossen
+  label_agile_sprint_duration: Dauer
+  label_agile_sprint_duration_select: <<Wähle Dauer>>
+  label_agile_sprint_duration_week_1: 1 Woche
+  label_agile_sprint_duration_week_2: 2 Wochen
+  label_agile_sprint_duration_week_3: 3 Wochen
+  label_agile_sprint_duration_week_4: 4 Wochen
+  label_agile_sprint_errors_crossed: Sprint Daten überschneiden sich mit einem anderen existierenden Sprint
+  label_agile_sprint_errors_end_more_start: Das Enddatum sollte nach dem Startdatum liegen
+  label_agile_sprint_default_chart: Diagramm
+  label_agile_sprint_chart_units: Einheit für Schätzung
+  label_agile_chart_for_sprint: "Für Sprint: %{sprint}"
+
+  label_agile_charts: Diagramme
+  label_agile_chart_burndown: Burndown Diagramm
+  label_agile_chart_burnup: Burnup Diagramm
+  label_agile_chart_units: Einheiten
+
+  label_agile_planning_board_more: Lade mehr...
+  label_agile_version_query_new: Neue agile Abfrage
+  label_agile_version_my_boards: Meine agilen boards
+  label_agile_version_board_plural: Agile boards
+  label_agile_version_board_edit: Bearbeite agile Board version
+
+  label_agile_edit_issue: Bearbeite Ticket
+
+  label_agile_board_type: Art des Taskboards
+  label_agile_board_type_kanban: Kanban board
+  label_agile_board_type_scrum: Scrum board
+  label_agile_board_totals: Gesamt
+  label_agile_board_totals_story_points: Story points
+  label_agile_board_totals_hours: Stunden
+  label_agile_board_totals_spent_time: Aufgewendete Zeit
+  label_agile_board_totals_percent_done: Prozent erledigt
+  label_agile_board_totals_velocity: Velocity
+  label_agile_board_totals_interval: Intervall
+  label_agile_board_totals_remaining: Verbleibend
+
+  label_agile_sprint_list_active: Aktive Sprints
+  label_agile_sprint_list_open: Zukünftige Sprints
+
+  label_agile_mixed_trackers: Verschiedene Tracker
+  label_agile_moving_average: Gleitender Durchschnitt
+
+  label_agile_board_backlog: Backlog
+  label_agile_board_backlog_column: Backlog Spalten
+  label_agile_board_search_backlog_issues: Durchsuche Backlog Tickets
+  label_agile_version_plural: Versionen
+  label_agile_sprint_add: Sprint hinzufügen
+  label_agile_version_add: Version hinzufügen
+
+  label_agile_sprint_query_new: Neue agile Sprint Abfragen
+  label_agile_sprint_my_boards: Meine agilen Sprint boards
+  label_agile_sprint_board_plural: Agile Sprint boards
+  label_agile_sprint_board_edit: Bearbeite agiles Sprint board
+  field_sprint: Sprint
+  label_agile_no_sprint_issues: Tickets ohne Sprint
+  field_closed_sprints: Geschlossenen Sprints
+  field_closed_versions: Geschlossene Versionen

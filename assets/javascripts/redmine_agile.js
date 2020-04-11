@@ -84,14 +84,15 @@
             positions[$e.data('id')] = { position: $e.index() };
           });
 
+          var issueParams = {};
+          if (version_id) issueParams['fixed_version_id'] = version_id || "";
+          if (sprint_id) issueParams['sprint_id'] = sprint_id || "";
+
           $.ajax({
             url: self.routes.update_agile_board_path,
             type: 'PUT',
             data: {
-              issue: {
-                fixed_version_id: version_id || "",
-                sprint_id: sprint_id || ""
-              },
+              issue: issueParams,
               positions: positions,
               id: issue_id
             },
@@ -577,25 +578,37 @@ function observeIssueSearchfield(fieldId, url) {
 }
 
 function recalculateHours() {
-  var unit = $(".planning-board").data('estimated-unit');
-
-  $('.version-column').each(function(i, elem){
-    var versionEstimationSum = 0;
-    $(elem).find('.issue-card').each(function(j, issue){
-      hours = parseFloat($(issue).data('estimated-hours'));
-      versionEstimationSum += hours;
+  $('.version-column').each(function (i, elem) {
+    var estimatedHours = 0;
+    var storyPoints = 0;
+    $(elem).find('.issue-card').each(function (j, issue) {
+      estimatedHours += parseFloat($(issue).data('estimated-hours'));
+      storyPoints += parseFloat($(issue).data('story-points'));
     });
-    $(elem).find('.version-estimate').text('(' + versionEstimationSum.toFixed(2) + unit + ')');
+
+    var values = [];
+    if (estimatedHours > 0) {
+      values.push(estimatedHours.toFixed(2) + 'h');
+    }
+
+    if (storyPoints > 0) {
+      values.push(storyPoints.toFixed(2) + 'sp');
+    }
+
+    if (values.length > 0) {
+      $(elem).find('.version-estimate').text('(' + values.join('/') + ')');
+    }
   });
 }
 
 function recalculateSprintHours() {
   var unit = $(".planning-board").data('estimated-unit');
+  var dataAttr = unit == 'sp' ? 'story-points' : 'estimated-hours';
 
   $('.sprint-column').each(function(i, elem){
     var versionEstimationSum = 0;
     $(elem).find('.issue-card').each(function(j, issue){
-      hours = parseFloat($(issue).data('estimated-hours'));
+      hours = parseFloat($(issue).data(dataAttr));
       versionEstimationSum += hours;
     });
     $(elem).find('.sprint-estimate').text('(' + versionEstimationSum.toFixed(2) + unit + ')');

@@ -1,8 +1,35 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2019 RedmineUP
+Copyright (C) 2011-2020 RedmineUP
 http://www.redmineup.com/
+
+== 2020-03-18 v1.5.3
+
+* Added grouping for agine status changes view
+* Added issue list sprint filter
+* German translation updated (Peter Schossig)
+* Added Italian translation (Marco Congia)
+* Fixed bug with context menu story points 
+* Added validation for sprint open issues
+* Backlog tab default menu 
+
+== 2020-02-05 v1.5.2
+
+* Agile Backlog as a different module 
+* Fixed between dates chart bug
+* Fixed context menu edit bug 
+* Fixed sprint cards load bug
+
+== 2019-12-10 v1.5.1
+
+* Added Sprint view permissions
+* Redmine 4.1 styles support
+* New Story points board setting
+* Hide Sprint field without available sprints
+* Modal edit styles cleanup
+* Fixed sprint charts bug 
+* Fixed MySQL order by bug
 
 == 2019-10-22 v1.5.0
 

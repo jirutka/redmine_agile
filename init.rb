@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,8 +21,13 @@ requires_redmine_crm version_or_higher: '0.0.43' rescue raise "\n\033[31mRedmine
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.5.0'
+AGILE_VERSION_NUMBER = '1.5.3'
 AGILE_VERSION_TYPE = "Light version"
+
+if ActiveRecord::VERSION::MAJOR >= 4
+  require 'csv'
+  FCSV = CSV
+end
 
 Redmine::Plugin.register :redmine_agile do
   name "Redmine Agile plugin (#{AGILE_VERSION_TYPE})"
@@ -42,16 +47,15 @@ Redmine::Plugin.register :redmine_agile do
        caption: :label_agile,
        if: Proc.new { User.current.allowed_to?(:view_agile_queries, nil, global: true) }
   menu :project_menu, :agile, { controller: 'agile_boards', action: 'index' }, caption: :label_agile,
-                                                                               after: :backlog,
+                                                                               after: :gantt,
                                                                                param: :project_id
 
   menu :admin_menu, :agile, { controller: 'settings', action: 'plugin', id: 'redmine_agile' }, caption: :label_agile, html: { class: 'icon' }
 
   project_module :agile do
     permission :manage_public_agile_queries, { agile_queries: [:new, :create, :edit, :update, :destroy] }, require: :member
-    permission :manage_agile_verions, { agile_versions: [:index, :update, :sprints] }
     permission :add_agile_queries, { agile_queries: [:new, :create, :edit, :update, :destroy] }, require: :loggedin
-    permission :view_agile_queries, { agile_boards: [:index, :create_issue], agile_queries: :index }, read: true
+    permission :view_agile_queries, { agile_boards: [:index, :update, :create_issue, :issue_tooltip, :inline_comment, :agile_data], agile_queries: :index }, read: true
     permission :view_agile_charts, { agile_charts: [:show, :render_chart, :select_version_chart] }, read: true
   end
 end

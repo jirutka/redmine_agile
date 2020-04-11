@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ module RedmineAgile
   module Hooks
     class ViewsLayoutsHook < Redmine::Hook::ViewListener
       def view_layouts_base_html_head(context={})
-        return stylesheet_link_tag(:redmine_agile, :plugin => 'redmine_agile') 
+        return stylesheet_link_tag(:redmine_agile, :plugin => 'redmine_agile')
       end
     end
   end

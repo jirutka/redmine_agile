@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ module RedmineAgile
     attr_reader :line_colors
 
     def initialize(data_scope, options = {})
+      @options = options
       @data_scope = data_scope
       @data_from ||= options[:data_from]
       @data_to ||= options[:data_to]
@@ -57,7 +58,8 @@ module RedmineAgile
 
     def current_date_period
       return @current_date_period if @current_date_period
-      date_period = (@date_to <= Date.today ? @period_count : (@period_count - (@date_to - Date.today).to_i / @scale_division) + 1).round
+
+      date_period = (@date_to <= Date.today || @options[:date_to].present? ? @period_count : (@period_count - (@date_to - Date.today).to_i / @scale_division) + 1).round
       @current_date_period ||= date_period > 0 ? date_period : 0
     end
 

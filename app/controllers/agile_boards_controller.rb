@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,8 +22,11 @@ class AgileBoardsController < ApplicationController
 
   menu_item :agile
 
-  before_action :find_issue, only: [:update, :issue_tooltip, :inline_comment, :edit_issue, :update_issue]
+  before_action :find_issue, only: [:update, :issue_tooltip, :inline_comment, :edit_issue, :update_issue, :agile_data]
   before_action :find_optional_project, only: [:index, :create_issue]
+  before_action :authorize, except: [:index, :edit_issue, :update_issue]
+
+  accept_api_auth :agile_data
 
   helper :issues
   helper :journals
@@ -105,7 +108,7 @@ class AgileBoardsController < ApplicationController
         messages = @issue.errors.full_messages
         messages = [l(:text_agile_move_not_possible)] if messages.empty?
         format.html {
-          render :json => messages, :status => :fail, :layout => nil
+          render json: messages, status: :unprocessable_entity, layout: nil
         }
       end
     end
@@ -119,6 +122,16 @@ class AgileBoardsController < ApplicationController
     render 'inline_comment', :layout => nil
   end
 
+  def agile_data
+    @agile_data = @issue.agile_data
+    return render_404 unless @agile_data
+
+    respond_to do |format|
+      format.any { head :ok }
+      format.api { }
+    end
+  end
+
   private
 
   def auto_assign_on_move?
@@ -126,5 +139,4 @@ class AgileBoardsController < ApplicationController
       !params[:issue].keys.include?('assigned_to_id') &&
       @issue.status_id != params[:issue]['status_id'].to_i
   end
-
 end

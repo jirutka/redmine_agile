@@ -156,6 +156,7 @@ ru:
   label_agile_sprint_duration_week_4: 4 недели
   label_agile_sprint_errors_crossed: Выбранные даты пересекают другой спринт
   label_agile_sprint_errors_end_more_start: Дата окончания должна быть больше даты начала
+  label_agile_sprint_errors_open_issues: Нельзя закрыть спринт содержащий открытые задачи
   label_agile_sprint_default_chart: График
   label_agile_sprint_chart_units: Единицы
   label_agile_chart_for_sprint: "Для спринта: %{sprint}"

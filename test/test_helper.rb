@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -71,6 +71,11 @@ module RedmineAgile
     def compatible_xhr_request(type, action, parameters = {})
       return xhr type, action, parameters if Redmine::VERSION.to_s < '3.5' && Redmine::VERSION::BRANCH == 'stable'
       send(type, action, :params => parameters, :xhr => true)
+    end
+
+    def compatible_api_request(type, action, parameters = {}, headers = {})
+      return send(type, action, :params => parameters, :headers => headers) if Rails.version >= '5.1'
+      send(type, action, parameters, headers)
     end
 
     def agile_issues_in_list
@@ -354,6 +359,7 @@ class RedmineAgile::TestCase
       r.permissions << :manage_public_agile_queries
       r.permissions << :add_agile_queries
       r.permissions << :view_agile_queries
+      r.permissions << :agile_versions
       r.save
     end
   end

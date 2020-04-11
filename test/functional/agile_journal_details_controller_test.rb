@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class AgileJournalDetailsControllerTest < ActionController::TestCase
   end
 
   def test_get_done_ratio
-    compatible_request :get, :done_ratio, :issue_id => 1
+    compatible_request :get, :done_ratio, issue_id: 1
     assert_response :success
     assert_match /% Done/, @response.body
     assert_match /Bug #1/, @response.body
@@ -63,15 +63,30 @@ class AgileJournalDetailsControllerTest < ActionController::TestCase
   end
 
   def test_get_status
-    compatible_request :get, :status, :issue_id => 1
+    compatible_request :get, :status, issue_id: 1
     assert_response :success
     assert_match /Issue statuses/, @response.body
     assert_match /Bug #1/, @response.body
     assert_select '.list td.name', 2
   end
 
+  def test_get_status_with_group
+    compatible_request :get, :status, issue_id: 1, group_by: 'status'
+    assert_response :success
+    assert_match /Issue statuses/, @response.body
+    assert_match /Bug #1/, @response.body
+    assert_select 'tr.group'
+  end
+
+  def test_get_status_csv
+    compatible_request :get, :status, issue_id: 1, format: :csv
+    assert_response :success
+    assert_match 'text/csv', @response.content_type
+    assert_match /#,Created/, @response.body
+  end
+
   def test_get_done_assignee
-    compatible_request :get, :assignee, :issue_id => 1
+    compatible_request :get, :assignee, issue_id: 1
     assert_response :success
     assert_match /Assignee/, @response.body
     assert_match /Bug #1/, @response.body

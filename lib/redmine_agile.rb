@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -31,6 +31,7 @@ require 'redmine_agile/charts/agile_chart'
 require 'redmine_agile/charts/burndown_chart'
 require 'redmine_agile/charts/work_burndown_chart'
 require 'redmine_agile/charts/charts'
+require 'redmine_agile/patches/issue_drop_patch'
 
 module RedmineAgile
 
@@ -71,7 +72,11 @@ module RedmineAgile
     end
 
     def use_story_points?
-      estimate_units == 'story_points'
+      if Setting.plugin_redmine_agile.key?('story_points_on')
+        Setting.plugin_redmine_agile['story_points_on'] == '1'
+      else
+        estimate_units == ESTIMATE_STORY_POINTS
+      end
     end
 
     def trackers_for_sp
@@ -79,9 +84,9 @@ module RedmineAgile
     end
 
     def use_story_points_for?(tracker)
-      return true if trackers_for_sp.blank?
+      return true if trackers_for_sp.blank? && use_story_points?
       tracker = tracker.is_a?(Tracker) ? tracker.id.to_s : tracker
-      trackers_for_sp == tracker
+      trackers_for_sp == tracker && use_story_points?
     end
 
     def use_colors?

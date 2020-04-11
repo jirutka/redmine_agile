@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -106,8 +106,7 @@ module RedmineAgile
         end
       end
 
-      selected_chart = RedmineAgile::Charts.chart_by_alias(selected) || selected
-      grouped_options_for_select(grouped_options, selected_chart) + options_for_select(container, selected_chart)
+      grouped_options_for_select(grouped_options, selected) + options_for_select(container, selected)
     end
 
     def options_chart_units_for_select(selected = nil)
