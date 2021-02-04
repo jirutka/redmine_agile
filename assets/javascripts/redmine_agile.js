@@ -85,8 +85,8 @@
           });
 
           var issueParams = {};
-          if (version_id) issueParams['fixed_version_id'] = version_id || "";
-          if (sprint_id) issueParams['sprint_id'] = sprint_id || "";
+          if (version_id != undefined) issueParams['fixed_version_id'] = version_id || "";
+          if (sprint_id != undefined) issueParams['sprint_id'] = sprint_id || "";
 
           $.ajax({
             url: self.routes.update_agile_board_path,
@@ -566,14 +566,25 @@ function observeIssueSearchfield(fieldId, url) {
         });
       }
     };
-    var reset = function() {
+    var reset = function(e) {
       if (timer) {
         clearInterval(timer);
         timer = setInterval(check, 300);
       }
     };
+    var skipSpecialKeys = function(e) {
+      if (e.keyCode === 13) { e.preventDefault() }
+    }
     var timer = setInterval(check, 300);
+    var skipSubmit = function(e) {
+      if (e.which == 13 || e.keyCode == 13) {
+        e.preventDefault();
+        return false
+      }
+    }
+    $this.bind('keydown', skipSubmit);
     $this.bind('keyup click mousemove', reset);
+    $this.bind('keydown', skipSpecialKeys);
   });
 }
 

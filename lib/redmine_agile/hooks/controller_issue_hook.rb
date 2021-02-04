@@ -34,7 +34,7 @@ module RedmineAgile
       def add_agile_journal_details(context)
         return false unless context[:issue].project.module_enabled?(:agile)
         # return false unless context[:issue].color
-        old_value = Issue.find(context[:issue].id)
+        old_value = Issue.where(id: context[:issue].id).first || context[:issue]
         # save changes for story points to journal
         old_sp = old_value.story_points
         new_sp = context[:issue].story_points

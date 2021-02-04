@@ -98,6 +98,10 @@ class AgileChartsQuery < AgileQuery
     self
   end
 
+  def condition_for_status
+    '1=1'
+  end
+
   private
 
   def chart_period_filter(params)
@@ -134,7 +138,7 @@ class AgileChartsQuery < AgileQuery
 
     case operator
     when 'w'
-      first_day_of_week = l(:general_first_day_of_week).to_i
+      first_day_of_week = (Setting.start_of_week || l(:general_first_day_of_week)).to_i
       day_of_week = date.cwday
       days_ago = (day_of_week >= first_day_of_week ? day_of_week - first_day_of_week : day_of_week + 7 - first_day_of_week)
       sql_for_field(field, '><t-', [days_ago], Issue.table_name, field)
@@ -144,8 +148,18 @@ class AgileChartsQuery < AgileQuery
     when 'y'
       days_ago = date - date.beginning_of_year
       sql_for_field(field, '><t-', [days_ago], Issue.table_name, field)
+    when '><'
+      sql_for_field(field, '><', present_values(values), Issue.table_name, field)
     else
       sql_for_field(field, operator, values, Issue.table_name, field)
     end
+  end
+
+  def present_values(values)
+    return values unless values.is_a?(Array)
+
+    from = Date.parse(values[0])
+    to = Date.parse(values[1])
+    [(from < Date.today ? from : Date.today).to_s, (Date.today < to ? Date.today : to).to_s]
   end
 end

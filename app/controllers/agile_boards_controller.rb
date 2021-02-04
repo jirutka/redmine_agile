@@ -23,7 +23,10 @@ class AgileBoardsController < ApplicationController
   menu_item :agile
 
   before_action :find_issue, only: [:update, :issue_tooltip, :inline_comment, :edit_issue, :update_issue, :agile_data]
-  before_action :find_optional_project, only: [:index, :create_issue]
+  before_action :find_optional_project, only: [
+                                               :index,
+                                               :create_issue,
+                                              ]
   before_action :authorize, except: [:index, :edit_issue, :update_issue]
 
   accept_api_auth :agile_data

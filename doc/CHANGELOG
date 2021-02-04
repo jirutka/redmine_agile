@@ -4,6 +4,24 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2020 RedmineUP
 http://www.redmineup.com/
 
+== 2020-07-24 v1.5.4
+
+* Added None for Sprint in issue context menu
+* Updated zh-tw locale (Hsiao Chung Chiang)
+* Updated es locale (Manuel Alba Ortega)
+* Fixed agile sprint remaining bug
+* Fixed issue copy error
+* Fixed submit error for issue search field
+* Fixed future data in the charts
+* Fixed error with all closed issues
+* Fixed full screen board update bug
+* Fixed first day for Agile chart
+* Fixed chart query visibility bug
+* Fixed no version column bug
+* Fixed sub project sprint assignment
+* Fixed backlog column saving
+* Fixed "For all projects" chart bug
+
 == 2020-03-18 v1.5.3
 
 * Added grouping for agine status changes view

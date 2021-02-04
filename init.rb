@@ -21,7 +21,7 @@ requires_redmine_crm version_or_higher: '0.0.43' rescue raise "\n\033[31mRedmine
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.5.3'
+AGILE_VERSION_NUMBER = '1.5.4'
 AGILE_VERSION_TYPE = "Light version"
 
 if ActiveRecord::VERSION::MAJOR >= 4
@@ -55,7 +55,15 @@ Redmine::Plugin.register :redmine_agile do
   project_module :agile do
     permission :manage_public_agile_queries, { agile_queries: [:new, :create, :edit, :update, :destroy] }, require: :member
     permission :add_agile_queries, { agile_queries: [:new, :create, :edit, :update, :destroy] }, require: :loggedin
-    permission :view_agile_queries, { agile_boards: [:index, :update, :create_issue, :issue_tooltip, :inline_comment, :agile_data], agile_queries: :index }, read: true
+    permission :view_agile_queries, { agile_boards: [:index,
+                                                     :update,
+                                                     :create_issue,
+                                                     :issue_tooltip,
+                                                     :inline_comment,
+                                                     :agile_data,
+                                                     :backlog_load_more,
+                                                     :backlog_autocomplete],
+                                      agile_queries: :index }, read: true
     permission :view_agile_charts, { agile_charts: [:show, :render_chart, :select_version_chart] }, read: true
   end
 end
