@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class AddStoryPointsToAgileRanks < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
+class AddSharingToAgileSprint < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
   def change
-    add_column :agile_data, :story_points, :integer
+    add_column :agile_sprints, :sharing, :integer, default: 0, null: false, index: true
   end
 end

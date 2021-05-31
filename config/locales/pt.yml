@@ -1,5 +1,5 @@
-#  Portugues - Brazil strings go here for Rails i18n
-pt-BR:
+#  Portugues - Portugal strings go here for Rails i18n
+pt:
   label_agile: Ágil
   label_agile_board: Quadro Ágil
   label_agile_board_plural: Quadros ágeis

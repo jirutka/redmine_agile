@@ -199,7 +199,7 @@ it:
   label_agile_board_totals_remaining: Residuo
 
   label_agile_sprint_list_active: Sprint attivi
-  label_agile_sprint_list_open: Sprint futuri
+  label_agile_sprint_list_future: Sprint futuri
 
   label_agile_mixed_trackers: Trackers misti
   label_agile_moving_average: Media scostamenti

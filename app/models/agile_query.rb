@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 class AgileQuery < Query
-  unloadable
   include Redmine::SafeAttributes
 
   attr_reader :truncated
@@ -222,7 +221,7 @@ class AgileQuery < Query
       type: :list_optional, values: assigned_to_values
     ) unless assigned_to_values.empty?
 
-    group_values = Group.all.collect {|g| [g.name, g.id.to_s] }
+    group_values = Group.visible.all.collect {|g| [g.name, g.id.to_s] }
     add_available_filter("member_of_group",
       type: :list_optional, values: group_values
     ) unless group_values.empty?
@@ -294,7 +293,7 @@ class AgileQuery < Query
     end
 
     if User.current.logged?
-      add_available_filter 'watcher_id', type: :list, values: [["<< #{l(:label_me)} >>", 'me']]
+      add_available_filter 'watcher_id', type: :list, values: author_values
     end
   end
 
@@ -347,7 +346,8 @@ class AgileQuery < Query
   end
 
   def groupable_columns
-    available_columns.select { |c| c.groupable && !c.is_a?(QueryCustomFieldColumn) }
+    groupable_method = Redmine::VERSION.to_s > '4.2' ? :groupable? : :groupable
+    available_columns.select { |c| c.public_send(groupable_method) && !c.is_a?(QueryCustomFieldColumn) }
   end
 
   def sql_for_issue_id_field(field, operator, value)
@@ -371,7 +371,7 @@ class AgileQuery < Query
   end
 
   def sql_for_version_status_field(field, operator, value)
-     sql_for_field(field, operator, value, Version.table_name, "status")
+    sql_for_field(field, operator, value, Version.table_name, "status")
   end
 
   def sql_for_has_sub_issues_field(field, operator, value)
@@ -644,14 +644,29 @@ class AgileQuery < Query
   def base_agile_query_scope
     Issue.visible
          .eager_load(:status, :project, :assigned_to, :tracker, :priority, :category, :fixed_version, :agile_data)
+         .where(agile_projects)
          .where(statement)
          .where(condition_for_status)
   end
 
+  def agile_projects
+    return '1=1' unless project
+
+    p_ids = [project.id]
+    p_ids += project.descendants.select { |sub| sub.module_enabled?('agile') }.map(&:id) if Setting.display_subprojects_issues?
+
+    "#{Project.table_name}.id IN (#{p_ids.join(',')})"
+  end
+
   def issue_scope
     return @agile_scope if @agile_scope
+
     @agile_scope = base_agile_query_scope
     @agile_scope
+  end
+
+  def project_statement
+      return super
   end
 
   def current_version

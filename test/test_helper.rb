@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -110,8 +110,8 @@ module RedmineAgile
         # journal = issue.init_journal(User.current)
         issue.done_ratio = value
         issue.save
-        issue.update_attributes(:updated_on => change_date)
-        Journal.last.update_attributes(:created_on => change_date)
+        issue.update(:updated_on => change_date)
+        Journal.last.update(:created_on => change_date)
       end
 
       def close_issue(issue, closed_on)
@@ -121,11 +121,11 @@ module RedmineAgile
         days_count = (issue.due_date - issue.created_on).to_i
         change_date = issue.created_on
         change_date = change_date + rand((issue.due_date - days_count).to_i)
-        issue.update_attributes(:status_id => in_status.id, :updated_on => change_date)
-        journal.update_attributes(:created_on => change_date)
+        issue.update(:status_id => in_status.id, :updated_on => change_date)
+        journal.update(:created_on => change_date)
         change_date = change_date + rand((issue.due_date - days_count).to_i)
-        issue.update_attributes(:status_id => done_status.id, :updated_on => change_date)
-        journal.update_attributes(:created_on => change_date)
+        issue.update(:status_id => done_status.id, :updated_on => change_date)
+        journal.update(:created_on => change_date)
         issue
       end
 

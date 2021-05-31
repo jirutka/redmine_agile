@@ -154,6 +154,7 @@ en:
   label_agile_sprint_name: Name
   label_agile_sprint_description: Description
   label_agile_sprint_status: Status
+  label_agile_sprint_sharing: Sharing
   label_agile_sprint_start_date: Start date
   label_agile_sprint_end_date: End date
   label_agile_sprint_new: New sprint
@@ -199,7 +200,8 @@ en:
   label_agile_board_totals_remaining: Remaining
 
   label_agile_sprint_list_active: Active sprints
-  label_agile_sprint_list_open: Future sprints
+  label_agile_sprint_list_future: Future sprints
+  label_agile_sprint_list_old: Old sprints
 
   label_agile_mixed_trackers: Mixed trackers
   label_agile_moving_average: Moving average
@@ -219,3 +221,11 @@ en:
   label_agile_no_sprint_issues: Issues without sprint
   field_closed_sprints: Closed sprints
   field_closed_versions: Closed versions
+
+  label_agile_sprint_sharing_none: Not shared
+  label_agile_sprint_sharing_descendants: With subprojects
+  label_agile_sprint_sharing_hierarchy: With project hierarchy
+  label_agile_sprint_sharing_tree: With project tree
+  label_agile_sprint_sharing_system: With all projects
+
+

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -221,7 +221,10 @@ module RedmineAgile
     end
 
     def chart_dates_by_period
-      @chart_dates_by_period ||= (@period_count - 1).times.inject([]) do |accum, m|
+      return @chart_dates_by_period if @chart_dates_by_period
+
+      period = period_count > 1 ? period_count - 1 : period_count
+      @chart_dates_by_period ||= period.times.inject([]) do |accum, m|
         period_date = ((@date_to.to_date - 1 - m * @scale_division) + 1)
         accum << if @interval_size == WEEK_INTERVAL
                    period_date.at_beginning_of_week.to_date

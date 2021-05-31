@@ -1,8 +1,40 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2020 RedmineUP
+Copyright (C) 2011-2021 RedmineUP
 http://www.redmineup.com/
+
+== 2021-05-04 v1.6.1
+
+* Redmine 4.2 support
+* Added assignee group board filter
+* Added past Sprints
+* Added reset sprint on project change
+* Fixed missied table SQL error
+* Fixed empty data error
+* Fixed FCSV warning
+* Dropped Redmine <3.0 support
+
+== 2021-02-15 v1.6.0
+
+* Added Agile Sprint sharing
+* Fixed sprint/story points copy
+* Fixed sprint for on-board created sprints
+* Fixed initial install error
+* Fixed Sprint query save bug
+* Fixed chart dates interval
+* Fixed for all-projects query bug
+* Fixed chart empty dates bug
+* Fixed chart version bug
+* Fixed Backlog load-more bug
+* Fixed Agile board remarks
+* Fixed selected sprint bug
+* Fixed Agile board issues display bug
+* Fixed missed filters for old Redmine versions
+* Fixed empty watcher filter bug
+* Fixed workflow issue creation bug
+* Updated BR locale (Adriano J. Baptistella)
+* Updated pt-BR locale (Adriano J. Baptistella)
 
 == 2020-07-24 v1.5.4
 
@@ -28,15 +60,15 @@ http://www.redmineup.com/
 * Added issue list sprint filter
 * German translation updated (Peter Schossig)
 * Added Italian translation (Marco Congia)
-* Fixed bug with context menu story points 
+* Fixed bug with context menu story points
 * Added validation for sprint open issues
-* Backlog tab default menu 
+* Backlog tab default menu
 
 == 2020-02-05 v1.5.2
 
-* Agile Backlog as a different module 
+* Agile Backlog as a different module
 * Fixed between dates chart bug
-* Fixed context menu edit bug 
+* Fixed context menu edit bug
 * Fixed sprint cards load bug
 
 == 2019-12-10 v1.5.1
@@ -46,7 +78,7 @@ http://www.redmineup.com/
 * New Story points board setting
 * Hide Sprint field without available sprints
 * Modal edit styles cleanup
-* Fixed sprint charts bug 
+* Fixed sprint charts bug
 * Fixed MySQL order by bug
 
 == 2019-10-22 v1.5.0
@@ -55,9 +87,9 @@ http://www.redmineup.com/
 * New Backlog tab
 * Board types: Scrum and Kanban
 * New lead time chart
-* Totals for board and swimlanes 
+* Totals for board and swimlanes
 * Added board units
-* Added board default chart 
+* Added board default chart
 * Fixed chart caclulation bug
 * Fixed custom field js error
 
@@ -65,7 +97,7 @@ http://www.redmineup.com/
 
 * Fixed light version Redmine 4.0.3+ bug
 * Fixed swilanes sorting
-* Fixed version planing Load more bug 
+* Fixed version planing Load more bug
 
 == 2019-05-15 v1.4.11
 
@@ -73,7 +105,7 @@ http://www.redmineup.com/
 
 == 2019-04-25 v1.4.10
 
-* Fixed light version compatibility bug 
+* Fixed light version compatibility bug
 
 == 2019-04-15 v1.4.9
 
@@ -82,13 +114,13 @@ http://www.redmineup.com/
 * Charts end date fixes
 * Fixed expand all board bug
 * Fixed interval size for old user sessions
-* Fixed charts with current interval 
+* Fixed charts with current interval
 
 == 2019-02-08 v1.4.8
 
 * Added new Version planner
 * Added saving for Agile charts
-* Fixed "Related to" filter 
+* Fixed "Related to" filter
 * Fixed "Parent task" filter
 * Fixed search sensitive bug
 * Fixed empty current version bug
@@ -122,10 +154,10 @@ http://www.redmineup.com/
 
 == 2017-07-06 v1.4.4
 
-* Redmine 3.4 support 
+* Redmine 3.4 support
 * Color attribute for users
 * Agile board <Current version> query filter
-* Added initional state for status and assignee history 
+* Added initional state for status and assignee history
 * Chinese translation update
 * Fixed checklist items order
 

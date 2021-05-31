@@ -142,6 +142,7 @@ ru:
   label_agile_sprint_name: Название
   label_agile_sprint_description: Описание
   label_agile_sprint_status: Статус
+  label_agile_sprint_sharing: Совместное использование
   label_agile_sprint_start_date: Дата начала
   label_agile_sprint_end_date: Дата окончания
   label_agile_sprint_new: Новый спринт
@@ -191,7 +192,8 @@ ru:
   label_agile_board_totals_velocity: Скорость закрытия
 
   label_agile_sprint_list_active: Активные спринты
-  label_agile_sprint_list_open: Следующие спринты
+  label_agile_sprint_list_future: Следующие спринты
+  label_agile_sprint_list_old: Прошлые спринты
 
   label_agile_moving_average: Скользящая средняя
 
@@ -210,3 +212,9 @@ ru:
   label_agile_no_sprint_issues: Задачи без спринта
   field_closed_sprints: Закрытые спринты
   field_closed_versions: Закрытые версии
+
+  label_agile_sprint_sharing_none: Без совместного использования
+  label_agile_sprint_sharing_descendants: С подпроектами
+  label_agile_sprint_sharing_hierarchy: С иерархией проектов
+  label_agile_sprint_sharing_tree: С деревом проектов
+  label_agile_sprint_sharing_system: Со всеми проектами

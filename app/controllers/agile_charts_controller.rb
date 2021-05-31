@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -69,6 +69,7 @@ class AgileChartsController < ApplicationController
     else
       retrieve_charts_query
       @issues = Issue.visible
+      @issues = @issues.joins(:fixed_version) if @query.filters.keys.include?('version_status')
       @issues = @issues.where(@query.statement)
       options = { date_from: @query.date_from,
                   date_to: @query.date_to,

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -54,8 +54,9 @@ class AgileChartsQueryTest < ActiveSupport::TestCase
     data = [
       [[(Date.today - 5.days).to_s, (Date.today - 1.days).to_s], [(Date.today - 6.days).to_s, (Date.today - 1.days).to_s]],
       [[(Date.today - 5.days).to_s, Date.today.to_s], [(Date.today - 6.days).to_s, Date.today.to_s]],
-      [[(Date.today - 5.days).to_s, (Date.today + 5.days).to_s], [(Date.today - 6.days).to_s, Date.today.to_s]],
-      [[Date.today.to_s, (Date.today + 5.days).to_s], [(Date.today - 1.days).to_s, Date.today.to_s]]
+      [[(Date.today - 5.days).to_s, (Date.today + 5.days).to_s], [(Date.today - 6.days).to_s, (Date.today + 5.days).to_s]],
+      [[Date.today.to_s, (Date.today + 5.days).to_s], [(Date.today - 1.days).to_s, (Date.today + 5.days).to_s]],
+      [['',''], [Date.today - 1.days, Date.today]]
     ]
 
     data.each do |values, result|

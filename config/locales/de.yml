@@ -211,7 +211,7 @@ de:
   label_agile_board_totals_remaining: Verbleibend
 
   label_agile_sprint_list_active: Aktive Sprints
-  label_agile_sprint_list_open: Zukünftige Sprints
+  label_agile_sprint_list_future: Zukünftige Sprints
 
   label_agile_mixed_trackers: Verschiedene Tracker
   label_agile_moving_average: Gleitender Durchschnitt

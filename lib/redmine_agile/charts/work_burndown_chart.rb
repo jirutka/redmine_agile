@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -53,7 +53,8 @@ module RedmineAgile
         total_hours_left, cumulative_total_hours_left = date_effort(issues, date)
         [total_hours_left, cumulative_total_hours - cumulative_total_hours_left]
       end
-      data = first_period_effort(all_issues, chart_dates_by_period.first, cumulative_total_hours) + data
+      tail_values = data.last ? [data.last] * (current_date_period - data.size) : []
+      data = first_period_effort(all_issues, chart_dates_by_period.first, cumulative_total_hours) + data + tail_values
       @burndown_data, @cumulative_burndown_data = data.transpose
     end
 

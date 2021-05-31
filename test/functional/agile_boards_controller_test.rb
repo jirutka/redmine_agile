@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -39,6 +39,9 @@ module RedmineAgile
       end
 
       def test_get_index_with_filter_is_private
+        project = Project.find(3)
+        emodule = EnabledModule.create(project_id: project.id, name: 'agile')
+
         compatible_request :get, :index, {
           project_id: 'ecookbook',
           set_filter: '1',
@@ -50,6 +53,8 @@ module RedmineAgile
 
         assert_response :success
         assert_equal [14], agile_issues_in_list.map(&:id)
+      ensure
+        emodule.destroy
       end
 
       def test_get_index_with_filter_watcher_id
@@ -105,8 +110,10 @@ class AgileBoardsControllerTest < ActionController::TestCase
     RedmineAgile::TestCase.prepare
     @project_1 = Project.find(1)
     @project_2 = Project.find(5)
+    @project_3 = Project.find(3)
     EnabledModule.create(:project => @project_1, :name => 'agile')
     EnabledModule.create(:project => @project_2, :name => 'agile')
+    EnabledModule.create(:project => @project_3, :name => 'agile')
     @request.session[:user_id] = 1
   end
 
@@ -119,9 +126,10 @@ class AgileBoardsControllerTest < ActionController::TestCase
   end
 
   def test_get_index_with_project
-    compatible_request :get, :index, :project_id => @project_1
-    issues = Issue.where(:project_id => [@project_1] + Project.where(:parent_id => @project_1.id).to_a,
-                         :status_id => IssueStatus.where(:is_closed => false))
+    compatible_request :get, :index, project_id: @project_1
+    issues = Issue.where(project_id: [@project_1] + Project.where(parent_id: @project_1.id)
+                                                           .select {|p| p.module_enabled?('agile') }.to_a,
+                         status_id: IssueStatus.where(is_closed: false))
     assert_equal issues.map(&:id).sort, agile_issues_in_list.map(&:id).sort
     assert_select '.issue-card', issues.count
     assert_select '.issue-card span.fields p.issue-id strong', issues.count

@@ -12,14 +12,13 @@
       </thead>
         <tr style="text-align: center;white-space: nowrap;" class="issue <%= cycle('odd', 'even') %>">
         <% @board_columns.each do |column| %>
-         <% column_issues = @issue_board[[column.id]] || [] %>
-          <td class="issue-status-col <%= 'closed' if column.is_closed? %> <%= 'collapse' if RedmineAgile.hide_closed_issues_data? %> <%= column.wp_class if column.respond_to?(:wp_class) %> <%= 'empty' if column_issues.empty? %>" data-id="<%= column.id %>">
-            <% column_issues.each do |issue| %>
-              <%= render :partial => 'issue_card', :locals => {:issue => issue} %>
-            <% end if @issue_board[[column.id]] %>
-            <%= render(:partial => 'add_issue_card') unless column.is_closed? %>
-          </td>
-
+          <% column_issues = @issue_board[[column.id]] || [] %>
+            <td class="issue-status-col <%= 'closed' if column.is_closed? %> <%= 'collapse' if RedmineAgile.hide_closed_issues_data? %> <%= column.wp_class if column.respond_to?(:wp_class) %> <%= 'empty' if column_issues.empty? %>" data-id="<%= column.id %>">
+              <% column_issues.each do |issue| %>
+                <%= render :partial => 'issue_card', :locals => {:issue => issue} %>
+              <% end if @issue_board[[column.id]] %>
+              <%= render(:partial => 'add_issue_card') if @allowed_statuses.include?(column) && !column.is_closed? %>
+            </td>
           <% end %>
         </tr>
     </table>

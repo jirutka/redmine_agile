@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2020 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -60,6 +60,7 @@ class AgileBoardsController < ApplicationController
       @issues = @query.issues
       @issue_board = @query.issue_board
       @board_columns = @query.board_statuses
+      @allowed_statuses = statuses_allowed_for_create
 
       respond_to do |format|
         format.html { render :template => 'agile_boards/index', :layout => !request.xhr? }
@@ -141,5 +142,17 @@ class AgileBoardsController < ApplicationController
     RedmineAgile.auto_assign_on_move? && @issue.assigned_to.nil? &&
       !params[:issue].keys.include?('assigned_to_id') &&
       @issue.status_id != params[:issue]['status_id'].to_i
+  end
+
+  def statuses_allowed_for_create
+    issue = Issue.new(project: @project)
+    issue.tracker = issue_tracker(issue)
+    issue.new_statuses_allowed_to
+  end
+
+  def issue_tracker(issue)
+    return issue.allowed_target_trackers.first if issue.respond_to?(:allowed_target_trackers)
+    return @project.trackers.first if @project
+    nil
   end
 end

@@ -227,7 +227,7 @@
               self.successSortable(oldStatusId, newStatusId, oldSwimLaneId, swimLaneId);
               $($item).replaceWith(data);
               estimatedHours = $($item).find("span.hours");
-              if(estimatedHours.size() > 0){
+              if(estimatedHours.length > 0){
                 hours = $(estimatedHours).html().replace(/(\(|\)|h)?/g, '');
                 // self.recalculateEstimateHours(oldStatusId, newStatusId, hours);
               }
@@ -326,36 +326,39 @@
       });
     }
 
-    this.createIssue = function(url){
-      $('.add-issue').click(function(){
-        $(this).children('.new-card__input').focus();
-      });
-      $('.new-card__input').keyup(function(evt){
-        var node = this;
-        evt = evt || window.event;
-        subject = $.trim($(node).val());
+    this.createIssue = function (url) {
+      $(".add-issue").click(function () {
+        $(this).children(".new-card__input").focus()
+      })
+      $(".new-card__input").keyup(function (evt) {
+        var node = this
+        var $sprintField = $("#sprint_id")
+        evt = evt || window.event
+        subject = $.trim($(node).val())
+        sprint_id = $sprintField ? $sprintField.val() : ""
         if (evt.keyCode == 13 && subject.length != 0) {
           $.ajax({
             url: url,
             type: "POST",
             data: {
               subject: subject,
-              status_id: $(node).parents('td').data('id')
+              status_id: $(node).parents("td").data("id"),
+              sprint_id: sprint_id
             },
             dataType: "html",
-            success: function(data, status, xhr){
-              $(node).parent().before(data);
-              $(node).val('');
+            success: function (data, status, xhr) {
+              $(node).parent().before(data)
+              $(node).val("")
             },
-            error:function(xhr, status, error) {
-              var alertMessage = parseErrorResponse(xhr.responseText);
+            error: function (xhr, status, error) {
+              var alertMessage = parseErrorResponse(xhr.responseText)
               if (alertMessage) {
-                setErrorMessage(alertMessage);
+                setErrorMessage(alertMessage)
               }
-            }
-          });
+            },
+          })
         }
-      });
+      })
     }
 
     this.routes = routes;
