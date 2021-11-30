@@ -128,6 +128,10 @@ module RedmineAgile
     def allow_inline_comments?
       Setting.plugin_redmine_agile['allow_inline_comments'].to_i > 0
     end
+
+    def chart_future_data?
+      Setting.plugin_redmine_agile['chart_future_data'].to_i > 0
+    end
   end
 
 end

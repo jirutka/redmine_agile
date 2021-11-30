@@ -556,55 +556,66 @@ class AgileQuery < Query
   end
 
   def board_statuses
-    if Redmine::VERSION.to_s > '2.4'
-      statuses =
-        if Redmine::VERSION.to_s >= '3.4' && project
-          project.rolled_up_statuses
+    return @board_statuses if @board_statuses
+
+    @board_statuses =
+      if Redmine::VERSION.to_s > '2.4'
+        statuses = Redmine::VERSION.to_s >= '3.4' && project ? project.rolled_up_statuses : board_issue_statuses
+        status_filter_values = (options[:f_status] if options)
+        if status_filter_values
+          result_statuses = statuses.where(id: status_filter_values)
         else
-          IssueStatus.where(id: Tracker.eager_load(issues: [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
+          result_statuses = statuses.where(is_closed: false)
         end
-      status_filter_values = (options[:f_status] if options)
-      if status_filter_values
-        result_statuses = statuses.where(id: status_filter_values)
+        result_statuses.sorted.map do |s|
+          s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+          if has_column_name?(:estimated_hours)
+            s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+          end
+          if RedmineAgile.use_story_points? && has_column_name?(:story_points)
+            s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
+          end
+          s
+        end
       else
-        result_statuses = statuses.where(is_closed: false)
-      end
-      result_statuses.sorted.map do |s|
-        s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-        if has_column_name?(:estimated_hours)
-          s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
-        end
-        if RedmineAgile.use_story_points? && has_column_name?(:story_points)
-          s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
-        end
-        s
-      end
-    else
-      status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
-      status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
-      statuses = IssueStatus.where(id: Tracker.eager_load(issues: [:status, :project, :fixed_version]).where(statement).map(&:issue_statuses).flatten.uniq.map(&:id))
-      result_statuses =
-        case status_filter_operator
-        when "o"
-          statuses.where(is_closed: false).sorted
-        when "c"
-          statuses.where(is_closed: true).sorted
-        when "="
-          statuses.where(id: status_filter_values).sorted
-        when "!"
-          statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
-        else
-          statuses.sorted
-        end
-      result_statuses.map do |s|
-        s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-        if has_column_name?(:estimated_hours)
-          s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+        status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
+        status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
+
+        result_statuses =
+          case status_filter_operator
+          when "o"
+            board_issue_statuses.where(is_closed: false).sorted
+          when "c"
+            board_issue_statuses.where(is_closed: true).sorted
+          when "="
+            board_issue_statuses.where(id: status_filter_values).sorted
+          when "!"
+            board_issue_statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
+          else
+            board_issue_statuses.sorted
+          end
+        result_statuses.map do |s|
+          s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+          if has_column_name?(:estimated_hours)
+            s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
+          end
+          s
         end
         s
       end
-      s
-    end
+    @board_statuses
+  end
+
+  def board_issue_statuses
+    return @board_issue_statuses if @board_issue_statuses
+
+    status_ids =
+      if tracker_ids = Tracker.eager_load(issues: [:project]).where(statement).pluck(:id)
+        WorkflowTransition.where(tracker_id: tracker_ids).distinct.pluck(:old_status_id, :new_status_id).flatten.uniq
+      else
+        []
+      end
+    @board_issue_statuses = IssueStatus.where(id: status_ids)
   end
 
   def issue_count_by_status

@@ -4,6 +4,21 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2021 RedmineUP
 http://www.redmineup.com/
 
+== 2021-09-07 v1.6.2
+
+* Added notification message for not available operations on Backlog board
+* Added subproject context menu
+* Added future data settings 
+* Added sprint overlapping option
+* Removed default sprint id from chart board
+* Fixed sprint locale erro
+* Fixed backlog option saving 
+* Fixed MSSQL double order error
+* Fixed close validation for sprint
+* Fixed extra load from board states
+* Fixed sprint drop for unpermitted user
+* Fixed form submit error
+
 == 2021-05-04 v1.6.1
 
 * Redmine 4.2 support

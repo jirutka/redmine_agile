@@ -69,17 +69,17 @@ class BurndownChartTest < ActiveSupport::TestCase
           month: {
             dates: { date_from: Date.parse('2019-03-01'), date_to: Date.parse('2019-03-31'), interval_size: 'week' },
             result: [{ type: 'line', data: [10, 9, 9, 9, 9, 9], label: 'Actual' },
-                     { type: 'line', data: [10.0, 8.0, 6.0, 4.0, 2.0, 0], label: 'Ideal' }]
+                     { type: 'line', data: [10.0, 7.5, 5.0, 2.5, 0], label: 'Ideal' }]
           },
           year: {
             dates: { date_from: Date.parse('2019-01-01'), date_to: Date.parse('2019-12-31'), interval_size: 'month' },
             result: [{ type: 'line', data: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1], label: 'Actual' },
-                     { type: 'line', data: [12.0, 11.08, 10.15, 9.23, 8.31, 7.38, 6.46, 5.54, 4.62, 3.69, 2.77, 1.85, 0.92, 0], label: 'Ideal' }]
+                     { type: 'line', data: [12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0], label: 'Ideal' }]
           },
           between: {
             dates: { date_from: Date.parse('2019-07-01'), date_to: Date.parse('2019-12-31'), interval_size: 'month' },
             result: [{ type: 'line', data: [6, 5, 4, 3, 2, 1, 1, 1], label: 'Actual' },
-                     { type: 'line', data: [6.0, 5.14, 4.29, 3.43, 2.57, 1.71, 0.86, 0], label: 'Ideal' }]
+                     { type: 'line', data: [6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0], label: 'Ideal' }]
           }
         }
       },
@@ -91,22 +91,22 @@ class BurndownChartTest < ActiveSupport::TestCase
           day: {
             dates: { date_from: Date.parse('2018-12-31'), date_to: Date.parse('2019-01-01'), chart_unit: 'story_points', interval_size: 'day' },
             result: [{ type: 'line', data: [234.0, 231.0, 231.0], label: 'Actual'},
-                     { type: 'line', data: [234.0, 117.0, 0], label: 'Ideal' }]
+                     { type: 'line', data: [234.0, 0], label: 'Ideal' }]
           },
           month: {
             dates: { date_from: Date.parse('2019-03-01'), date_to: Date.parse('2019-03-31'), chart_unit: 'story_points', interval_size: 'week' },
             result: [{ type: 'line', data: [216.0, 216.0, 216.0, 216.0, 216.0, 216.0], label: 'Actual' },
-                     { type: 'line', data: [216.0, 172.8, 129.6, 86.4, 43.2, 0], label: 'Ideal' }]
+                     { type: 'line', data: [216.0, 162.0, 108.0, 54.0, 0], label: 'Ideal' }]
           },
           year: {
             dates: { date_from: Date.parse('2019-01-01'), date_to: Date.parse('2019-12-31'), chart_unit: 'story_points', interval_size: 'month' },
             result: [{ type: 'line', data: [225.0, 225.0, 216.0, 204.0, 189.0, 171.0, 150.0, 126.0, 99.0, 69.0, 36.0, 36.0, 36.0, 36.0], label: 'Actual' },
-                     { type: 'line', data: [225.0, 207.69, 190.38, 173.08, 155.77, 138.46, 121.15, 103.85, 86.54, 69.23, 51.92, 34.62, 17.31, 0], label: 'Ideal' }]
+                     { type: 'line', data: [225.0, 206.25, 187.5, 168.75, 150.0, 131.25, 112.5, 93.75, 75.0, 56.25, 37.5, 18.75, 0], label: 'Ideal' }]
           },
           between: {
             dates: { date_from: Date.parse('2019-07-01'), date_to: Date.parse('2019-12-31'), chart_unit: 'story_points', interval_size: 'month' },
             result: [{ type: 'line', data: [126.0, 126.0, 99.0, 69.0, 36.0, 36.0, 36.0, 36.0], label: 'Actual' },
-                     { type: 'line', data: [126.0, 108.0, 90.0, 72.0, 54.0, 36.0, 18.0, 0], label: 'Ideal' }]
+                     { type: 'line', data: [126.0, 105.0, 84.0, 63.0, 42.0, 21.0, 0], label: 'Ideal' }]
           }
         }
       },
@@ -118,22 +118,22 @@ class BurndownChartTest < ActiveSupport::TestCase
           day: {
             dates: { date_from: Date.parse('2018-12-31'), date_to: Date.parse('2019-01-01'), chart_unit: 'hours', interval_size: 'day' },
             result: [{ type: 'line', data: [156.0, 154.0, 154.0], label: 'Actual'},
-                     { type: 'line', data: [156.0, 78.0, 0], label: 'Ideal' }]
+                     { type: 'line', data: [156.0, 0], label: 'Ideal' }]
           },
           month: {
             dates: { date_from: Date.parse('2019-03-01'), date_to: Date.parse('2019-03-31'), chart_unit: 'hours', interval_size: 'week' },
             result: [{ type: 'line', data: [144.0, 144.0, 144.0, 144.0, 144.0, 144.0], label: 'Actual' },
-                     { type: 'line', data: [144.0, 115.2, 86.4, 57.6, 28.8, 0], label: 'Ideal' }]
+                     { type: 'line', data: [144.0, 108.0, 72.0, 36.0, 0], label: 'Ideal' }]
           },
           year: {
             dates: { date_from: Date.parse('2019-01-01'), date_to: Date.parse('2019-12-31'), chart_unit: 'hours', interval_size: 'month' },
             result: [{ type: 'line', data: [150.0, 150.0, 144.0, 136.0, 126.0, 114.0, 100.0, 84.0, 66.0, 46.0, 24.0, 24.0, 24.0, 24.0], label: 'Actual' },
-                     { type: 'line', data: [150.0, 138.46, 126.92, 115.38, 103.85, 92.31, 80.77, 69.23, 57.69, 46.15, 34.62, 23.08, 11.54, 0], label: 'Ideal' }]
+                     { type: 'line', data: [150.0, 137.5, 125.0, 112.5, 100.0, 87.5, 75.0, 62.5, 50.0, 37.5, 25.0, 12.5, 0], label: 'Ideal' }]
           },
           between: {
             dates: { date_from: Date.parse('2019-07-01'), date_to: Date.parse('2019-12-31'), chart_unit: 'hours', interval_size: 'month' },
             result: [{ type: 'line', data: [84.0, 84.0, 66.0, 46.0, 24.0, 24.0, 24.0, 24.0], label: 'Actual' },
-                     { type: 'line', data: [84.0, 72.0, 60.0, 48.0, 36.0, 24.0, 12.0, 0], label: 'Ideal' }]
+                     { type: 'line', data: [84.0, 70.0, 56.0, 42.0, 28.0, 14.0, 0], label: 'Ideal' }]
           }
         }
       }

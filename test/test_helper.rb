@@ -360,6 +360,12 @@ class RedmineAgile::TestCase
       r.permissions << :add_agile_queries
       r.permissions << :view_agile_queries
       r.permissions << :agile_versions
+      r.permissions << :view_sprints
+      r.save
+    end
+
+    Role.find(1, 3).each do |r|
+      r.permissions << :manage_sprints
       r.save
     end
   end

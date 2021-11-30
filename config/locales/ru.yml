@@ -104,7 +104,7 @@ ru:
   label_agile_additional_agile_charts: Доп. диаграммы
   label_agile_coloured_issue_cards: Цветовая индикация карточек
   label_agile_4_more_features: И еще другие 4 функции...
-  label_agile_upgrade_to_pro: 'Обновитесь до PRO версии чтобы:'
+  label_agile_upgrade_to_pro: "Обновитесь до PRO версии чтобы:"
 
   #1.3.10
   label_agile_hide_closed_issues_data: Скрывать данные закрытых задач
@@ -123,7 +123,7 @@ ru:
   label_agile_board_columns: Столбцы доски
   lable_agile_wip_limit_exceeded: Превышен лимит по задачам в данном столбце
   label_agile_wip_limit: Ограничение по кол-ву задач в столбце
-  label_agile_add_new_issue: '+ НОВАЯ ЗАДАЧА'
+  label_agile_add_new_issue: "+ НОВАЯ ЗАДАЧА"
   label_agile_allow_create_cards: Создавать новые задачи на доске
   label_agile_auto_assign_on_move: Автоназначение при перетаскивании
   text_agile_create_issue_error: Произошла ошибка при создании задачи
@@ -180,7 +180,6 @@ ru:
 
   label_agile_edit_issue: Изменить задачу
 
-
   label_agile_board_type: Тип доски
   label_agile_board_type_kanban: Kanban доска
   label_agile_board_type_scrum: Scrum доска
@@ -212,9 +211,16 @@ ru:
   label_agile_no_sprint_issues: Задачи без спринта
   field_closed_sprints: Закрытые спринты
   field_closed_versions: Закрытые версии
+  label_allow_ovelapping_sprints: Пересекающиеся спринты
 
   label_agile_sprint_sharing_none: Без совместного использования
   label_agile_sprint_sharing_descendants: С подпроектами
   label_agile_sprint_sharing_hierarchy: С иерархией проектов
   label_agile_sprint_sharing_tree: С деревом проектов
   label_agile_sprint_sharing_system: Со всеми проектами
+
+  label_agile_action_not_available: Действие недоступно
+  label_agile_general: Общие
+  label_agile_hidden: Дополнительные
+
+  label_chart_future_data: Показывать рассчетные данные на графиках

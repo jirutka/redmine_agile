@@ -145,8 +145,8 @@ class AgileChartsQuery < AgileQuery
       days_ago = (day_of_week >= first_day_of_week ? day_of_week - first_day_of_week : day_of_week + 7 - first_day_of_week)
       sql_for_field(field, '><t-', [days_ago], Issue.table_name, field)
     when 'm'
-      days_ago = date - date.beginning_of_month
-      sql_for_field(field, '><t-', [days_ago], Issue.table_name, field)
+      date_to = RedmineAgile.chart_future_data? ? date.end_of_month.to_s : date.to_s
+      sql_for_field(field, '><', [date.beginning_of_month.to_s, date_to], Issue.table_name, field)
     when 'y'
       days_ago = date - date.beginning_of_year
       sql_for_field(field, '><t-', [days_ago], Issue.table_name, field)

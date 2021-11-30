@@ -59,7 +59,8 @@ module RedmineAgile
     def current_date_period
       return @current_date_period if @current_date_period
 
-      date_period = (@date_to <= Date.today || @options[:date_to].present? ? @period_count : (@period_count - (@date_to - Date.today).to_i / @scale_division) + 1).round
+      for_future = RedmineAgile.chart_future_data? ? @options[:date_to].present? : false
+      date_period = (@date_to <= Date.today || for_future ? @period_count : (@period_count - (@date_to - Date.today).to_i / @scale_division)).round
       @current_date_period ||= date_period > 0 ? date_period : 0
     end
 
@@ -67,7 +68,7 @@ module RedmineAgile
       @date_from = @date_from.to_date
       @date_to = @date_to.to_date
       due_date = (@due_date && @due_date > @date_from) ? @due_date : @date_from
-      @due_date_period ||= (@due_date ? @period_count - (@date_to - due_date.to_date).to_i : @period_count - 1) + 1
+      @due_date_period ||= (@due_date ? @period_count - (@date_to - due_date.to_date).to_i : @period_count - 1)
       @due_date_period = @due_date_period > 0 ? @due_date_period : 1
     end
 

@@ -60,9 +60,11 @@
         connectWith: ".column-issues",
         start: function(event, ui) {
           var $item = $(ui.item);
+          var boardType = $item.parent().data('version-id') !== undefined ? 'version' : 'sprint';
+          $item.attr('oldPosition', $item.index());
           $item.attr('oldColumnId', $item.parent().data('version-id'));
           $item.attr('oldSprintId', $item.parent().data('sprint-id'));
-          $item.attr('oldPosition', $item.index());
+          $item.attr('boardType', boardType);
         },
         stop: function(event, ui) {
           var $item = $(ui.item);
@@ -71,8 +73,8 @@
           var version_id = $column.attr('data-version-id');
           var sprint_id = $column.attr('data-sprint-id');
           var positions = {};
-          var oldId = $item.attr('oldColumnId');
-          var $oldColumn = $('.ui-sortable[data-version-id="' + oldId + '"]');
+          var oldId = $item.attr('boardType') !== 'sprint' ? $item.attr('oldColumnId') : $item.attr('oldSprintId');
+          var $oldColumn = $('.ui-sortable[data-' + $item.attr('boardType') + '-id="' + oldId + '"]');
 
           if(!self.hasChange($item)){
             self.backSortable($column);
@@ -329,6 +331,9 @@
     this.createIssue = function (url) {
       $(".add-issue").click(function () {
         $(this).children(".new-card__input").focus()
+      })
+      $('.agile-board').parent('form').on('submit', function(evt) {
+        evt.preventDefault();
       })
       $(".new-card__input").keyup(function (evt) {
         var node = this

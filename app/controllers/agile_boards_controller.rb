@@ -77,7 +77,7 @@ class AgileBoardsController < ApplicationController
   end
 
   def update
-    (render_403; return false) unless @issue.editable?
+    (render_error_message(l(:label_agile_action_not_available)); return false) unless @issue.editable?
     retrieve_agile_query_from_session
     old_status = @issue.status
     @issue.init_journal(User.current)
@@ -154,5 +154,9 @@ class AgileBoardsController < ApplicationController
     return issue.allowed_target_trackers.first if issue.respond_to?(:allowed_target_trackers)
     return @project.trackers.first if @project
     nil
+  end
+
+  def render_error_message(message)
+    render json: [message], status: :unprocessable_entity
   end
 end

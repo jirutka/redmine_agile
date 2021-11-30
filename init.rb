@@ -21,7 +21,7 @@ requires_redmine_crm version_or_higher: '0.0.43' rescue raise "\n\033[31mRedmine
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.1'
+AGILE_VERSION_NUMBER = '1.6.2'
 AGILE_VERSION_TYPE = "Light version"
 
 if ActiveRecord::VERSION::MAJOR >= 4 && !defined?(FCSV)
@@ -40,7 +40,7 @@ Redmine::Plugin.register :redmine_agile do
   requires_redmine version_or_higher: '3.0'
 
   settings default: { 'default_columns' => %w(tracker assigned_to) },
-           partial: 'settings/agile/general'
+           partial: 'settings/agile/agile'
 
   menu :application_menu, :agile,
        { controller: 'agile_boards', action: 'index' },
