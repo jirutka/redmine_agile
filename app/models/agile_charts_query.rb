@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ class AgileChartsQuery < AgileQuery
   end
 
   def chart
-    @chart ||= RedmineAgile::Charts.valid_chart_name_by(options[:chart])
+    @chart ||= RedmineAgile::Charts::Helper.valid_chart_name_by(options[:chart])
   end
 
   def chart=(arg)
@@ -69,10 +69,10 @@ class AgileChartsQuery < AgileQuery
   end
 
   def interval_size
-    if RedmineAgile::AgileChart::TIME_INTERVALS.include?(options[:interval_size])
+    if RedmineAgile::Charts::AgileChart::TIME_INTERVALS.include?(options[:interval_size])
       options[:interval_size]
     else
-      RedmineAgile::AgileChart::DAY_INTERVAL
+      RedmineAgile::Charts::AgileChart::DAY_INTERVAL
     end
   end
 
@@ -94,8 +94,8 @@ class AgileChartsQuery < AgileQuery
     self.date_from = params[:date_from] || (params[:query] && params[:query][:date_from])
     self.date_to = params[:date_to] || (params[:query] && params[:query][:date_to])
     self.chart = params[:chart] || (params[:query] && params[:query][:chart]) || params[:default_chart] || RedmineAgile.default_chart
-    self.interval_size = params[:interval_size] || (params[:query] && params[:query][:interval_size]) || RedmineAgile::AgileChart::DAY_INTERVAL
-    self.chart_unit = params[:chart_unit] || (params[:query] && params[:query][:chart_unit]) || RedmineAgile::Charts::UNIT_ISSUES
+    self.interval_size = params[:interval_size] || (params[:query] && params[:query][:interval_size]) || RedmineAgile::Charts::AgileChart::DAY_INTERVAL
+    self.chart_unit = params[:chart_unit] || (params[:query] && params[:query][:chart_unit]) || RedmineAgile::Charts::Helper::UNIT_ISSUES
 
     self
   end

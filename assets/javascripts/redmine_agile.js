@@ -630,7 +630,9 @@ function recalculateSprintHours() {
       hours = parseFloat($(issue).data(dataAttr));
       versionEstimationSum += hours;
     });
-    $(elem).find('.sprint-estimate').text('(' + versionEstimationSum.toFixed(2) + unit + ')');
+    if (versionEstimationSum > 0) {
+      $(elem).find('.sprint-estimate').text('(' + versionEstimationSum.toFixed(2) + unit + ')');
+    }
   });
 }
 

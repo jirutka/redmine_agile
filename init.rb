@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmine_crm version_or_higher: '0.0.43' rescue raise "\n\033[31mRedmine requires newer redmine_crm gem version.\nPlease update with 'bundle update redmine_crm'.\033[0m"
+requires_redmine_crm version_or_higher: '0.0.56' rescue raise "\n\033[31mRedmine requires newer redmine_crm gem version.\nPlease update with 'bundle update redmine_crm'.\033[0m"
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.2'
+AGILE_VERSION_NUMBER = '1.6.4'
 AGILE_VERSION_TYPE = "Light version"
 
 if ActiveRecord::VERSION::MAJOR >= 4 && !defined?(FCSV)
@@ -68,4 +68,7 @@ Redmine::Plugin.register :redmine_agile do
   end
 end
 
-require 'redmine_agile'
+if Rails.configuration.respond_to?(:autoloader) && Rails.configuration.autoloader == :zeitwerk
+  Rails.autoloaders.each { |loader| loader.ignore(File.dirname(__FILE__) + '/lib') }
+end
+require File.dirname(__FILE__) + '/lib/redmine_agile'

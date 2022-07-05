@@ -198,6 +198,8 @@ en:
   label_agile_board_totals_velocity: Velocity
   label_agile_board_totals_interval: Interval
   label_agile_board_totals_remaining: Remaining
+  label_agile_board_totals_description: Sprint description
+
 
   label_agile_sprint_list_active: Active sprints
   label_agile_sprint_list_future: Future sprints

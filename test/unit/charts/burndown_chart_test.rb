@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -37,8 +37,8 @@ class BurndownChartTest < ActiveSupport::TestCase
     chart_data_cases.each do |test_case|
       test_case_issues = test_case[:issues].call
       test_case[:inerval_data].each do |case_interval|
-        puts "BurndownChartTest case - #{case_interval[:name]}"
-        chart_data = RedmineAgile::BurndownChart.data(test_case_issues, case_interval[:options])
+        # puts "BurndownChartTest case - #{case_interval[:name]}"
+        chart_data = RedmineAgile::Charts::BurndownChart.data(test_case_issues, case_interval[:options])
         assert_equal case_interval[:result], extract_values(chart_data)
       end
       test_case_issues.destroy_all

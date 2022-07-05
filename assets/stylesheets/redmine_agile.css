@@ -576,6 +576,16 @@ table.list.issues-board.sticky {
   margin-top: -2.3em;
 }
 
+.controller-agile_boards .observed-desc {
+  margin-top: 0;
+  display: flex;
+  justify-content: end;
+}
+
+.agile-sprint-description {
+  margin-right: auto;
+}
+
 .agile-board-fullscreen .controller-agile_boards .query-totals {
   margin: 0px;
   position: fixed;

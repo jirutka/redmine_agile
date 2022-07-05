@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -90,6 +90,6 @@ class AgileJournalDetailsControllerTest < ActionController::TestCase
     assert_response :success
     assert_match /Assignee/, @response.body
     assert_match /Bug #1/, @response.body
-    assert_select '.list td a.user', 1
+    assert_select '.list td a', 'John Smith'
   end
 end

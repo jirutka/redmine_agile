@@ -1,18 +1,36 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2021 RedmineUP
+Copyright (C) 2011-2022 RedmineUP
 http://www.redmineup.com/
+
+== 2022-04-11 v1.6.4
+
+* Redmine 5.0 compatibility fixes
+* Fixed agile subproject displaying error
+* Added closed sprints to filter
+
+== 2022-03-30 v1.6.3
+
+* Redmine 5.0 compatibility
+* Added sprint description to a board view
+* Changed Manage board permissions behavior
+* Fixed default board setting
+* Fixed card load error
+* Fixed empty sprint for default board
+* Fixed saved query bug for agile board
+* Fixed story points are not being added up in "Sprints" subtab of "Backlog" tab
+* Fixed error with empty sprint_id in AgileQuery
 
 == 2021-09-07 v1.6.2
 
 * Added notification message for not available operations on Backlog board
 * Added subproject context menu
-* Added future data settings 
+* Added future data settings
 * Added sprint overlapping option
 * Removed default sprint id from chart board
 * Fixed sprint locale erro
-* Fixed backlog option saving 
+* Fixed backlog option saving
 * Fixed MSSQL double order error
 * Fixed close validation for sprint
 * Fixed extra load from board states

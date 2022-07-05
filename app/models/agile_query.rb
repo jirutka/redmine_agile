@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -120,7 +120,7 @@ class AgileQuery < Query
   end
 
   def chart_unit
-    @chart_unit ||= RedmineAgile::Charts.valid_chart_unit_by(options[:chart], options[:chart_unit])
+    @chart_unit ||= RedmineAgile::Charts::Helper.valid_chart_unit_by(options[:chart], options[:chart_unit])
   end
 
   def chart_unit=(value)
@@ -666,7 +666,7 @@ class AgileQuery < Query
     p_ids = [project.id]
     p_ids += project.descendants.select { |sub| sub.module_enabled?('agile') }.map(&:id) if Setting.display_subprojects_issues?
 
-    "#{Project.table_name}.id IN (#{p_ids.join(',')})"
+    p_ids.any? ? "#{Project.table_name}.id IN (#{p_ids.join(',')})" : '1=0'
   end
 
   def issue_scope

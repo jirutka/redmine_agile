@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -16,22 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
-require 'redmine_agile/hooks/views_layouts_hook'
-require 'redmine_agile/hooks/views_issues_hook'
-require 'redmine_agile/hooks/views_versions_hook'
-require 'redmine_agile/hooks/controller_issue_hook'
-require 'redmine_agile/patches/issue_patch'
-
-require 'redmine_agile/helpers/agile_helper'
-
-require 'redmine_agile/charts/agile_chart'
-require 'redmine_agile/charts/burndown_chart'
-require 'redmine_agile/charts/work_burndown_chart'
-require 'redmine_agile/charts/charts'
-require 'redmine_agile/patches/issue_drop_patch'
 
 module RedmineAgile
 
@@ -64,7 +48,7 @@ module RedmineAgile
     end
 
     def default_chart
-      Setting.plugin_redmine_agile['default_chart'] || Charts::BURNDOWN_CHART
+      Setting.plugin_redmine_agile['default_chart'] || Charts::Helper::BURNDOWN_CHART
     end
 
     def estimate_units
@@ -135,3 +119,20 @@ module RedmineAgile
   end
 
 end
+
+REDMINE_AGILE_REQUIRED_FILES = [
+  'redmine_agile/hooks/views_layouts_hook',
+  'redmine_agile/hooks/views_issues_hook',
+  'redmine_agile/hooks/views_versions_hook',
+  'redmine_agile/hooks/controller_issue_hook',
+  'redmine_agile/patches/issue_patch',
+  'redmine_agile/helpers/agile_helper',
+  'redmine_agile/charts/helper',
+  'redmine_agile/charts/agile_chart',
+  'redmine_agile/charts/burndown_chart',
+  'redmine_agile/charts/work_burndown_chart',
+  'redmine_agile/patches/issue_drop_patch'
+]
+
+base_url = File.dirname(__FILE__)
+REDMINE_AGILE_REQUIRED_FILES.each { |file| require(base_url + '/' + file) }

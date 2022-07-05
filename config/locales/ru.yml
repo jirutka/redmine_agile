@@ -189,6 +189,7 @@ ru:
   label_agile_board_totals_spent_time: Потраченное время
   label_agile_board_totals_percent_done: Готовность (%)
   label_agile_board_totals_velocity: Скорость закрытия
+  label_agile_board_totals_description: Описание спринта
 
   label_agile_sprint_list_active: Активные спринты
   label_agile_sprint_list_future: Следующие спринты

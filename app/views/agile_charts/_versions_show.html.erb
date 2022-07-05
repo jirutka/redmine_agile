@@ -13,7 +13,7 @@
       </span>
     </legend>
     <div id='agile_chart'>
-      <%= render_agile_chart(RedmineAgile::Charts.valid_chart_name_by(params[:chart] || RedmineAgile.default_chart), @version.fixed_issues) %>
+      <%= render_agile_chart(RedmineAgile::Charts::Helper.valid_chart_name_by(params[:chart] || RedmineAgile.default_chart), @version.fixed_issues) %>
     </div>
   </fieldset>
 <% end %>
@@ -24,7 +24,7 @@
 <% end %>
 
 <%= javascript_tag do %>
-  var chartsWithUnits = <%= raw RedmineAgile::Charts::CHARTS_WITH_UNITS.to_json %>
+  var chartsWithUnits = <%= raw RedmineAgile::Charts::Helper::CHARTS_WITH_UNITS.to_json %>
   $(document).ready(function() {
     toggleChartUnit($('#chart_by_select').val(), 'chart-unit-row');
   });

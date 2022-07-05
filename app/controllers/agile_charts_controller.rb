@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ class AgileChartsController < ApplicationController
   include SortHelper
   include IssuesHelper
   helper :timelog
-  include RedmineAgile::AgileHelper
+  include RedmineAgile::Helpers::AgileHelper
 
   def show
     retrieve_charts_query
@@ -85,7 +85,7 @@ class AgileChartsController < ApplicationController
   private
 
   def render_data(options = {})
-    agile_chart = RedmineAgile::Charts::AGILE_CHARTS[@chart]
+    agile_chart = RedmineAgile::Charts::Helper::AGILE_CHARTS[@chart]
     data = agile_chart[:class].data(@issues, options) if agile_chart
 
     if data

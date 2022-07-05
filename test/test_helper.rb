@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -360,7 +360,6 @@ class RedmineAgile::TestCase
       r.permissions << :add_agile_queries
       r.permissions << :view_agile_queries
       r.permissions << :agile_versions
-      r.permissions << :view_sprints
       r.save
     end
 

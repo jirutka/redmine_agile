@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ class AgileBoardsController < ApplicationController
   include SortHelper
   include IssuesHelper
   helper :timelog
-  include RedmineAgile::AgileHelper
+  include RedmineAgile::Helpers::AgileHelper
   helper :checklists if RedmineAgile.use_checklist?
 
   def index
@@ -81,10 +81,10 @@ class AgileBoardsController < ApplicationController
     retrieve_agile_query_from_session
     old_status = @issue.status
     @issue.init_journal(User.current)
-    @issue.safe_attributes = auto_assign_on_move? ? params[:issue].merge(:assigned_to_id => User.current.id) : params[:issue]
-    checking_params = params.respond_to?(:to_unsafe_hash) ? params.to_unsafe_hash : params
 
-    saved = checking_params['issue'] && checking_params['issue'].inject(true) do |total, attribute|
+    @issue.safe_attributes = configured_params['issue']
+
+    saved = configured_params['issue'] && configured_params['issue'].inject(true) do |total, attribute|
       if @issue.attributes.include?(attribute.first)
         total &&= @issue.attributes[attribute.first].to_i == attribute.last.to_i
       else
@@ -137,6 +137,16 @@ class AgileBoardsController < ApplicationController
   end
 
   private
+
+  def configured_params
+    return @configured_params if @configured_params
+
+    issue_params = params[:issue]
+    issue_params[:parent_issue_id] = issue_params[:parent_id] && issue_params.delete(:parent_id) if issue_params[:parent_id]
+    issue_params[:assigned_to_id] = User.current.id if auto_assign_on_move?
+
+    @configured_params = params.respond_to?(:to_unsafe_hash) ? params.to_unsafe_hash : params
+  end
 
   def auto_assign_on_move?
     RedmineAgile.auto_assign_on_move? && @issue.assigned_to.nil? &&

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2022 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -53,8 +53,8 @@ class AgileChartsControllerTest < ActionController::TestCase
 
     EnabledModule.create(project: @project, name: 'agile')
 
-    @charts = RedmineAgile::Charts::AGILE_CHARTS.keys
-    @charts_with_units = RedmineAgile::Charts::CHARTS_WITH_UNITS
+    @charts = RedmineAgile::Charts::Helper::AGILE_CHARTS.keys
+    @charts_with_units = RedmineAgile::Charts::Helper::CHARTS_WITH_UNITS
   end
 
   def test_get_show
@@ -73,7 +73,7 @@ class AgileChartsControllerTest < ActionController::TestCase
 
   def test_charts_with_chart_unit
     @charts_with_units.each do |chart|
-      RedmineAgile::Charts::CHART_UNITS.each do |chart_unit, label|
+      RedmineAgile::Charts::Helper::CHART_UNITS.each do |chart_unit, label|
         check_chart chart: chart, project_id: @project.identifier, chart_unit: chart_unit
       end
     end
@@ -81,7 +81,7 @@ class AgileChartsControllerTest < ActionController::TestCase
 
   def test_charts_by_different_time_intervals
     @charts.each do |chart|
-      RedmineAgile::AgileChart::TIME_INTERVALS.each do |interval|
+      RedmineAgile::Charts::AgileChart::TIME_INTERVALS.each do |interval|
         check_chart chart: chart, project_id: @project.identifier, interval_size: interval
       end
     end
@@ -89,7 +89,7 @@ class AgileChartsControllerTest < ActionController::TestCase
 
   def test_charts_by_different_periods_and_time_intervals
     @charts.each do |chart|
-      RedmineAgile::AgileChart::TIME_INTERVALS.each do |interval|
+      RedmineAgile::Charts::AgileChart::TIME_INTERVALS.each do |interval|
         params = {
           chart: chart,
           project_id: @project.identifier,
@@ -135,7 +135,7 @@ class AgileChartsControllerTest < ActionController::TestCase
 
   def test_charts_with_version_and_chart_unit
     @charts_with_units.each do |chart|
-      RedmineAgile::Charts::CHART_UNITS.each do |chart_unit, label|
+      RedmineAgile::Charts::Helper::CHART_UNITS.each do |chart_unit, label|
         should_get_render_chart chart: chart, version_id: 2, chart_unit: chart_unit
       end
     end
@@ -152,7 +152,7 @@ class AgileChartsControllerTest < ActionController::TestCase
     )
     new_version.fixed_issues << issue.reload
 
-    should_get_render_chart chart: RedmineAgile::Charts::BURNDOWN_CHART, project_id: @project.identifier, version_id: new_version.id
+    should_get_render_chart chart: RedmineAgile::Charts::Helper::BURNDOWN_CHART, project_id: @project.identifier, version_id: new_version.id
   end
 
   def test_get_show_chart_with_open_target_version
