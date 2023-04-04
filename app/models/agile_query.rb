@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2022 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -140,6 +140,8 @@ class AgileQuery < Query
   end
 
   def build_from_params(params)
+    params = params.permit!.to_h if params.is_a?(ActionController::Parameters) && Rails.version > '5.0'
+
     if params[:fields] || params[:f]
       self.filters = {}
       add_filters(params[:fields] || params[:f], params[:operators] || params[:op], params[:values] || params[:v])
@@ -610,7 +612,7 @@ class AgileQuery < Query
     return @board_issue_statuses if @board_issue_statuses
 
     status_ids =
-      if tracker_ids = Tracker.eager_load(issues: [:project]).where(statement).pluck(:id)
+      if tracker_ids = Tracker.eager_load(issues: [{ project: :versions }]).where(statement).pluck(:id)
         WorkflowTransition.where(tracker_id: tracker_ids).distinct.pluck(:old_status_id, :new_status_id).flatten.uniq
       else
         []
@@ -637,16 +639,18 @@ class AgileQuery < Query
       end
 
   def statement
-    if values_for('fixed_version_id') == ['current_version'] && project
-      version = current_version
-      # substitute id for current version
-      version ? filters['fixed_version_id'][:values] = [version.id.to_s] : filters.delete('fixed_version_id')
+    incoming_values = filters['fixed_version_id'][:values] if filters['fixed_version_id']
+
+    if values_for('fixed_version_id') == ['current_version'] && project && !current_version
+      filters.delete('fixed_version_id')
+    elsif values_for('fixed_version_id') && values_for('fixed_version_id').include?('current_version') && project
+      # convert identifier of current version to integer
+      filters['fixed_version_id'][:values] = incoming_values.map { |el| el == 'current_version' ? current_version.id.to_s : el }
     end
+
     clauses = super
-    if version
-      # return string for correct value in a select on a form
-      filters['fixed_version_id'][:values] = ['current_version']
-    end
+    # return of incoming filter for correct value in a select on a form
+    filters['fixed_version_id'][:values] = incoming_values if incoming_values
     clauses
   end
 
@@ -664,7 +668,7 @@ class AgileQuery < Query
     return '1=1' unless project
 
     p_ids = [project.id]
-    p_ids += project.descendants.select { |sub| sub.module_enabled?('agile') }.map(&:id) if Setting.display_subprojects_issues?
+    p_ids += project.descendants.select { |sub| sub.module_enabled?('agile') }.map(&:id) if Setting.display_subprojects_issues? || has_filter?('subproject_id')
 
     p_ids.any? ? "#{Project.table_name}.id IN (#{p_ids.join(',')})" : '1=0'
   end

@@ -45,8 +45,8 @@ ko:
 
   #1.1.1
   label_agile_charts_average_velocity: "평균 속도"
-  label_agile_charts_avarate_number_of_issues: "평균 일감 수"
-  label_agile_charts_avarate_number_of_hours: "평균 시간 수"
+  label_agile_charts_average_number_of_issues: "평균 일감 수"
+  label_agile_charts_average_number_of_hours: "평균 시간 수"
 
   #1.2.0
   label_agile_color: "색상"

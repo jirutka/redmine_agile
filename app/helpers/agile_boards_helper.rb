@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2022 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -84,6 +84,14 @@ module AgileBoardsHelper
     hours << "#{issue.story_points}sp" if RedmineAgile.use_story_points? && query.has_column_name?(:story_points) && issue.story_points
 
     content_tag(:span, "(#{hours.join('/')})", :class => 'hours') unless hours.blank?
+  end
+
+  def render_sprint_total_time_story_points(query, sprint)
+    sp = query.sprint_total_time_story_points(query, sprint)
+
+    if sp.positive?
+      "(#{"%.2f" % sp})sp"
+    end
   end
 
   def agile_progress_bar(pcts, options={})

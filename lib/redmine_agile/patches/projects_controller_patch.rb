@@ -17,8 +17,27 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class AddStoryPointsToAgileRanks < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
-  def change
-    add_column :agile_data, :story_points, :integer
+module RedmineAgile
+  module Patches
+    module ProjectsControllerPatch
+      def self.included(base) # :nodoc:
+        base.send(:include, InstanceMethods)
+        base.class_eval do
+        end
+      end
+
+      module InstanceMethods
+        def settings_with_agile
+          settings_without_agile
+
+          @sprint_status = params[:sprint_status] || ''
+          @project_sprints = @project.agile_sprints.status(@sprint_status).sorted
+        end
+      end
+    end
   end
+end
+
+unless ProjectsController.included_modules.include?(RedmineAgile::Patches::ProjectsControllerPatch)
+  ProjectsController.send(:include, RedmineAgile::Patches::ProjectsControllerPatch)
 end

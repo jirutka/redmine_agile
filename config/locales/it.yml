@@ -49,8 +49,8 @@ it:
 
   #1.1.1
   label_agile_charts_average_velocity: Media velocità
-  label_agile_charts_avarate_number_of_issues: Media del numero di segnalazioni
-  label_agile_charts_avarate_number_of_hours: Media del numero di ore
+  label_agile_charts_average_number_of_issues: Media del numero di segnalazioni
+  label_agile_charts_average_number_of_hours: Media del numero di ore
 
   #1.2.0
   label_agile_color: Colore

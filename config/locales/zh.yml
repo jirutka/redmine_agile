@@ -50,8 +50,8 @@ zh:
 
   #1.1.1
   label_agile_charts_average_velocity: 平均速率
-  label_agile_charts_avarate_number_of_issues: 平均问题数
-  label_agile_charts_avarate_number_of_hours: 平均时长
+  label_agile_charts_average_number_of_issues: 平均问题数
+  label_agile_charts_average_number_of_hours: 平均时长
 
   #1.2.0
   label_agile_color: 颜色

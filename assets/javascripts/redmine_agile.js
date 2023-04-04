@@ -620,9 +620,36 @@ function recalculateHours() {
   });
 }
 
-function recalculateSprintHours() {
+function recalculateSprintHours(url, options) {
+  var $sprint_ids = [];
+  var $sprintValueExist = $('span.sprint-estimate').text().trim()
+
+  $('div.column-issues').each(function() {
+    if($(this).attr('data-sprint-id') !== '') {
+      $sprint_ids.push($(this).attr('data-sprint-id'));
+    }
+  });
+  if($sprint_ids.length > 0 && $sprintValueExist) {
+    $.ajax({
+      url: url,
+      type: "get",
+      data: {sprint_ids: $sprint_ids},
+      success: function (data, status, xhr) {
+        refreshStoryPointsValues(data);
+      },
+      error: function (xhr, status, error) {
+            var alertMessage = parseErrorResponse(xhr.responseText);
+            if (alertMessage) {
+              setErrorMessage(alertMessage);
+            }
+      }
+    });
+  }
+}
+
+function recalculateEstimatedHours() {
   var unit = $(".planning-board").data('estimated-unit');
-  var dataAttr = unit == 'sp' ? 'story-points' : 'estimated-hours';
+  var dataAttr = 'estimated-hours';
 
   $('.sprint-column').each(function(i, elem){
     var versionEstimationSum = 0;
@@ -632,6 +659,18 @@ function recalculateSprintHours() {
     });
     if (versionEstimationSum > 0) {
       $(elem).find('.sprint-estimate').text('(' + versionEstimationSum.toFixed(2) + unit + ')');
+    }
+  });
+}
+
+function refreshStoryPointsValues(values) {
+  $('div.column-issues').each(function() {
+    var sprint = $(this).attr('data-sprint-id');
+
+    if(values[sprint]) {
+      $(this).parent().find('span.sprint-estimate').text("(" + values[sprint] + "sp)");
+    } else {
+      $(this).parent().find('span.sprint-estimate').text("");
     }
   });
 }

@@ -151,6 +151,7 @@ table.list.issues-board th {overflow: hidden; text-overflow: ellipsis;}
   padding: 5px;
   border: 1px solid #D5D5D5;
   background-color: #ffffdd;
+  z-index: 1;
 }
 
 table.issues-board .issue-status-col.empty { padding-bottom: 30px }

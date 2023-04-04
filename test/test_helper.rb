@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2022 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -159,7 +159,7 @@ module RedmineAgile
     :subject => "Issue 100",
     :id => 100,
     :fixed_version_id => 7,
-    :category_id => 1,
+    :category_id => 4,
     :description => "Unable to print recipes",
     :tracker_id => 1,
     :assigned_to_id => 1,
@@ -196,7 +196,7 @@ module RedmineAgile
     :subject => "Issue 102",
     :id => 102,
     :fixed_version_id => 7,
-    :category_id => 1,
+    :category_id => 4,
     :description => "Unable to print recipes",
     :tracker_id => 3,
     :assigned_to_id => 2,
@@ -214,7 +214,7 @@ module RedmineAgile
     :subject => "Issue 103",
     :id => 103,
     :fixed_version_id => 7,
-    :category_id => 1,
+    :category_id => 4,
     :description => "Unable to print recipes",
     :tracker_id => 1,
     :assigned_to_id => 2,

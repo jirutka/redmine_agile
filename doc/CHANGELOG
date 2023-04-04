@@ -1,8 +1,17 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2022 RedmineUP
+Copyright (C) 2011-2023 RedmineUP
 http://www.redmineup.com/
+
+== 2023-01-26 v1.6.5
+
+* Added Hungarian translation (Krisztian Engi, Lilla Basilides)
+* Added SP totals into issues
+* Added API for agile_sprints
+* Updated Czech translation (Petr Stefan)
+* Updated German locale (Joachim Mathes)
+* Added Velocity chart by story points and hours
 
 == 2022-04-11 v1.6.4
 

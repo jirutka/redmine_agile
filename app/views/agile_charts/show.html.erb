@@ -9,13 +9,13 @@
     <%= hidden_field_tag 'set_filter', '1' %>
     <div id="query_form_content">
       <fieldset id="filters" class="collapsible">
-        <legend class="icon icon-expended icon-expanded" onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
+        <legend onclick="toggleFieldset(this);" class="icon icon-<%= @query.new_record? ? "expanded" : "collapsed" %>"><%= l(:label_filter_plural) %></legend>
         <div>
           <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
         </div>
       </fieldset>
       <fieldset class="collapsible">
-        <legend class="icon icon-expended icon-expanded" onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
+        <legend onclick="toggleFieldset(this);" class="icon icon-collapsed"><%= l(:label_options) %></legend>
         <div>
           <table>
             <tr>

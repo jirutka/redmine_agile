@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2022 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ requires_redmine_crm version_or_higher: '0.0.56' rescue raise "\n\033[31mRedmine
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.4'
+AGILE_VERSION_NUMBER = '1.6.5'
 AGILE_VERSION_TYPE = "Light version"
 
 if ActiveRecord::VERSION::MAJOR >= 4 && !defined?(FCSV)

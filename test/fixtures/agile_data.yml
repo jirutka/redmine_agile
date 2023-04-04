@@ -15,4 +15,4 @@ agile_data_3:
   issue_id: 3
   position: 3
   story_points: nil
-  agile_sprint_id: nil
+  agile_sprint_id: 2

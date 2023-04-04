@@ -19,10 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-require File.expand_path('../../test_helper', __FILE__)
-require File.expand_path(File.dirname(__FILE__) + '/../../../../test/test_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../../test_helper')
 
-class RedmineAgile::CommonViewsTest < ActionDispatch::IntegrationTest
+class Redmine::ApiTest::AgileDataTest < ActiveRecord::VERSION::MAJOR >= 4 ? Redmine::ApiTest::Base : ActionController::IntegrationTest
   fixtures :projects,
            :users,
            :roles,
@@ -47,41 +46,24 @@ class RedmineAgile::CommonViewsTest < ActionDispatch::IntegrationTest
            :journal_details,
            :queries
 
+  RedmineAgile::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_agile).directory + '/test/fixtures/', [:agile_data])
+
   def setup
-    @project_1 = Project.find(1)
-    EnabledModule.create(:project => @project_1, :name => 'agile')
-    EnabledModule.create(:project => @project_1, :name => 'gantt')
-    EnabledModule.create(:project => @project_1, :name => 'calendar')
+    Setting.rest_api_enabled = '1'
+    EnabledModule.create(:project => Project.find(1), :name => 'agile')
+    RedmineAgile::TestCase.prepare
   end
 
-  test 'View issues' do
-    log_user('admin', 'admin')
-    compatible_request :get, '/issues'
-    assert_response :success
+  test 'GET agile_data' do
+    compatible_api_request :get, '/issues/1/agile_data.xml', {}, credentials('admin')
+    assert_match 'application/xml', @response.content_type
+    assert_equal '200', @response.code
   end
 
-  test 'View Gantt chart' do
-    log_user('admin', 'admin')
-    compatible_request :get, '/projects/ecookbook/issues/gantt'
-    assert_response :success
+  test 'GET missied id' do
+    missied_id = Issue.order(:id).last.id
+    compatible_api_request :get, "/issues/#{missied_id}/agile_data.xml", {}, credentials('admin')
+    assert_match 'application/xml', @response.content_type
+    assert ['401', '403'].include?(@response.code)
   end
-
-  test 'View Calendar' do
-    log_user('admin', 'admin')
-    compatible_request :get, '/projects/ecookbook/issues/calendar'
-    assert_response :success
-  end
-
-  test 'View agile settings' do
-    log_user('admin', 'admin')
-    compatible_request :get, '/settings/plugin/redmine_agile'
-    assert_response :success
-  end
-
-  test 'View version' do
-    log_user('admin', 'admin')
-    compatible_request :get, '/versions/2'
-    assert_response :success
-  end
-
 end

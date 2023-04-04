@@ -1,7 +1,11 @@
 <div class="attributes">
   <div class="splitcontent">
-    <%= render :partial => 'issue_story_points_form', :locals => { :form => form } %>
   </div>
+  <% if RedmineAgile.use_story_points_for?(@issue.tracker) %>
+    <div class="splitcontent">
+      <%= render :partial => 'issue_story_points_form', :locals => { :form => form } %>
+    </div>
+  <% end %>
 </div>
 
 <% content_for :header_tags do %>

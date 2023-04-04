@@ -49,8 +49,8 @@ en:
 
   #1.1.1
   label_agile_charts_average_velocity: Average velocity
-  label_agile_charts_avarate_number_of_issues: Average number of issues
-  label_agile_charts_avarate_number_of_hours: Average number of hours
+  label_agile_charts_average_number_of_issues: Average number of issues
+  label_agile_charts_average_number_of_hours: Average number of hours
 
   #1.2.0
   label_agile_color: Color
@@ -169,7 +169,7 @@ en:
   label_agile_sprint_duration_week_4: 4 weeks
   label_agile_sprint_errors_crossed: Sprint dates are cross another existed sprint
   label_agile_sprint_errors_end_more_start: End date should be more than start date
-  label_agile_sprint_errors_open_issues: Sprint with open issues cannot be closed
+  label_agile_sprint_errors_open_issues: The sprint with open issues cannot be closed
   label_agile_sprint_default_chart: Сhart
   label_agile_sprint_chart_units: Estimation
   label_agile_chart_for_sprint: "For sprint: %{sprint}"
@@ -236,3 +236,4 @@ en:
   label_agile_hidden: Hidden
 
   label_chart_future_data: Show future data on charts
+  label_agile_charts_work_partially_closed: Partially completed

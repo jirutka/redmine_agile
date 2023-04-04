@@ -17,8 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class AddStoryPointsToAgileRanks < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
-  def change
-    add_column :agile_data, :story_points, :integer
+module RedmineAgile
+  module Hooks
+    class ViewsIssuesBulkEditHook < Redmine::Hook::ViewListener
+      render_on :view_issues_bulk_edit_details_bottom, :partial => 'issues/agile_data_fields_bulk_edit'
+    end
   end
 end

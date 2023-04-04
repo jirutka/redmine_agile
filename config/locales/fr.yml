@@ -45,8 +45,8 @@ fr:
 
   #1.1.1
   label_agile_charts_average_velocity: Vélocité moyenne
-  label_agile_charts_avarate_number_of_issues: Nombre moyen de demandes
-  label_agile_charts_avarate_number_of_hours: nombre moyen d'heures
+  label_agile_charts_average_number_of_issues: Nombre moyen de demandes
+  label_agile_charts_average_number_of_hours: nombre moyen d'heures
 
   #1.2.0
   label_agile_color: Couleur

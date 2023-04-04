@@ -49,8 +49,8 @@ pt-BR:
 
   #1.1.1
   label_agile_charts_average_velocity: Velocidade média
-  label_agile_charts_avarate_number_of_issues: Média de número de tarefas
-  label_agile_charts_avarate_number_of_hours: Média número de horas
+  label_agile_charts_average_number_of_issues: Média de número de tarefas
+  label_agile_charts_average_number_of_hours: Média número de horas
 
   #1.2.0
   label_agile_color: Cor

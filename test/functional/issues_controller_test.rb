@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2022 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,6 +22,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class IssuesControllerTest < ActionController::TestCase
+  include Redmine::I18n
+
   fixtures :projects,
            :users,
            :roles,
@@ -63,7 +65,7 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_new_issue_without_sp_value
-    with_agile_settings 'estimate_units' => 'hours' do
+    with_agile_settings 'estimate_units' => 'hours', 'story_points_on' => '0' do
       compatible_request :get, :new, :project_id => 1
       assert_response :success
       assert_select 'input#issue_agile_data_attributes_story_points', :count => 0
