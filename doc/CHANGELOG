@@ -1,8 +1,20 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2023 RedmineUP
+Copyright (C) 2011-2023 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
+
+== 2023-11-22 v1.6.6
+
+* Added global Scrum board
+* Added sorting for Sprint column
+* Fixed permission check for Agile card spent time
+* Fixed Sprint bug in Issues bulk update
+* Fixed redmineup_tags compatibility
+* Fixed Story points for Issue bulk edit
+* Fixed Backlog hiding on empty board
+* Changed Velocity chart average calculation
+* Updated French locale (Brice Beaumensnil)
 
 == 2023-01-26 v1.6.5
 

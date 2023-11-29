@@ -58,6 +58,7 @@ class AgileBoardsController < ApplicationController
     retrieve_agile_query
     if @query.valid?
       @issues = @query.issues
+      @agile_projects = @query.agile_projects
       @issue_board = @query.issue_board
       @board_columns = @query.board_statuses
       @allowed_statuses = statuses_allowed_for_create

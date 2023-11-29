@@ -612,7 +612,7 @@ class AgileQuery < Query
     return @board_issue_statuses if @board_issue_statuses
 
     status_ids =
-      if tracker_ids = Tracker.eager_load(issues: [{ project: :versions }]).where(statement).pluck(:id)
+      if tracker_ids = Tracker.eager_load(issues: [{ project: :versions }]).where(statement).pluck(:id).uniq
         WorkflowTransition.where(tracker_id: tracker_ids).distinct.pluck(:old_status_id, :new_status_id).flatten.uniq
       else
         []
@@ -654,21 +654,30 @@ class AgileQuery < Query
     clauses
   end
 
+  def agile_projects
+    Project.where(agile_projects_condition)
+  end
+
   private
 
   def base_agile_query_scope
     Issue.visible
          .eager_load(:status, :project, :assigned_to, :tracker, :priority, :category, :fixed_version, :agile_data)
-         .where(agile_projects)
+         .where(agile_projects_condition)
          .where(statement)
          .where(condition_for_status)
   end
 
-  def agile_projects
-    return '1=1' unless project
+  def agile_projects_condition
+    agile_pids = EnabledModule.where(name: 'agile').pluck(:project_id).uniq
+    return agile_pids.any? ? "#{Project.table_name}.id IN (#{agile_pids.join(',')})" : '1=1' unless project
 
-    p_ids = [project.id]
-    p_ids += project.descendants.select { |sub| sub.module_enabled?('agile') }.map(&:id) if Setting.display_subprojects_issues? || has_filter?('subproject_id')
+    if project
+      p_ids = [project.id]
+      p_ids += project.descendants.select { |sub| sub.module_enabled?('agile') }.map(&:id) if Setting.display_subprojects_issues? || has_filter?('subproject_id')
+    else
+      p_ids = Project.joins(:enabled_modules).where(enabled_modules: {name: 'agile'}).ids
+    end
 
     p_ids.any? ? "#{Project.table_name}.id IN (#{p_ids.join(',')})" : '1=0'
   end

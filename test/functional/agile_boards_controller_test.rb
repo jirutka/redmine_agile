@@ -120,9 +120,12 @@ class AgileBoardsControllerTest < ActionController::TestCase
   def test_get_index
     # global board
     compatible_request :get, :index
-    assert_response :success
-    assert_equal Issue.open.map(&:id).sort, agile_issues_in_list.map(&:id).sort
-    assert_select '.issue-card', Issue.open.count
+    issues = Issue.where(project: Project.all.select {|p| p.module_enabled?('agile') }.to_a,
+                         status_id: IssueStatus.where(is_closed: false))
+    assert_equal issues.map(&:id).sort, agile_issues_in_list.map(&:id).sort
+    assert_select '.issue-card', issues.count
+    assert_select '.issue-card span.fields p.issue-id strong', issues.count
+    assert_select '.issue-card span.fields p.name a', issues.count
   end
 
   def test_get_index_with_project

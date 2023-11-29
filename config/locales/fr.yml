@@ -17,17 +17,21 @@ fr:
 
   #1.1.0
   label_agile_board_default_fields: Champs par défaut des cartes
-  label_agile_charts_issues_burndown: Burndown des demandes
-  label_agile_charts_work_burndown: Burndown du temps de travail
+  label_agile_charts_issues_burndown: Avancement des demandes
+  label_agile_charts_work_burndown_hours: Avancement du temps de travail
+  label_agile_charts_work_burndown_sp: Avancement des Story Points
   label_agile_charts_number_of_hours: Nombre d'heures
   label_agile_charts_number_of_issues: Nombre de demandes
   label_agile_charts_cumulative_flow: Flux cumulé
   label_agile_charts_trackers_cumulative_flow: Flux cumulé des trackers
   label_agile_charts_issues_velocity: Vélocité
+  label_agile_charts_cycle_time: Temps de cycle
   label_agile_charts_lead_time: Délais
   label_agile_charts_average_lead_time: Délai moyen de livraison
   label_agile_chart_plural: Graphiques Agiles
-  permission_view_agile_charts: Afficher les graphique Agiles
+  label_agile_chart_new: Nouveau graphique Agile
+  label_agile_chart_edit: Modifier le graphique Agile
+  permission_view_agile_charts: Afficher les graphiques Agiles
   label_agile_ideal_work_remaining: Idéal
   label_agile_actual_work_remaining: Réel
   label_agile_chart: Graphique
@@ -36,7 +40,7 @@ fr:
   label_agile_chart_dates: Intervalles du graphique
   label_agile_weighed_ideal_work_remaining: Idéal pondéré
   label_agile_status_colors: Couleurs des statuts
-  label_agile_charts_burnup: Burnup des demandes
+  label_agile_charts_burnup: Avancement des demandes
   label_agile_charts_number_of_days: Nombre de jours
   label_agile_too_many_items: "Le graphique ne peut pas être créé car il dépasse le nombre maximal d'éléments pouvant être affichés (%{max})"
   label_agile_time_reports_items_limit: Limite du nombre de demandes pour les graphiques temporels
@@ -46,7 +50,7 @@ fr:
   #1.1.1
   label_agile_charts_average_velocity: Vélocité moyenne
   label_agile_charts_average_number_of_issues: Nombre moyen de demandes
-  label_agile_charts_average_number_of_hours: nombre moyen d'heures
+  label_agile_charts_average_number_of_hours: Nombre moyen d'heures
 
   #1.2.0
   label_agile_color: Couleur
@@ -60,7 +64,8 @@ fr:
   label_agile_manage_colors: Gérer les couleurs
   label_agile_fullscreen: Plein écran
   label_agile_no_version_issues: Demandes sans version
-  label_agile_charts_work_burnup: Burnup du temps de travail
+  label_agile_charts_work_burnup_hours: Hours burnup
+  label_agile_charts_work_burnup_sp: Story points burnu
   label_agile_completed: Terminé
   label_agile_exclude_weekends: Exclure les week-ends de l'effort idéal
   label_agile_board_truncated: "Le tableau ne peut pas être créé car il dépasse le nombre maximal d'éléments pouvant être affichés (%{max})"
@@ -75,7 +80,7 @@ fr:
 
   #1.3.8
   label_agile_parent_issue_tracker_id: Tracker parent
-  label_agile_sub_issues: Sous-demandes
+  label_agile_sub_issues: Sous-tâches
   label_agile_color_green: Vert
   label_agile_color_blue: Bleu
   label_agile_color_turquoise: Turquoise
@@ -85,7 +90,7 @@ fr:
   label_agile_color_red: Rouge
   label_agile_color_purple: Violet
   label_agile_color_gray: Gris
-  label_agile_has_sub_issues: A des sous-demandes
+  label_agile_has_sub_issues: A des sous-tâches
   label_agile_light_free_version: Agile Version gratuite
   label_agile_link_to_pro: Mettre à jour en version PRO
   label_agile_link_to_pro_demo: Démo live de la version PRO
@@ -100,7 +105,133 @@ fr:
   label_agile_4_more_features: 4 nouveautés supplémentaires...
   label_agile_upgrade_to_pro: Passez en version PRO pour bénéficier de ces nouveautés
 
-  label_agile_day_in_state:  Dans le statut
+  label_agile_day_in_state: Dans le statut
 
   #1.3.10
+  label_agile_hide_closed_issues_data: Cacher les données des tâches fermées
   project_module_agile: Agile
+
+  #1.3.13
+  label_agile_last_comment: Dernier commentaire
+
+  #1.4.0
+  label_agile_esitmate_units: Estimate units
+  label_agile_trackers_for_sp: Trackers pour les Story points
+  label_agile_story_points: Story points
+  field_story_points: Story points
+  label_agile_charts_number_of_story_points: Nombre de story points
+  label_agile_board_columns: Colonnes du tableau
+  lable_agile_wip_limit_exceeded: Limite des travaux en cours dépassée
+  label_agile_wip_limit: Limite des travaux en cours
+  label_agile_add_new_issue: "+ NOUVELLE DEMANDE"
+  label_agile_allow_create_cards: Création d'une carte
+  label_agile_auto_assign_on_move: Attribution automatique lors du déplacement
+  text_agile_create_issue_error: Une erreur s'est produite lors de la création de la demande
+  label_agile_inline_comment: Commentaire intégré
+  label_agile_hours: Heures
+  field_color: Couleur
+
+  field_duration: Durée
+
+  field_closed_on_trendline: Ligne de tendance des demandes fermées
+  field_created_on_trendline: Ligne de tendance des demandes créées
+
+  label_agile_sp_values: Valeurs des story points
+
+  label_agile_interval_size: Taille de l'intervalle
+  label_agile_day: Jour
+  label_agile_week: Semaine
+  label_agile_month: Mois
+  label_agile_quarter: Trimestre
+  label_agile_year: Année
+  label_cards_search: Recherche par sujet
+
+  field_agile_sprint: Sprint
+  field_end_date: Date de fin
+  label_agile_sprints_on: Activer les sprints par défaut
+  label_agile_sprint: Sprint
+  label_agile_sprint_plural: Sprints
+  label_agile_sprint_name: Nom
+  label_agile_sprint_description: Description
+  label_agile_sprint_status: Statut
+  label_agile_sprint_sharing: Partage
+  label_agile_sprint_start_date: Date de début
+  label_agile_sprint_end_date: Date de fin
+  label_agile_sprint_new: Nouveau sprint
+  label_agile_sprint_status_open: Ouvert
+  label_agile_sprint_status_active: Active
+  label_agile_sprint_status_closed: Fermé
+  label_agile_sprint_duration: Durée
+  label_agile_sprint_duration_select: <<Selection durée>>
+  label_agile_sprint_duration_week_1: 1 semaine
+  label_agile_sprint_duration_week_2: 2 semaines
+  label_agile_sprint_duration_week_3: 3 semaines
+  label_agile_sprint_duration_week_4: 4 semaines
+  label_agile_sprint_errors_crossed: Les dates de sprint sont croisées avec un autre sprint existant
+  label_agile_sprint_errors_end_more_start: La date de fin doit être supérieure à la date de début
+  label_agile_sprint_errors_open_issues: Un sprint avec des problèmes ouverts ne peut pas être fermé
+  label_agile_sprint_default_chart: Graphique
+  label_agile_sprint_chart_units: Estimation
+  label_agile_chart_for_sprint: "Pour le sprint: %{sprint}"
+
+  label_agile_charts: Graphiques
+  label_agile_chart_burndown: Avancement (Burndown)
+  label_agile_chart_burnup: Avancement (Burnup)
+  label_agile_chart_units: Unités
+
+  label_agile_planning_board_more: Charger plus...
+  label_agile_version_query_new: Nouvelle requête sur les versions
+  label_agile_version_my_boards: Mes requêtes sur les versions
+  label_agile_version_board_plural: Requêtes sur les versions
+  label_agile_version_board_edit: Editer la requête sur les versions
+
+  label_agile_edit_issue: Modifier la demande
+
+  label_agile_board_type: Type de tableau
+  label_agile_board_type_kanban: Tableau Kanban
+  label_agile_board_type_scrum: Tableau Scrum
+  label_agile_board_totals: Totaux
+  label_agile_board_totals_story_points: Story points
+  label_agile_board_totals_hours: Heures
+  label_agile_board_totals_spent_time: Temps passé
+  label_agile_board_totals_percent_done: Pourcentage fait
+  label_agile_board_totals_velocity: Velocité
+  label_agile_board_totals_interval: Intervalle
+  label_agile_board_totals_remaining: Reste à faire
+
+  label_agile_sprint_list_active: Sprints actifs
+  label_agile_sprint_list_future: Futurs sprints
+  label_agile_sprint_list_old: Anciens sprints
+
+  label_agile_mixed_trackers: Moyenne locale (tous trackers)
+  label_agile_moving_average: Moyenne mobile
+
+  label_agile_board_backlog: Backlog
+  label_agile_board_backlog_column: Colonne Backlog
+  label_agile_board_search_backlog_issues: Rechercher des demandes du backlog
+  label_agile_version_plural: Versions
+  label_agile_sprint_add: Ajouter un sprint
+  label_agile_version_add: Ajouter une version
+
+  label_agile_sprint_query_new: Nouvelle requête sur les sprints
+  label_agile_sprint_my_boards: Mes requêtes sur les sprints
+  label_agile_sprint_board_plural: Requêtes sur les sprints
+  label_agile_sprint_board_edit: Editer la requête sur les sprints
+  field_sprint: Sprint
+  label_agile_no_sprint_issues: Tâches sans sprint
+  field_closed_sprints: Sprints finalisés
+  field_closed_versions: Versions finalisées
+
+  label_agile_sprint_sharing_none: Non partagé
+  label_agile_sprint_sharing_descendants: Avec les sous-projets
+  label_agile_sprint_sharing_hierarchy: Avec toute la hiérarchie
+  label_agile_sprint_sharing_tree: Avec tout l'arbre
+  label_agile_sprint_sharing_system: Avec tous les projets
+  label_allow_ovelapping_sprints: Autoriser la superposition de sprints
+
+  label_agile_action_not_available: Action non disponible
+  label_agile_general: Général
+  label_agile_hidden: Caché
+
+  label_chart_future_data: Voir les futures données dans les graphiques
+  label_agile_charts_work_partially_closed: Partially completed

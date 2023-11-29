@@ -39,7 +39,7 @@ ru:
   label_agile_date_from: С
   label_agile_date_to: По
   label_agile_chart_dates: Интервалы диаграммы
-  label_agile_weighed_ideal_work_remaining: Взвещенно
+  label_agile_weighed_ideal_work_remaining: Взвешенно
   label_agile_status_colors: Цвета статусов
   label_agile_charts_burnup: Выполнение задач
   label_agile_charts_number_of_days: Кол-во дней
@@ -224,5 +224,5 @@ ru:
   label_agile_general: Общие
   label_agile_hidden: Дополнительные
 
-  label_chart_future_data: Показывать рассчетные данные на графиках
+  label_chart_future_data: Показывать расчетные данные на графиках
   label_agile_charts_work_partially_closed: Частично закрыто

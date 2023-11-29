@@ -616,6 +616,8 @@ function recalculateHours() {
 
     if (values.length > 0) {
       $(elem).find('.version-estimate').text('(' + values.join('/') + ')');
+    } else {
+      $(elem).find('.version-estimate').text('');
     }
   });
 }

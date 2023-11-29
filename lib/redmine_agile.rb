@@ -102,7 +102,7 @@ module RedmineAgile
     end
 
     def use_checklist?
-      @@chcklist_plugin_installed ||= (Redmine::Plugin.installed?(:redmine_checklists))
+      @@chcklist_plugin_installed ||= Dir.exist?(File.join(Rails.root, 'plugins/redmine_checklists'))
     end
 
     def allow_create_card?

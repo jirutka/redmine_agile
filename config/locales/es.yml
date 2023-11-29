@@ -55,7 +55,7 @@ es:
   #1.2.0
   label_agile_color: Color
   permission_manage_agile_verions: Administrar planificación de versiones
-  label_agile_version_planning: planificación de versiones
+  label_agile_version_planning: Planificación de versiones
   error_agile_version_transition: No se puede cambiar la versión de la petición
   label_agile_tracker_colors: Colores de tipos
   label_agile_issue_priority_colors: Colores de prioridades de la petición

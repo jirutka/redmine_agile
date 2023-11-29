@@ -1,0 +1,27 @@
+
+
+<% if @safe_attributes.include?('agile_color_attributes') && RedmineAgile.use_colors? %>
+  <p>
+    <%= label_tag 'issue_agile_color_attributes_color', l(:label_agile_color) %>
+    <%= select 'issue[agile_color_attributes]', :color,
+               content_tag('option', l(:label_no_change_option), :value => '', selected: 'selected') +
+                 content_tag('option', l(:label_none), :value => 'none') +
+                 options_for_select(AgileColor::AGILE_COLORS)
+    %>
+  </p>
+
+  <%= javascript_tag "$('#issue_agile_color_attributes_color').simplecolorpicker({picker: true});"%>
+  <% content_for :header_tags do %>
+    <%= javascript_include_tag 'jquery.simplecolorpicker.js', :plugin => "redmine_agile" %>
+    <%= stylesheet_link_tag 'jquery.simplecolorpicker.css', :plugin => 'redmine_agile' %>
+  <% end %>
+<% end %>
+
+<% if @project && @project.module_enabled?('agile') &&
+  RedmineAgile.use_story_points? &&
+  RedmineAgile.use_story_points_for?(@target_tracker) %>
+  <p>
+      <%= label_tag 'issue_agile_data_attributes_story_points', l(:label_agile_story_points) %>
+      <%= text_field_tag 'issue[agile_data_attributes][story_points]', '', :size => 3 %>
+  </p>
+<% end %>

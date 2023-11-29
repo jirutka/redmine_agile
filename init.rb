@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmine_crm version_or_higher: '0.0.56' rescue raise "\n\033[31mRedmine requires newer redmine_crm gem version.\nPlease update with 'bundle update redmine_crm'.\033[0m"
+requires_redmine_crm version_or_higher: '0.0.59' rescue raise "\n\033[31mRedmine requires newer redmine_crm gem version.\nPlease update with 'bundle update redmine_crm'.\033[0m"
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.5'
+AGILE_VERSION_NUMBER = '1.6.6'
 AGILE_VERSION_TYPE = "Light version"
 
 if ActiveRecord::VERSION::MAJOR >= 4 && !defined?(FCSV)
