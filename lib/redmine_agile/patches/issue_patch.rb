@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@ module RedmineAgile
       def self.included(base)
         base.send(:include, InstanceMethods)
         base.class_eval do
-          unloadable
           has_one :agile_data, :dependent => :destroy
           delegate :position, :to => :agile_data, :allow_nil => true
           scope :sorted_by_rank, lambda { eager_load(:agile_data).

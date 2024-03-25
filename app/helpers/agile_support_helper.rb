@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ module AgileSupportHelper
   def issue_statuses_to_csv(collector)
     decimal_separator = l(:general_csv_decimal_separator)
     encoding = 'utf-8'
-    export = FCSV.generate(:col_sep => l(:general_csv_separator)) do |csv|
+    export = CSV.generate(:col_sep => l(:general_csv_separator)) do |csv|
       headers = [ "#",
                   l(:field_created_on, locale: :en),
                   l(:field_status, locale: :en),

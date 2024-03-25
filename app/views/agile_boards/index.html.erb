@@ -1,3 +1,7 @@
 <%= render 'index' %>
+
+<script type="text/javascript">
+  const boardConsumer = new agileBoardConsumer('<%= rcrm_cable_agile_url(protocol: :wss) %>', '<%= "board-#{@project.try(:id)}" %>')
+</script>
 <%= init_agile_tooltip_info %>
 <%= call_hook(:view_agile_board_bottom, { :issues => @issues, :project => @project, :query => @query }) %>

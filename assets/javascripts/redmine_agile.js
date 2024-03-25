@@ -83,7 +83,7 @@
 
           $column.find('.issue-card').each(function(i, e) {
             var $e = $(e);
-            positions[$e.data('id')] = { position: $e.index() };
+            positions[$e.data('id')] = { position: i };
           });
 
           var issueParams = {};
@@ -96,7 +96,8 @@
             data: {
               issue: issueParams,
               positions: positions,
-              id: issue_id
+              id: issue_id,
+              actor: $(".agile-board").data("actor")
             },
             success: function(data, status, xhr) {
               self.successSortable($oldColumn, $column);
@@ -198,7 +199,7 @@
 
           $column.find('.issue-card').each(function(i, e) {
             var $e = $(e);
-            positions[$e.data('id')] = { position: $e.index() };
+            positions[$e.data('id')] = { position: i };
           });
 
           var params = {
@@ -206,7 +207,8 @@
                 status_id: newStatusId
               },
               positions: positions,
-              id: issue_id
+              id: issue_id,
+              actor: $(".agile-board").data("actor")
             }
           params['issue'][swimLaneField] = swimLaneId;
 

@@ -17,10 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module RedmineAgile
-  module Hooks
-    class ViewsVersionsHook < Redmine::Hook::ViewListener
-      render_on :view_versions_show_bottom, :partial => "agile_charts/versions_show"
+module ActionCable
+  module Server
+    class RcrmServer < ActionCable::Server::Base
+      attr_reader :config
+
+      def initialize(config: self.class.config)
+        @config = config
+        @mutex = Monitor.new
+        @remote_connections = @event_loop = @worker_pool = @pubsub = nil
+      end
     end
   end
 end

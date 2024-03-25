@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -18,8 +18,6 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 class AgileBoardsController < ApplicationController
-  unloadable
-
   menu_item :agile
 
   before_action :find_issue, only: [:update, :issue_tooltip, :inline_comment, :edit_issue, :update_issue, :agile_data]
@@ -104,6 +102,11 @@ class AgileBoardsController < ApplicationController
       end if params[:positions]
 
       @inline_adding = params[:issue][:notes] || nil
+
+      ActionCable::Producers::AgileBoardProducer.card_moved(
+        params[:actor],
+        { channel: "board-#{@project.try(:id)}", issue: @issue, query: @query, from_id: old_status.id }
+      ) if RedmineAgile.cable_available?
 
       respond_to do |format|
         format.html { render(:partial => 'issue_card', :locals => {:issue => @issue}, :status => :ok, :layout => nil) }

@@ -17,10 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module RedmineAgile
-  module Hooks
-    class ViewsVersionsHook < Redmine::Hook::ViewListener
-      render_on :view_versions_show_bottom, :partial => "agile_charts/versions_show"
+module ActionCable
+  module Channels
+    class AgileChannel < ActionCable::Channel::Base
+      BASE_CHANNEL_NAME = "action_cable:channels:agile"
+
+      def subscribed
+        return subscribe_to_board_stream if params[:chat_id].match(/board/)
+
+        reject
+      end
+
+      private
+
+      def subscribe_to_board_stream
+        project = Project.find_by(id: params[:chat_id].split('board-').last)
+        return reject if !project || !current_user || !current_user.allowed_to?(:view_issues, project)
+        stream_from "#{BASE_CHANNEL_NAME}:#{params[:chat_id]}"
+      end
     end
   end
 end

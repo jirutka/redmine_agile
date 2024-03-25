@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -39,6 +39,6 @@ module RedmineAgile
   end
 end
 
-unless RedmineCrm::Liquid::IssueDrop.included_modules.include?(RedmineAgile::Patches::IssueDropPatch)
-  RedmineCrm::Liquid::IssueDrop.send(:include, RedmineAgile::Patches::IssueDropPatch)
+unless Redmineup::Liquid::IssueDrop.included_modules.include?(RedmineAgile::Patches::IssueDropPatch)
+  Redmineup::Liquid::IssueDrop.send(:include, RedmineAgile::Patches::IssueDropPatch)
 end

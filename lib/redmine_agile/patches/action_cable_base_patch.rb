@@ -18,9 +18,22 @@
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
 module RedmineAgile
-  module Hooks
-    class ViewsVersionsHook < Redmine::Hook::ViewListener
-      render_on :view_versions_show_bottom, :partial => "agile_charts/versions_show"
+  module Patches
+    module ActionCableBasePatch
+      def self.included(base)
+        base.send(:extend, ClassMethods)
+        delegate :rcrm_broadcast_to, to: :class
+      end
+
+      module ClassMethods
+        def rcrm_broadcast_to(klass, model, message)
+          ActionCable.rcrm_server(klass).broadcast(broadcasting_for(model), message)
+        end
+      end
     end
   end
+end
+
+unless ActionCable::Channel::Base.included_modules.include?(RedmineAgile::Patches::ActionCableBasePatch)
+  ActionCable::Channel::Base.send(:include, RedmineAgile::Patches::ActionCableBasePatch)
 end

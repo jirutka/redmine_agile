@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -25,9 +25,8 @@ class UsersControllerTest < ActionController::TestCase
   fixtures :users,
            :roles,
            :members,
-           :member_roles
-
-  fixtures :email_addresses if Redmine::VERSION.to_s > '3.0'
+           :member_roles,
+           :email_addresses
 
   def setup
     @user = User.find(1)

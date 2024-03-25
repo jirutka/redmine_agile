@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ class AgileQuery < Query
   attr_reader :truncated
 
   self.queried_class = Issue
-  self.view_permission = :view_issues if Redmine::VERSION.to_s >= '3.4'
+  self.view_permission = :view_issues
 
   self.available_columns = [
     QueryColumn.new(:id, sortable: "#{Issue.table_name}.id", default_order: 'desc', caption: :label_agile_issue_id),
@@ -71,9 +71,6 @@ class AgileQuery < Query
 
   def initialize(attributes = nil, *args)
     super attributes
-    unless Redmine::VERSION.to_s > '2.4'
-      self.filters ||= { 'status_id' => { operator: '*', values: [''] } }
-    end
     self.filters ||= {}
     @truncated = false
   end
@@ -140,7 +137,7 @@ class AgileQuery < Query
   end
 
   def build_from_params(params)
-    params = params.permit!.to_h if params.is_a?(ActionController::Parameters) && Rails.version > '5.0'
+    params = params.permit!.to_h if params.is_a?(ActionController::Parameters)
 
     if params[:fields] || params[:f]
       self.filters = {}
@@ -186,11 +183,6 @@ class AgileQuery < Query
     principals.uniq!
     principals.sort!
     users = principals.select { |p| p.is_a?(User) }
-
-    unless Redmine::VERSION.to_s > '2.4'
-      add_available_filter 'status_id',
-        type: :list_status, values: IssueStatus.sorted.collect{|s| [s.name, s.id.to_s] }
-    end
 
     if project.nil?
       project_values = []
@@ -483,10 +475,7 @@ class AgileQuery < Query
   end
 
   def condition_for_status
-    if Redmine::VERSION.to_s > '2.4'
-      return { status_id: options[:f_status] || IssueStatus.where(is_closed: false) }
-    end
-    '1=1'
+    { status_id: options[:f_status] || IssueStatus.where(is_closed: false) }
   end
 
   def issues(options={})
@@ -560,51 +549,23 @@ class AgileQuery < Query
   def board_statuses
     return @board_statuses if @board_statuses
 
-    @board_statuses =
-      if Redmine::VERSION.to_s > '2.4'
-        statuses = Redmine::VERSION.to_s >= '3.4' && project ? project.rolled_up_statuses : board_issue_statuses
-        status_filter_values = (options[:f_status] if options)
-        if status_filter_values
-          result_statuses = statuses.where(id: status_filter_values)
-        else
-          result_statuses = statuses.where(is_closed: false)
-        end
-        result_statuses.sorted.map do |s|
-          s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-          if has_column_name?(:estimated_hours)
-            s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
-          end
-          if RedmineAgile.use_story_points? && has_column_name?(:story_points)
-            s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
-          end
-          s
-        end
-      else
-        status_filter_operator = filters.fetch("status_id", {}).fetch(:operator, nil)
-        status_filter_values = filters.fetch("status_id", {}).fetch(:values, [])
-
-        result_statuses =
-          case status_filter_operator
-          when "o"
-            board_issue_statuses.where(is_closed: false).sorted
-          when "c"
-            board_issue_statuses.where(is_closed: true).sorted
-          when "="
-            board_issue_statuses.where(id: status_filter_values).sorted
-          when "!"
-            board_issue_statuses.where("#{IssueStatus.table_name}.id NOT IN (" + status_filter_values.map{|val| "'#{self.class.connection.quote_string(val)}'"}.join(",") + ")").sorted
-          else
-            board_issue_statuses.sorted
-          end
-        result_statuses.map do |s|
-          s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
-          if has_column_name?(:estimated_hours)
-            s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
-          end
-          s
-        end
-        s
+    statuses = project ? project.rolled_up_statuses : board_issue_statuses
+    status_filter_values = (options[:f_status] if options)
+    if status_filter_values
+      result_statuses = statuses.where(id: status_filter_values)
+    else
+      result_statuses = statuses.where(is_closed: false)
+    end
+    @board_statuses = result_statuses.sorted.map do |s|
+      s.instance_variable_set "@issue_count", self.issue_count_by_status[s.id].to_i
+      if has_column_name?(:estimated_hours)
+        s.instance_variable_set "@estimated_hours_sum", self.issue_count_by_estimated_hours[s.id].to_f
       end
+      if RedmineAgile.use_story_points? && has_column_name?(:story_points)
+        s.instance_variable_set "@story_points", self.issue_count_by_story_points[s.id].to_i
+      end
+      s
+    end
     @board_statuses
   end
 

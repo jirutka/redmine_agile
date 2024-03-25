@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../../test_helper')
 
-class Redmine::ApiTest::AgileDataTest < ActiveRecord::VERSION::MAJOR >= 4 ? Redmine::ApiTest::Base : ActionController::IntegrationTest
+class Redmine::ApiTest::AgileDataTest < Redmine::ApiTest::Base
   fixtures :projects,
            :users,
            :roles,

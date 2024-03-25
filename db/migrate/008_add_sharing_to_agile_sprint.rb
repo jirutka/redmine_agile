@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-class AddSharingToAgileSprint < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
+class AddSharingToAgileSprint < ActiveRecord::Migration[4.2]
   def change
     add_column :agile_sprints, :sharing, :integer, default: 0, null: false, index: true
   end

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -64,18 +64,15 @@ end
 module RedmineAgile
   module TestHelper
     def compatible_request(type, action, parameters = {})
-      return send(type, action, parameters) if Redmine::VERSION.to_s < '3.5' && Redmine::VERSION::BRANCH == 'stable'
       send(type, action, :params => parameters)
     end
 
     def compatible_xhr_request(type, action, parameters = {})
-      return xhr type, action, parameters if Redmine::VERSION.to_s < '3.5' && Redmine::VERSION::BRANCH == 'stable'
       send(type, action, :params => parameters, :xhr => true)
     end
 
     def compatible_api_request(type, action, parameters = {}, headers = {})
-      return send(type, action, :params => parameters, :headers => headers) if Rails.version >= '5.1'
-      send(type, action, parameters, headers)
+      send(type, action, :params => parameters, :headers => headers)
     end
 
     def agile_issues_in_list
@@ -165,8 +162,8 @@ module RedmineAgile
     :assigned_to_id => 1,
     :author_id => 1,
     :status_id => 4,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 3,
@@ -184,8 +181,8 @@ module RedmineAgile
     :assigned_to_id => 3,
     :author_id => 3,
     :status_id => 3,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 1,
@@ -202,8 +199,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 3,
     :status_id => 2,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 12
@@ -220,8 +217,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 1,
     :status_id => 1,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 55,
@@ -239,8 +236,8 @@ module RedmineAgile
     :assigned_to_id => nil,
     :author_id => 1,
     :status_id => 4,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 3,
@@ -257,8 +254,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 1,
     :status_id => 5,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 4,
@@ -275,8 +272,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 1,
     :status_id => 5,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 8,
@@ -294,8 +291,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 1,
     :status_id => 4,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 3,
@@ -312,8 +309,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 1,
     :status_id => 5,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 4
@@ -330,8 +327,8 @@ module RedmineAgile
     :assigned_to_id => 2,
     :author_id => 1,
     :status_id => 5,
-    :start_date => 1.day.ago.to_date.to_s(:db),
-    :due_date => 10.day.from_now.to_date.to_s(:db),
+    :start_date => 1.day.ago.to_date.strftime('%Y-%m-%d %H:%M:%S'),
+    :due_date => 10.day.from_now.to_date.strftime('%Y-%m-%d %H:%M:%S'),
     :root_id => 1,
     :lock_version => 3,
     :estimated_hours => 8
@@ -347,11 +344,7 @@ end
 
 class RedmineAgile::TestCase
   def self.create_fixtures(fixtures_directory, table_names, class_names = {})
-    if ActiveRecord::VERSION::MAJOR >= 4
-      ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
-    else
-      ActiveRecord::Fixtures.create_fixtures(fixtures_directory, table_names, class_names = {})
-    end
+    ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
   end
 
   def self.prepare

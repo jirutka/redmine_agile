@@ -139,11 +139,9 @@
     <script type="text/javascript">
       $("table.issues-board thead").html("<%=escape_javascript render_board_headers(@query.board_statuses) %>");
     </script>
-    <% if Redmine::VERSION.to_s > '2.4' %>
-      <script type="text/javascript">
-        agileBoard.initDroppable();
-      </script>
-    <% end %>
+    <script type="text/javascript">
+      agileBoard.initDroppable();
+    </script>
   <% end %>
   <%= init_agile_tooltip_info %>
 <% end %>

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -136,7 +136,7 @@ module RedmineAgile
                       group_by: session[:agile_query][:group_by],
                       column_names: session[:agile_query][:column_names],
                       color_base: session[:agile_query][:color_base] }
-        (attributes[:options] = session[:agile_query][:options] || {}) if Redmine::VERSION.to_s > '2.4'
+        (attributes[:options] = session[:agile_query][:options] || {})
         attributes
       end
 
@@ -146,7 +146,7 @@ module RedmineAgile
                                   group_by: query.group_by,
                                   color_base: (query.respond_to?(:color_base) && query.color_base),
                                   column_names: query.column_names }
-        (session[:agile_query][:options] = query.options) if Redmine::VERSION.to_s > '2.4'
+        (session[:agile_query][:options] = query.options)
       end
     end
   end

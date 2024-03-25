@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -101,10 +101,10 @@ class AgileBoardsControllerTest < ActionController::TestCase
            :time_entries,
            :journals,
            :journal_details,
-           :queries
-  fixtures :email_addresses if Redmine::VERSION.to_s > '3.0'
+           :queries,
+           :email_addresses
 
-  include(RedmineAgile::AgileBoardsControllerTest::SpecificTestCase) if Redmine::VERSION.to_s > '2.4'
+  include(RedmineAgile::AgileBoardsControllerTest::SpecificTestCase)
 
   def setup
     RedmineAgile::TestCase.prepare
@@ -156,14 +156,11 @@ class AgileBoardsControllerTest < ActionController::TestCase
       assert_response :success
       assert_select 'div#content p.warning', 0
     end
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_get_index_with_filters
-    if Redmine::VERSION.to_s > '2.4'
-      compatible_request :get, :index, agile_query_params.merge(:f_status => IssueStatus.where('id != 1').pluck(:id))
-    else
-      compatible_request :get, :index, agile_query_params.merge(:op => { :status_id => '!' }, :v => { :status_id => ['1'] })
-    end
+    compatible_request :get, :index, agile_query_params.merge(:f_status => IssueStatus.where('id != 1').pluck(:id))
+
     assert_response :success
     expected_issues = Issue.where(:project_id => [@project_1] + Project.where(:parent_id => @project_1.id).to_a,
                                   :status_id => IssueStatus.where('id != 1'))
@@ -182,7 +179,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     members = Member.joins(:roles).where(:project_id => [@project_1]).where('member_roles.role_id = 2').map(&:user_id).uniq
     expected_issues = Issue.where(:project_id => [@project_1]).where(:assigned_to_id => members)
     assert_equal expected_issues.map(&:id).sort, agile_issues_in_list.map(&:id).sort
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def create_subissue
     @issue1 = Issue.find(1)
@@ -206,7 +203,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     )
     assert_response :success
     assert_equal [@subissue.id], agile_issues_in_list.map(&:id)
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_get_index_with_filter_on_two_parent_id
     create_subissue
@@ -221,7 +218,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     )
     assert_response :success
     assert_equal [@subissue.id, child2.id].sort, agile_issues_in_list.map(&:id).sort
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_get_index_with_filter_on_parent_tracker_inversed
     create_subissue
@@ -233,7 +230,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     )
     assert_response :success
     assert_not_include @subissue.id, agile_issues_in_list.map(&:id)
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_get_index_with_filter_on_has_subissues
     create_subissue
@@ -245,7 +242,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     )
     assert_response :success
     assert_equal [@issue1.id], agile_issues_in_list.map(&:id)
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_get_index_with_filter_and_field_time_in_state
     create_subissue
@@ -257,7 +254,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       )
       assert_response :success, "Error with group by #{col.name}"
     end
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_put_update_status
     status_id = 1
@@ -309,12 +306,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       project = closed_issues.first.project
 
       # get :index, agile_query_params.merge(:f_status => closed_status)
-      if Redmine::VERSION.to_s > '2.4'
-        compatible_request :get, :index, agile_query_params.merge(:f_status => closed_status)
-      else
-        compatible_request :get, :index, agile_query_params.merge('f' => [''])
-      end
-
+      compatible_request :get, :index, agile_query_params.merge(:f_status => closed_status)
       assert_response :success
       assert_select '.closed-issue', project.issues.where(:status_id => IssueStatus.where(:is_closed => true)).count
     end
@@ -332,11 +324,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   def test_empty_node_for_tooltip
     with_agile_settings 'hide_closed_issues_data' => '1' do
       closed_status = IssueStatus.where(:is_closed => true).pluck(:id)
-      if Redmine::VERSION.to_s > '2.4'
-        compatible_request :get, :index, agile_query_params.merge(:f_status => closed_status)
-      else
-        compatible_request :get, :index, agile_query_params.merge('f' => [''])
-      end
+      compatible_request :get, :index, agile_query_params.merge(:f_status => closed_status)
       assert_select 'span.tip', { :text => '' }
     end
   end
@@ -389,7 +377,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     compatible_request :get, :index, agile_query_params.merge(:f_status => IssueStatus.pluck(:id), :op => { :status_id => '*', :relates => '*' }, :f => ['relates'])
     assert_response :success
     assert_equal [1, 7, 8], agile_issues_in_list.map(&:id).sort
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_index_with_relations_blocked
     create_issue_relation
@@ -397,7 +385,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     compatible_request :get, :index, agile_query_params.merge(:f_status => IssueStatus.pluck(:id), :op => { :status_id => '*', :blocked => '*' }, :f => ['blocked'])
     assert_response :success
     assert_equal [2, 11], agile_issues_in_list.map(&:id).sort
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_list_of_attributes_on_update_status
     params = agile_query_params.merge(:c => ['project', 'day_in_state'], :group_by => 'parent')
@@ -418,16 +406,16 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_response :success
     assert_equal 2, issue.status_id
     assert_select 'p.attributes', /0.hours/
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_global_query_and_project_board
     query = AgileQuery.create(:name => 'global', :column_names => ['project'], :visibility => 2, :options => { :is_default => true })
     compatible_request :get, :index, :project_id => 1
     assert_select 'p.project', { :count => 0, :text => Project.find(2).to_s }
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_total_estimated_hours_for_status
-    Setting.stubs(:display_subprojects_issues?).returns(false) if Redmine::VERSION.to_s >= '4.0'
+    Setting.stubs(:display_subprojects_issues?).returns(false)
     Issue.find(1, 2, 3).each do |issue|
       issue.estimated_hours = 10
       issue.save
@@ -492,7 +480,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
 
   def test_get_index_check_quick_edit_without_permission
     role = Role.find(2)
-    role.permissions << :veiw_issues
+    role.permissions << :view_issues
     role.permissions << :view_agile_queries
     role.permissions.delete(:edit_issues)
     role.save
@@ -516,7 +504,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert_select 'span.last-comment', :text => text_comment.truncate(100)
     compatible_request :put, :update, :issue => { :status_id => 2 }, :id => issue.id
     assert_select 'span.last-comment', :text => text_comment.truncate(100)
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_show_sp_value_on_issue_cart
     with_agile_settings 'estimate_units' => 'story_points', 'story_points_on' => '1' do
@@ -538,7 +526,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
       # check story_points in available_columns for query
       assert_select 'input[value="story_points"]'
     end
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_show_sp_with_estimated_hours_on_issue_cart
     Setting.stubs(:display_subprojects_issues?).returns(false)
@@ -656,21 +644,21 @@ class AgileBoardsControllerTest < ActionController::TestCase
       assert_response :success
       assert_select '.quick-edit-card img[alt="Comment"]'
     end
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_quick_add_comment_form
     compatible_request :get, :inline_comment, :id => @project_1.issues.open.first
     assert_response :success
     assert_select 'textarea'
     assert_select 'button'
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_quick_add_comment_update
     issue = @project_1.issues.open.first
     compatible_request :put, :update, :issue => { :notes => 'new comment!!!' }, :id => issue
     assert_response :success
     assert_select '.last_comment', :text => 'new comment!!!'
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   
   def test_card_for_new_issue
@@ -680,7 +668,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
   "set_filter"=>"1", :project_id => @project_1, :f_status => statuses.map(&:id) }
   assert_select '.add-issue input.new-card__input', 0
   end
-  end if Redmine::VERSION.to_s > '2.4'
+  end
   
 
   def test_on_auto_assign_on_move
@@ -737,7 +725,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     compatible_request :get, :index, :project_id => @project_1
     assert_response :success
     assert_match 'current_version', response.body
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_filter_by_current_version
     @request.session[:user_id] = 1
@@ -750,7 +738,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     issue.fixed_version = current_version
     issue.save
     assert agile_issues_in_list.all? { |i| i.fixed_version == current_version }
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   def test_filter_by_current_version_closed
     @request.session[:user_id] = 1
@@ -768,7 +756,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     assert agile_issues_in_list.all?{ |i| i.fixed_version != current_version }
     # check set filter for current version
     assert_match 'addFilter("fixed_version_id", "=", ["current_version"])', response.body
-  end if Redmine::VERSION.to_s > '2.4'
+  end
 
   private
 

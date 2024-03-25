@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -17,17 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmine_crm version_or_higher: '0.0.59' rescue raise "\n\033[31mRedmine requires newer redmine_crm gem version.\nPlease update with 'bundle update redmine_crm'.\033[0m"
+requires_redmineup version_or_higher: '1.0.5' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.6'
+AGILE_VERSION_NUMBER = '1.6.8'
 AGILE_VERSION_TYPE = "Light version"
-
-if ActiveRecord::VERSION::MAJOR >= 4 && !defined?(FCSV)
-  require 'csv'
-  FCSV = CSV
-end
 
 Redmine::Plugin.register :redmine_agile do
   name "Redmine Agile plugin (#{AGILE_VERSION_TYPE})"
@@ -37,7 +32,7 @@ Redmine::Plugin.register :redmine_agile do
   url 'http://redmineup.com/pages/plugins/agile'
   author_url 'mailto:support@redmineup.com'
 
-  requires_redmine version_or_higher: '3.0'
+  requires_redmine version_or_higher: '4.0'
 
   settings default: { 'default_columns' => %w(tracker assigned_to) },
            partial: 'settings/agile/agile'
@@ -68,7 +63,7 @@ Redmine::Plugin.register :redmine_agile do
   end
 end
 
-if Rails.configuration.respond_to?(:autoloader) && Rails.configuration.autoloader == :zeitwerk
+if (Rails.configuration.respond_to?(:autoloader) && Rails.configuration.autoloader == :zeitwerk) || Rails.version > '7.0'
   Rails.autoloaders.each { |loader| loader.ignore(File.dirname(__FILE__) + '/lib') }
 end
 require File.dirname(__FILE__) + '/lib/redmine_agile'

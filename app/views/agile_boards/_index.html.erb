@@ -83,6 +83,8 @@
 <% content_for :header_tags do %>
   <%= javascript_include_tag "redmine_agile", plugin: 'redmine_agile' %>
   <%= javascript_include_tag "jquery.ui.touch-punch.js", plugin: 'redmine_agile' %>
+  <%= javascript_include_tag 'consumer.js', plugin: 'redmine_agile' %>
+  <%= javascript_include_tag 'consumers/agile_board.js', plugin: 'redmine_agile' %>
   <%= stylesheet_link_tag 'context_menu' %>
   <%= stylesheet_link_tag "redmine_agile.css", plugin: "redmine_agile", media: "print" %>
 <% end %>

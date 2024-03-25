@@ -17,10 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module RedmineAgile
-  module Hooks
-    class ViewsVersionsHook < Redmine::Hook::ViewListener
-      render_on :view_versions_show_bottom, :partial => "agile_charts/versions_show"
+module ActionCable
+  module Connection
+    class RedmineAgileConnection < ActionCable::Connection::Base
+      identified_by :current_user
+
+      def connect
+        self.current_user = find_verified_user
+      end
+
+      private
+
+      def find_verified_user
+        User.find_by(id: @request.session[:user_id])
+      end
     end
   end
 end

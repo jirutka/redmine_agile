@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ module AgileBoardsHelper
   end
 
   def render_board_fields_status(query)
-    available_statuses = Redmine::VERSION.to_s >= '3.4' && @project ? @project.rolled_up_statuses : IssueStatus.sorted
+    available_statuses = @project ? @project.rolled_up_statuses : IssueStatus.sorted
     current_statuses = query.options[:f_status] || IssueStatus.where(:is_closed => false).pluck(:id).map(&:to_s)
     wp = query.options[:wp] || {}
     status_tags = available_statuses.map do |status|

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -26,6 +26,8 @@ module RedmineAgile
   ESTIMATE_HOURS        = 'hours'.freeze
   ESTIMATE_STORY_POINTS = 'story_points'.freeze
   ESTIMATE_UNITS        = [ESTIMATE_HOURS, ESTIMATE_STORY_POINTS].freeze
+
+  CABLE_CONNECTION = 'ActionCable::Connection::RedmineAgileConnection'
 
   class << self
     def time_reports_items_limit
@@ -116,6 +118,10 @@ module RedmineAgile
     def chart_future_data?
       Setting.plugin_redmine_agile['chart_future_data'].to_i > 0
     end
+
+    def cable_available?
+      Redmine::VERSION.to_s >= '4'
+    end
   end
 
 end
@@ -131,7 +137,11 @@ REDMINE_AGILE_REQUIRED_FILES = [
   'redmine_agile/charts/agile_chart',
   'redmine_agile/charts/burndown_chart',
   'redmine_agile/charts/work_burndown_chart',
-  'redmine_agile/patches/issue_drop_patch'
+  'redmine_agile/patches/issue_drop_patch',
+  'redmine_agile/patches/action_cable_patch',
+  'redmine_agile/patches/action_cable_base_patch',
+  'action_cable/connection/redmine_agile_connection',
+  'action_cable/channels/agile_channel.rb'
 ]
 
 base_url = File.dirname(__FILE__)

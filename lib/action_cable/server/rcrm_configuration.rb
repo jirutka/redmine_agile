@@ -17,10 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-module RedmineAgile
-  module Hooks
-    class ViewsVersionsHook < Redmine::Hook::ViewListener
-      render_on :view_versions_show_bottom, :partial => "agile_charts/versions_show"
+
+module ActionCable
+  module Server
+    class RcrmConfiguration < ActionCable::Server::Configuration
+
+      def initialize(connection_klass: 'ActionCable::Connection::Base')
+        super()
+
+        @connection_class = -> { connection_klass.constantize }
+        @logger ||= ::Rails.logger
+      end
+
+      def cable
+        @cable = { 'adapter' => 'inline' }.with_indifferent_access
+      end
     end
   end
 end
