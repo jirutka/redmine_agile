@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 module ActionCable
   module Server
-    class RcrmServer < ActionCable::Server::Base
+    class RupServer < ActionCable::Server::Base
       attr_reader :config
 
       def initialize(config: self.class.config)

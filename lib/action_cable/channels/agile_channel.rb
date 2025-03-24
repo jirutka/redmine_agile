@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@ module ActionCable
       BASE_CHANNEL_NAME = "action_cable:channels:agile"
 
       def subscribed
+        return reject unless RedmineAgile.web_sockets_enabled?
         return subscribe_to_board_stream if params[:chat_id].match(/board/)
 
         reject
@@ -32,7 +33,8 @@ module ActionCable
 
       def subscribe_to_board_stream
         project = Project.find_by(id: params[:chat_id].split('board-').last)
-        return reject if !project || !current_user || !current_user.allowed_to?(:view_issues, project)
+        return reject if !current_user || !current_user.allowed_to?(:view_issues, project, global: true)
+
         stream_from "#{BASE_CHANNEL_NAME}:#{params[:chat_id]}"
       end
     end

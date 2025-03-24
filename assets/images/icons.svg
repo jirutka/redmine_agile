@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon--sprite">
+  <defs>
+    <symbol viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" id="icon--agile">
+      <path d="M4 4l6 0"/>
+      <path d="M14 4l6 0"/>
+      <path d="M4 8m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/>
+      <path d="M14 8m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/>
+    </symbol>
+    <symbol viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" id="icon--agile-fullscreen">
+      <path d="M16 4l4 0l0 4"/>
+      <path d="M14 10l6 -6"/>
+      <path d="M8 20l-4 0l0 -4"/>
+      <path d="M4 20l6 -6"/>
+      <path d="M16 20l4 0l0 -4"/>
+      <path d="M14 14l6 6"/>
+      <path d="M8 4l-4 0l0 4"/>
+      <path d="M4 4l6 6"/>
+    </symbol>
+  </defs>
+</svg>

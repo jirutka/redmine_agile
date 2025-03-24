@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -119,6 +119,10 @@ module RedmineAgile
       Setting.plugin_redmine_agile['chart_future_data'].to_i > 0
     end
 
+    def web_sockets_enabled?
+      Setting.plugin_redmine_agile['use_web_sockets'].to_i > 0
+    end
+
     def cable_available?
       Redmine::VERSION.to_s >= '4'
     end
@@ -140,8 +144,9 @@ REDMINE_AGILE_REQUIRED_FILES = [
   'redmine_agile/patches/issue_drop_patch',
   'redmine_agile/patches/action_cable_patch',
   'redmine_agile/patches/action_cable_base_patch',
+  'redmine_agile/patches/application_controller_patch',
   'action_cable/connection/redmine_agile_connection',
-  'action_cable/channels/agile_channel.rb'
+  'action_cable/channels/agile_channel',
 ]
 
 base_url = File.dirname(__FILE__)

@@ -1,8 +1,23 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2024 Kirill Bezrukov (RedmineUP)
+Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
+
+== 2025-03-03 v1.6.10
+
+* Redmine 6.0 compatibility
+* Added SVG icons for compatibility with Redmine 6
+* Updated WebSocket connection
+* Updated Czech locale (Michael Stanek)
+* Fixed agile_color requests handling
+* Fixed issue with removing a sprint (Change sprint to None)
+
+== 2024-05-07 v1.6.9
+
+* Updated charts.js lib
+* Fixed easygantt plugin compatibility
+* Fixed websockets bugs
 
 == 2024-02-16 v1.6.8
 

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,12 +22,12 @@ module RedmineAgile
     module ActionCableBasePatch
       def self.included(base)
         base.send(:extend, ClassMethods)
-        delegate :rcrm_broadcast_to, to: :class
+        delegate :rup_broadcast_to, to: :class
       end
 
       module ClassMethods
-        def rcrm_broadcast_to(klass, model, message)
-          ActionCable.rcrm_server(klass).broadcast(broadcasting_for(model), message)
+        def rup_broadcast_to(klass, model, message)
+          ActionCable.rup_server(klass).broadcast(broadcasting_for(model), message)
         end
       end
     end

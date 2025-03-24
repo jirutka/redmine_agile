@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ module ActionCable
       private
 
       def find_verified_user
-        User.find_by(id: @request.session[:user_id])
+        User.find_by(id: @request.session[:user_id]) || User.anonymous
       end
     end
   end

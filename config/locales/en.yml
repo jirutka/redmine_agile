@@ -200,10 +200,10 @@ en:
   label_agile_board_totals_remaining: Remaining
   label_agile_board_totals_description: Sprint description
 
-
   label_agile_sprint_list_active: Active sprints
   label_agile_sprint_list_future: Future sprints
   label_agile_sprint_list_old: Old sprints
+  label_agile_sprint_assigned_sprint: Assigned sprint
 
   label_agile_mixed_trackers: Mixed trackers
   label_agile_moving_average: Moving average
@@ -237,3 +237,5 @@ en:
 
   label_chart_future_data: Show future data on charts
   label_agile_charts_work_partially_closed: Partially completed
+
+  label_use_web_sockets: Real-time agile boards

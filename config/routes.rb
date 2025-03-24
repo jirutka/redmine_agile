@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 # Plugin's routes
 # See: http://guides.rubyonrails.org/routing.html
 
-mount ActionCable.rcrm_server(RedmineAgile::CABLE_CONNECTION) => '/rcrm_cable_agile', as: 'rcrm_cable_agile' if RedmineAgile.cable_available?
+mount ActionCable.rup_server(RedmineAgile::CABLE_CONNECTION) => '/rup_cable_agile', as: 'rup_cable_agile' if RedmineAgile.cable_available?
 
 resources :projects do
   resources :agile_queries, only: [:new, :create]

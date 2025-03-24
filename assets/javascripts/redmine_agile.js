@@ -350,7 +350,8 @@
             data: {
               subject: subject,
               status_id: $(node).parents("td").data("id"),
-              sprint_id: sprint_id
+              sprint_id: sprint_id,
+              actor: $(".agile-board").data("actor")
             },
             dataType: "html",
             success: function (data, status, xhr) {

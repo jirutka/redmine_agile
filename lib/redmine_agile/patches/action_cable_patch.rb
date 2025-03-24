@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -23,12 +23,12 @@ module RedmineAgile
 
       def self.included(base)
         base.class_eval do
-          module_function def rcrm_server(klass = nil)
-            @rcrm_servers ||= {}
-            return @rcrm_servers[klass] if @rcrm_servers[klass]
+          module_function def rup_server(klass = nil)
+            @rup_servers ||= {}
+            return @rup_servers[klass] if @rup_servers[klass]
 
-            config = ActionCable::Server::RcrmConfiguration.new(connection_klass: klass)
-            @rcrm_servers[klass] = ActionCable::Server::RcrmServer.new(config: config)
+            config = ActionCable::Server::RupConfiguration.new(connection_klass: klass)
+            @rup_servers[klass] = ActionCable::Server::RupServer.new(config: config)
           end
         end
       end

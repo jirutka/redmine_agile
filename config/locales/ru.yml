@@ -194,6 +194,7 @@ ru:
   label_agile_sprint_list_active: Активные спринты
   label_agile_sprint_list_future: Следующие спринты
   label_agile_sprint_list_old: Прошлые спринты
+  label_agile_sprint_assigned_sprint: Назначенный спринт
 
   label_agile_moving_average: Скользящая средняя
 
@@ -226,3 +227,5 @@ ru:
 
   label_chart_future_data: Показывать расчетные данные на графиках
   label_agile_charts_work_partially_closed: Частично закрыто
+
+  label_use_web_sockets: Real-time доски

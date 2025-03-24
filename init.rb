@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_agile.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmineup version_or_higher: '1.0.5' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
+requires_redmineup version_or_higher: '1.0.10' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.8'
+AGILE_VERSION_NUMBER = '1.6.10'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do
@@ -45,7 +45,7 @@ Redmine::Plugin.register :redmine_agile do
                                                                                after: :gantt,
                                                                                param: :project_id
 
-  menu :admin_menu, :agile, { controller: 'settings', action: 'plugin', id: 'redmine_agile' }, caption: :label_agile, html: { class: 'icon' }
+  menu :admin_menu, :agile, { controller: 'settings', action: 'plugin', id: 'redmine_agile' }, caption: :label_agile, html: { class: 'icon' }, icon: 'agile', plugin: 'redmine_agile'
 
   project_module :agile do
     permission :manage_public_agile_queries, { agile_queries: [:new, :create, :edit, :update, :destroy] }, require: :member
@@ -67,3 +67,4 @@ if (Rails.configuration.respond_to?(:autoloader) && Rails.configuration.autoload
   Rails.autoloaders.each { |loader| loader.ignore(File.dirname(__FILE__) + '/lib') }
 end
 require File.dirname(__FILE__) + '/lib/redmine_agile'
+require 'redmineup/patches/compatibility_patch'

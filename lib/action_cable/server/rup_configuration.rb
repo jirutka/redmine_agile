@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,17 +20,24 @@
 
 module ActionCable
   module Server
-    class RcrmConfiguration < ActionCable::Server::Configuration
+    class RupConfiguration < ActionCable::Server::Configuration
 
       def initialize(connection_klass: 'ActionCable::Connection::Base')
         super()
 
         @connection_class = -> { connection_klass.constantize }
         @logger ||= ::Rails.logger
+        @disable_request_forgery_protection = true
       end
 
       def cable
-        @cable = { 'adapter' => 'inline' }.with_indifferent_access
+        @cable ||= { 'adapter' => detect_adapter_type }.with_indifferent_access
+      end
+
+      private
+
+      def detect_adapter_type
+        ActionCable.server.config.cable ? (ActionCable.server.config.cable.fetch('adapter') { 'async' }) : 'async'
       end
     end
   end

@@ -1,49 +1,66 @@
 class activeCableConsumer {
-  OPEN = 1
+  OPEN = 1;
 
-  constructor(url, channel, chatId, consumer) {
-    this.url = url
-    this.socket = this.intializeSocket(channel, chatId, consumer)
+  constructor(consumer) {
+    this.consumer = consumer;
+    this._isConnecting = true;
+
+    this.connect();
   }
 
-  static processMessage(consumer, message) {
-    consumer.process(message)
+  connect() {
+    this.socket = this.intializeSocket(this, this.consumer);
+    this._isConnecting = false;
   }
 
-  intializeSocket(channel, chatId, consumer) {
-    const socket = new WebSocket(this.url)
-
-    socket.onopen = function() {
-      const message = {
-        command: 'subscribe',
-        identifier: JSON.stringify({
-          channel: channel,
-          chat_id: chatId
-        })
-      }
-      socket.send(JSON.stringify(message))
+  reconnect() {
+    if (!this._isConnecting) {
+      setTimeout(this.connect.bind(this), 3000);
+      this._isConnecting = true;
     }
+  }
 
-    socket.onclose = function() {
-      console.log("WebSocket is closed")
-    }
-
-    socket.onmessage = function(event) {
-      const messageData = (event.data && JSON.parse(event.data)) || {}
-      if (messageData.type === 'ping' || !messageData.message) { return }
-      const message = messageData.message
-
-      activeCableConsumer.processMessage(consumer, message)
-    }
-
-    socket.onerror = function(error) {
-      console.log(error)
-    }
-
-    return socket
+  processMessage(message) {
+    this.consumer.process(message);
   }
 
   isOpen() {
-    return this.socket.readyState === this.OPEN
+    return this.socket.readyState === this.OPEN;
+  }
+
+  intializeSocket(self, consumer) {
+    const socket = new WebSocket(consumer.url);
+
+    socket.onopen = function () {
+      const message = {
+        command: "subscribe",
+        identifier: JSON.stringify({
+          channel: consumer.channel,
+          chat_id: consumer.chatId,
+        }),
+      };
+      socket.send(JSON.stringify(message));
+    };
+
+    socket.onclose = function () {
+      self.reconnect();
+    };
+
+    socket.onmessage = function (event) {
+      const messageData = (event.data && JSON.parse(event.data)) || {};
+      if (messageData.type === "ping" || !messageData.message) {
+        return;
+      }
+      const message = messageData.message;
+
+      self.processMessage(message);
+    };
+
+    socket.onerror = function (error) {
+      console.log(error);
+      self.reconnect();
+    };
+
+    return socket;
   }
 }

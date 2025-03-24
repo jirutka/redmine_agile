@@ -52,3 +52,9 @@
   <%= hidden_field_tag 'settings[allow_inline_comments]', 0, :id => nil %>
   <%= check_box_tag 'settings[allow_inline_comments]', 1, RedmineAgile.allow_inline_comments? %>
 </p>
+
+<p>
+  <label for="settings_use_web_sockets"><%= l(:label_use_web_sockets) %></label>
+  <%= hidden_field_tag 'settings[use_web_sockets]', 0, :id => nil %>
+  <%= check_box_tag 'settings[use_web_sockets]', 1, RedmineAgile.web_sockets_enabled? %>
+</p>

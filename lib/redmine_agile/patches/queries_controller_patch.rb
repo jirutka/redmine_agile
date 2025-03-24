@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,25 +20,24 @@
 module RedmineAgile
   module Patches
     module QueriesControllerPatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-        base.class_eval do
-          alias_method :query_class_without_agile, :query_class
-          alias_method :query_class, :query_class_with_agile
-        end
+      def self.prepended(base)
+        base.prepend(InstanceMethods)
       end
 
       module InstanceMethods
-        def query_class_with_agile
-          return AgileChartsQuery if params[:type] == 'AgileChartsQuery'
-          return AgileVersionsQuery if params[:type] == 'AgileVersionsQuery'
-          query_class_without_agile
+        def query_class
+          case params[:type]
+          when 'AgileChartsQuery'
+            AgileChartsQuery
+          when 'AgileVersionsQuery'
+            AgileVersionsQuery
+          else
+            super
+          end
         end
       end
     end
   end
 end
 
-unless QueriesController.included_modules.include?(RedmineAgile::Patches::QueriesControllerPatch)
-  QueriesController.send(:include, RedmineAgile::Patches::QueriesControllerPatch)
-end
+QueriesController.prepend RedmineAgile::Patches::QueriesControllerPatch

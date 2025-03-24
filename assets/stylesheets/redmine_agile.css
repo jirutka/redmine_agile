@@ -1,8 +1,8 @@
 /**********************************************************************/
 /* ICONS
 /**********************************************************************/
-#admin-menu a.agile { background-image: url(../images/agile.png);}
-.icon-fullscreen { background-image:  url(../images/fullscreen.png); }
+#admin-menu a.agile:not(:has(svg)) { background-image: url(../images/agile.png);}
+.icon-fullscreen:not(:has(svg)) { background-image:  url(../images/fullscreen.png); }
 
 /**********************************************************************/
 /* FULLSCREEN
@@ -397,6 +397,7 @@ table.list.issues tr.issue:not(.context-menu-selection).bk-gray td.id a {backgro
 
 .issue-card .last-comment{
   font-style: italic;
+  display: inline;
 }
 
 .issues-board .add-issue{
@@ -425,7 +426,9 @@ table.list.issues tr.issue:not(.context-menu-selection).bk-gray td.id a {backgro
 }
 
 table.list thead tr th span.hours {color: #888; float: right; font-size: 90%; font-weight: normal;}
+table.issues-board {border: 1px solid #d0d7de;}
 table.issues-board thead th {white-space: normal;}
+table.issues-board tr span.expander:not(:has(svg)) {padding-left: 16px;}
 /*
 tr.issue.br-red td.id::before,
 tr.issue.br-green td.id::before,
@@ -615,6 +618,25 @@ table.list.issues-board.sticky {
   background: #e1f1f8;
   border-right: solid 3px #d7d7d7 !important;
 }
+
+.ws-actors-wrapper {
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+  border: 1px solid #ddd;
+  background-color: #e5fccc;
+  z-index: 10000;
+  display: flex;
+  padding-right: 7px;
+}
+
+.ws-actors-wrapper .ws-actor {
+  padding: 5px 5px 10px 5px;
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+}
+
 
 html {
   overflow-y: inherit !important;

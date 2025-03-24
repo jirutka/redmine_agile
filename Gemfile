@@ -1,1 +1,1 @@
-gem "redmineup"
+gem 'redmineup'

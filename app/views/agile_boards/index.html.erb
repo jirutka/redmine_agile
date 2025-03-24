@@ -1,7 +1,15 @@
 <%= render 'index' %>
 
-<script type="text/javascript">
-  const boardConsumer = new agileBoardConsumer('<%= rcrm_cable_agile_url(protocol: :wss) %>', '<%= "board-#{@project.try(:id)}" %>')
-</script>
+<% if RedmineAgile.web_sockets_enabled? %>
+  <script type="text/javascript">
+    const boardConsumer = new agileBoardConsumer('<%= rup_cable_agile_url(protocol: Rails.env.development? ? :ws : :wss) %>', '<%= "board-#{@project.try(:id)}" %>')
+  </script>
+
+  <div class="ws-actors-wrapper hidden">
+    <div class="ws-actor">
+      <%# avatar(draft.user, size: 30, title: l(:label_zen_draft_user_title, user: draft.user.name, date: format_time(draft.updated_at))) %>
+    </div>
+  </div>
+<% end %>
 <%= init_agile_tooltip_info %>
 <%= call_hook(:view_agile_board_bottom, { :issues => @issues, :project => @project, :query => @query }) %>

@@ -1,0 +1,4 @@
+- name: agile-fullscreen
+  svg: arrows-maximize
+- name: agile
+  svg: layout-kanban

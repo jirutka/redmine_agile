@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -642,7 +642,7 @@ class AgileBoardsControllerTest < ActionController::TestCase
     with_agile_settings 'allow_inline_comments' => 1 do
       compatible_request :get, :index, agile_query_params
       assert_response :success
-      assert_select '.quick-edit-card img[alt="Comment"]'
+      assert_select '.quick-edit-card span.icon.icon-comment'
     end
   end
 
