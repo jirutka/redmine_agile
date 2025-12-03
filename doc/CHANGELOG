@@ -4,6 +4,21 @@ Redmine Agile plugin - Agile board plugin for redmine
 Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
 
+== 2025-09-09 v1.6.12
+
+* Added SVG icons to context menu
+* Updated ActionCable feature (moved to redmineup gem)
+* Fixed sprint_id zero value
+* Fixed collapse_all action on agile board
+* Fixed sprint sharing error
+
+== 2025-07-01 v1.6.11
+
+* Added description field to query form
+* Fixed issue API response
+* Fixed non sprints filter in issue query
+* Fixed wrong locale in errors log
+
 == 2025-03-03 v1.6.10
 
 * Redmine 6.0 compatibility

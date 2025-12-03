@@ -23,7 +23,7 @@ module ActionCable
       BASE_CHANNEL_NAME = "action_cable:channels:agile"
 
       def subscribed
-        return reject unless RedmineAgile.web_sockets_enabled?
+        return reject unless RedmineAgile.cable_enabled?
         return subscribe_to_board_stream if params[:chat_id].match(/board/)
 
         reject

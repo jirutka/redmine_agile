@@ -119,12 +119,12 @@ module RedmineAgile
       Setting.plugin_redmine_agile['chart_future_data'].to_i > 0
     end
 
-    def web_sockets_enabled?
-      Setting.plugin_redmine_agile['use_web_sockets'].to_i > 0
+    def cable_available?
+      Redmineup.try(:cable_available?)
     end
 
-    def cable_available?
-      Redmine::VERSION.to_s >= '4'
+    def cable_enabled?
+      cable_available? && Setting.plugin_redmine_agile['use_web_sockets'].to_i > 0
     end
   end
 
@@ -142,8 +142,6 @@ REDMINE_AGILE_REQUIRED_FILES = [
   'redmine_agile/charts/burndown_chart',
   'redmine_agile/charts/work_burndown_chart',
   'redmine_agile/patches/issue_drop_patch',
-  'redmine_agile/patches/action_cable_patch',
-  'redmine_agile/patches/action_cable_base_patch',
   'redmine_agile/patches/application_controller_patch',
   'action_cable/connection/redmine_agile_connection',
   'action_cable/channels/agile_channel',

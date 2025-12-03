@@ -34,7 +34,7 @@ module RedmineAgile
 
       module InstanceMethods
         def web_socket_service_update(params, issue, options)
-          return if !RedmineAgile.cable_available? || !RedmineAgile.web_sockets_enabled? || options[:query].nil?
+          return if !RedmineAgile.cable_available? || !RedmineAgile.cable_enabled? || options[:query].nil?
 
           query = options[:query]
           project = options[:project]
@@ -58,7 +58,7 @@ module RedmineAgile
         end
 
         def web_socket_service_create(params, issue, options)
-          return if !RedmineAgile.cable_available? || !RedmineAgile.web_sockets_enabled?
+          return if !RedmineAgile.cable_available? || !RedmineAgile.cable_enabled?
 
           query = options[:query]
           project = options[:project]
@@ -73,7 +73,7 @@ module RedmineAgile
 
 
         def web_socket_service_destroy(params, issue, options)
-          return if !RedmineAgile.cable_available? || !RedmineAgile.web_sockets_enabled?
+          return if !RedmineAgile.cable_available? || !RedmineAgile.cable_enabled?
 
           query = options[:query]
           project = options[:project]

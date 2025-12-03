@@ -21,7 +21,7 @@ requires_redmineup version_or_higher: '1.0.10' rescue raise "\n\033[31mRedmine r
 
 require 'redmine'
 
-AGILE_VERSION_NUMBER = '1.6.10'
+AGILE_VERSION_NUMBER = '1.6.12'
 AGILE_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_agile do

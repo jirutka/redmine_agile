@@ -56,5 +56,5 @@
 <p>
   <label for="settings_use_web_sockets"><%= l(:label_use_web_sockets) %></label>
   <%= hidden_field_tag 'settings[use_web_sockets]', 0, :id => nil %>
-  <%= check_box_tag 'settings[use_web_sockets]', 1, RedmineAgile.web_sockets_enabled? %>
+  <%= check_box_tag 'settings[use_web_sockets]', 1, RedmineAgile.cable_enabled?, disabled: !RedmineAgile.cable_available? %>
 </p>

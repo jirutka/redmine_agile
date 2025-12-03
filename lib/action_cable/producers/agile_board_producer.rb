@@ -21,6 +21,8 @@ module ActionCable
   module Producers
     class AgileBoardProducer
       class << self
+        require 'ostruct'
+
         include ActionView::Helpers::SanitizeHelper
 
         def card_moved(actor, options)
@@ -110,7 +112,7 @@ module ActionCable
 
         def options_object(options)
           ostruct =
-          OpenStruct.new(
+          ::OpenStruct.new(
             channel: options[:channel],
             params: options[:params],
             issue: options[:issue],

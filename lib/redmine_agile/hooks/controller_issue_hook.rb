@@ -22,15 +22,15 @@ module RedmineAgile
     class ControllerIssueHook < Redmine::Hook::ViewListener
 
       def controller_issues_edit_before_save(context={})
-        add_agile_journal_details(context)
+        add_agile_journal_details(context) unless context[:controller].api_request?
       end
 
       def controller_issues_bulk_edit_before_save(context={})
-        add_agile_journal_details(context)
+        add_agile_journal_details(context) unless context[:controller].api_request?
       end
 
       def controller_issues_new_after_save(context={})
-        notify_web_socket_services(context)
+        notify_web_socket_services(context) unless context[:controller].api_request?
       end
 
       private
