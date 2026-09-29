@@ -158,15 +158,29 @@
 
       $issuesCols.sortable({
         items: '.issue-card',
-        connectWith: ".issue-status-col",
+        connectWith: [".issue-status-col", ".closed_status"],
+        scroll: false,
+        tolerance: "pointer",
+        placeholder: "ui-state-highlight",
         start: function(event, ui) {
           var $item = $(ui.item);
+          var $board = $('.agile-board')
           $item.attr('oldColumnId', $item.parent().data('id'));
           $item.attr('oldSwimLaneId', $item.parents('tr.swimlane').data('id'));
           $item.attr('oldSwimLaneField', $item.parents('tr.swimlane').attr('data-field'));
           $item.attr('oldPosition', $item.index());
+          $("div.closed_container").css('left', $board.outerWidth() - 80)
+          $("div.closed_container").show();
+          $("#content").css("overflow-x", "visible");
         },
         stop: function(event, ui) {
+          if (self.overClosedContainer) {
+            $(ui.item).hide();
+            $(this).sortable('cancel');
+            $("div.closed_container").hide();
+            $("#content").css("overflow-x", "");
+            return;
+          }
           var that = this;
           var $item = $(ui.item);
           var sender = ui.sender;
@@ -183,6 +197,8 @@
           var oldSwimLaneField = $item.attr('oldSwimLaneField');
           var $oldColumn = $('.ui-sortable[data-id="' + oldStatusId + '"]');
           var $sprintField = $('#sprint_id');
+          $("div.closed_container").hide();
+          $("#content").css("overflow-x", "");
 
           if(!self.hasChange($item)){
             self.backSortable($column);
@@ -233,7 +249,6 @@
               estimatedHours = $($item).find("span.hours");
               if(estimatedHours.length > 0){
                 hours = $(estimatedHours).html().replace(/(\(|\)|h)?/g, '');
-                // self.recalculateEstimateHours(oldStatusId, newStatusId, hours);
               }
             },
             error: function(xhr, status, error) {
@@ -306,6 +321,75 @@
           $self.find("p.info").show();
           $self.find("p.info").html(ui.draggable.clone());
         }
+      });
+
+      $closedContainer = $("div.closed_container");
+      $closedContainer.find("div.closed_status").droppable({
+        activeClass: "droppable-active",
+        hoverClass: "droppable-hover",
+        accept: ".issue-card",
+        tolerance: "pointer",
+        drop: function (event, ui) {
+          var that = this;
+          var $card = $(ui.draggable);
+          var issue_id = $card.data("id");
+          var $swimlane = $card.parents("tr.swimlane");
+          var swimLaneField = $swimlane.attr("data-field");
+          var swimLaneId = $swimlane.data("id");
+          var oldStatusId = $card.attr("oldColumnId");
+          var oldSwimLaneId = $card.attr("oldSwimLaneId");
+          var $oldColumn = $('.ui-sortable[data-id="' + oldStatusId + '"]');
+
+          var newStatusId = $(this).data("id");
+
+          var params = {
+            issue: {
+              status_id: newStatusId,
+            },
+            id: issue_id,
+            actor: $(".agile-board").data("actor"),
+          };
+          params["issue"][swimLaneField] = swimLaneId;
+
+          $.ajax({
+            url: self.routes.update_agile_board_path,
+            type: "PUT",
+            data: params,
+            success: function (data, status, xhr) {
+              self.successSortable(
+                oldStatusId,
+                newStatusId,
+                oldSwimLaneId,
+                swimLaneId
+              );
+              estimatedHours = $($card).find("span.hours");
+              if (estimatedHours.length > 0) {
+                hours = $(estimatedHours)
+                  .html()
+                  .replace(/(\(|\)|h)?/g, "");
+              }
+            },
+            error: function (xhr, status, error) {
+              console.log("Dropping error: ", error);
+              self.errorSortable($oldColumn, xhr.responseText);
+              $closedContainer
+                .find("div.closed_status")
+                .animate({ padding: "0px" }, "fast");
+            },
+            complete: function () {
+              ui.draggable.remove();
+              $(".lock").hide();
+            },
+          });
+        },
+        over: function () {
+          self.overClosedContainer = true;
+          $(this).animate({ padding: "5px" }, "fast");
+        },
+        out: function () {
+          self.overClosedContainer = false;
+          $(this).animate({ padding: "0px" }, "fast");
+        },
       });
     };
 

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -21,21 +21,15 @@ module RedmineAgile
   module Patches
     module ProjectPatch
 
-      def self.included(base)
+      def self.prepended(base)
         base.class_eval do
-          base.send(:include, InstanceMethods)
           safe_attributes 'agile_color_attributes',
             if: lambda { |project, user| user.allowed_to?(:edit_project, project) && user.allowed_to?(:view_agile_queries, project) && RedmineAgile.use_colors? }
         end
-      end
-
-      module InstanceMethods
       end
     end
 
   end
 end
 
-unless Project.included_modules.include?(RedmineAgile::Patches::ProjectPatch)
-  Project.send(:include, RedmineAgile::Patches::ProjectPatch)
-end
+Project.prepend(RedmineAgile::Patches::ProjectPatch)

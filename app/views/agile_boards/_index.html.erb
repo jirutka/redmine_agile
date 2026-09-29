@@ -71,6 +71,15 @@
       <p class="warning"><%= l(:label_agile_board_truncated, :max => RedmineAgile.board_items_limit) %></p>
     <% end %>
     <%= render :partial => 'board' %>
+    <% if @closed_statuses.present? %>
+      <div class="closed_container" style="display: none;">
+        <% @closed_statuses.each do |status| %>
+          <%= content_tag('div', class: 'closed_status', 'data-id' => status.id) do -%>
+            <span><%= status.name -%></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>
 

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -59,6 +59,7 @@ class AgileBoardsController < ApplicationController
       @agile_projects = @query.agile_projects
       @issue_board = @query.issue_board
       @board_columns = @query.board_statuses
+      @closed_statuses = IssueStatus.where.not(id: @board_columns.map(&:id)).where(is_closed: true)
       @allowed_statuses = statuses_allowed_for_create
 
       respond_to do |format|

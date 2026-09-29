@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -80,8 +80,8 @@ class AgileChartsQuery < AgileQuery
 
   def build_from_params(params)
     if params[:fields] || params[:f]
-      self.filters = {}.merge(chart_period_filter(params))
       add_filters(params[:fields] || params[:f], params[:operators] || params[:op], params[:values] || params[:v])
+      self.filters = filters.merge(chart_period_filter(params))
     else
       available_filters.keys.each do |field|
         add_short_filter(field, params[field]) if params[field]
@@ -105,8 +105,8 @@ class AgileChartsQuery < AgileQuery
   private
 
   def chart_period_filter(params)
-    return {} if (params[:fields] || params[:f]).include?('chart_period')
-    { 'chart_period' => { operator: 'm', values: [''] } }
+    period_filter = (params[:fields] || params[:f]).include?('chart_period')
+    period_filter ? {} : { 'chart_period' => { operator: 'm', values: [''] } }
   end
 
   def validate_query_dates

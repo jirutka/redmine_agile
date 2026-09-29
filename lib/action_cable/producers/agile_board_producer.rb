@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ module ActionCable
             }
           }
 
-          Channels::AgileChannel.rup_broadcast_to(RedmineAgile::CABLE_CONNECTION, opts.channel, message)
+          Channels::AgileChannel.rup_broadcast_to(opts.channel, message)
         end
 
         def card_updated(actor, options)
@@ -69,7 +69,7 @@ module ActionCable
             html: html.html_safe
           }
 
-          Channels::AgileChannel.rup_broadcast_to(RedmineAgile::CABLE_CONNECTION, opts.channel, message)
+          Channels::AgileChannel.rup_broadcast_to(opts.channel, message)
         end
 
         def card_created(actor, options)
@@ -87,7 +87,7 @@ module ActionCable
             html: html.html_safe
           }
 
-          Channels::AgileChannel.rup_broadcast_to(RedmineAgile::CABLE_CONNECTION, opts.channel, message)
+          Channels::AgileChannel.rup_broadcast_to(opts.channel, message)
         end
 
         def card_deleted(actor, options)
@@ -104,7 +104,7 @@ module ActionCable
             issue_id: opts.issue.id
           }
 
-          Channels::AgileChannel.rup_broadcast_to(RedmineAgile::CABLE_CONNECTION, opts.channel, message)
+          Channels::AgileChannel.rup_broadcast_to(opts.channel, message)
         end
 
 

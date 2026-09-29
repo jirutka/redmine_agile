@@ -2,7 +2,7 @@
 
 <% if RedmineAgile.cable_enabled? %>
   <script type="text/javascript">
-    const boardConsumer = new agileBoardConsumer('<%= rup_cable_agile_url(protocol: Rails.env.development? ? :ws : :wss) %>', '<%= "board-#{@project.try(:id)}" %>')
+    const boardConsumer = new agileBoardConsumer('<%= rup_cable_url(protocol: Rails.env.development? ? :ws : :wss) %>', '<%= "board-#{@project.try(:id)}" %>')
   </script>
 
   <div class="ws-actors-wrapper hidden">

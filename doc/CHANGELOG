@@ -1,8 +1,37 @@
 == Redmine Agile plugin changelog
 
 Redmine Agile plugin - Agile board plugin for redmine
-Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
+Copyright (C) 2011-2026 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
+
+== 2026-09-02 v1.7.0
+
+* Switched core patches loading from include to prepend
+* Fixed editing of a public agile board making it private
+* Fixed agile_sprint_id=0 bug
+* Fixed SQL injection vulnerability
+
+== 2026-06-30 v1.6.14
+
+* Added total story points including subtasks on issue view page
+* Added display of closed statuses in the board corner when dragging a card
+* Updated German translation
+* Updated styles for new Redmine themes and versions
+* Fixed status history error when a status is deleted
+* Fixed disappearing sprint
+* Fixed index query error with no shared sprints on Redmine 5.1
+* Fixed disappearing thumbnails on the agile board
+* Fixed link_to display problem in Redmine 5
+* Fixed color picker error
+
+== 2026-01-22 v1.6.13
+
+* Updated permissions for showing sprints in backlog
+* Updated view_backlog permission to allow access to sprints
+* Updated Korean locale (Jung Ji Yong)
+* Fixed Agile chart filters bug
+* Fixed agile board filter for sibling subprojects
+* Fixed backlog column visibility on Kanban board
 
 == 2025-09-09 v1.6.12
 

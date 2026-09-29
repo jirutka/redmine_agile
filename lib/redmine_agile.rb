@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -143,8 +143,8 @@ REDMINE_AGILE_REQUIRED_FILES = [
   'redmine_agile/charts/work_burndown_chart',
   'redmine_agile/patches/issue_drop_patch',
   'redmine_agile/patches/application_controller_patch',
-  'action_cable/connection/redmine_agile_connection',
   'action_cable/channels/agile_channel',
+  'action_cable/producers/agile_board_producer',
 ]
 
 base_url = File.dirname(__FILE__)

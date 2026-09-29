@@ -169,6 +169,38 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card {
 }
 table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.fields {display: none;}
 
+
+div.closed_container {
+  display: flex;
+  position: fixed;
+  bottom: 1vh;
+  min-width: 10vw;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+div.closed_container div.closed_status {
+  background-color: #fbb3b3;
+  border: 1px solid #b36363;
+  font-weight: bold;
+  font-size: 0.8125rem;
+  opacity: 0.5;
+  overflow-wrap: anywhere;
+  margin-bottom: 15px;
+  min-height: 4vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.agile-board div.droppable-active {
+  display: block;
+}
+
+.closed_container div.droppable-hover {
+  opacity: 1 !important;
+}
+
 /**********************************************************************/
 /* ISSUE CARD
 /**********************************************************************/
@@ -198,6 +230,7 @@ table.issues-board.minimize-closed td.issue-status-col.closed .issue-card span.f
 .issue-card span.hours {float: right;}
 
 .issue-card .thumbnail {
+  display: block;
   height: 145px;
   background-size: auto;
   background-position: center;
@@ -531,6 +564,7 @@ table.list.issues-board.sticky {
   margin: 0 4px 4px 4px;
   background-color: #f6f7f8;
   border: 1px solid #d7d7d7;
+  overflow: hidden;
 }
 
 .planning-board .column-header {

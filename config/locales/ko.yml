@@ -1,70 +1,241 @@
-# Translation by Ki Won Kim (http://x10.iptime.org/redmine, http://xyz37.blog.me, xyz37@naver.com)
+# Korean strings for Rails i18n (Ki Won Kim, Jung Ji Yong)
 ko:
-  label_agile: "애자일"
-  label_agile_board: "애자일 보드"
-  label_agile_board_plural: "애자일 보드"
-  label_agile_board_thumbnails: "축소판 그림"
-  label_agile_board_more_issues: "더 많은 일감"
-  error_agile_status_transition: "일감 상태를 변경할 수 없습니다."
-  label_agile_board_new: "신규 애자일 보드"
-  label_agile_board_edit: "애자일 보드 수정"
-  label_agile_my_boards: "내 애자일 보드"
-  label_agile_issue_id: "일감 번호"
+  label_agile: 애자일
+  label_agile_board: 애자일 보드
+  label_agile_board_plural: 애자일 보드 목록
+  label_agile_board_thumbnails: 썸네일 보기
+  label_agile_board_more_issues: 더 많은 일감 보기
+  error_agile_status_transition: 일감 상태를 변경할 수 없습니다
+  label_agile_board_new: 새 애자일 보드
+  label_agile_board_edit: 애자일 보드 편집
+  label_agile_my_boards: 내 애자일 보드
+  label_agile_issue_id: 일감 ID
 
-  permission_manage_public_agile_queries: "공용 애자일 보드 관리"
-  permission_add_agile_queries: "애자일 보드 추가"
-  permission_view_agile_queries: "애자일 보드 보기"
+  permission_manage_public_agile_queries: 공용 애자일 보드 관리
+  permission_add_agile_queries: 애자일 보드 추가
+  permission_view_agile_queries: 애자일 보드 보기
 
-  #1.1.0
-  label_agile_board_default_fields: "기본 카드 필드"
-  label_agile_charts_issues_burndown: "일감 Burn Down"
-  label_agile_charts_work_burndown: "작업 Burn Down"
-  label_agile_charts_number_of_hours: "시간 수"
-  label_agile_charts_number_of_issues: "일감 수"
-  label_agile_charts_cumulative_flow: "누적 흐름"
-  label_agile_charts_trackers_cumulative_flow: "일감 유형 누적 흐름"
-  label_agile_charts_issues_velocity: "속도"
-  label_agile_charts_lead_time: "리드 타임"
-  label_agile_charts_average_lead_time: "평균 리드 타임"
-  label_agile_chart_plural: "애자일 차트"
-  permission_view_agile_charts: "애자일 차트 보기"
-  label_agile_ideal_work_remaining: "이상적인"
-  label_agile_actual_work_remaining: "실제"
-  label_agile_chart: "차트"
-  label_agile_date_from: "부터"
-  label_agile_date_to: "까지"
-  label_agile_chart_dates: "차트 간격"
-  label_agile_weighed_ideal_work_remaining: "무게 이상"
-  label_agile_status_colors: "상태 색상"
-  label_agile_charts_burnup: "일감 Burn Up"
-  label_agile_charts_number_of_days: "일 수"
-  label_agile_too_many_items: "차트가 표시 (% {max}) 될 수 있는 항목의 최대 수를 초과 하므로 만들 수 없습니다."
-  label_agile_time_reports_items_limit: "시간 항목에 기반한 차트 일감 제한"
-  label_agile_total_work_remaining: "전체"
-  label_agile_default_chart: "버전 기본 차트"
+  # 1.1.0
+  label_agile_board_default_fields: 기본 카드 표시 항목
+  label_agile_charts_issues_burndown: 일감 소멸 차트 (Burndown)
+  label_agile_charts_work_burndown_hours: 작업 시간 소멸 차트
+  label_agile_charts_work_burndown_sp: 스토리 포인트 소멸 차트
+  label_agile_charts_number_of_hours: 작업 시간 수
+  label_agile_charts_number_of_issues: 일감 개수
+  label_agile_charts_cumulative_flow: 누적 흐름 (Cumulative Flow)
+  label_agile_charts_trackers_cumulative_flow: 추적기별 누적 흐름
+  label_agile_charts_issues_velocity: 진행 속도 (Velocity)
+  label_agile_charts_cycle_time: 사이클 타임
+  label_agile_charts_lead_time: 리드 타임
+  label_agile_charts_average_lead_time: 평균 리드 타임
+  label_agile_chart_plural: 애자일 차트
+  label_agile_chart_new: 새 애자일 차트
+  label_agile_chart_edit: 애자일 차트 편집
+  permission_view_agile_charts: 애자일 차트 보기
+  label_agile_ideal_work_remaining: 이상적인 잔여 작업량
+  label_agile_actual_work_remaining: 실제 잔여 작업량
+  label_agile_chart: 차트
+  label_agile_date_from: 시작일
+  label_agile_date_to: 종료일
+  label_agile_chart_dates: 차트 구간
+  label_agile_weighed_ideal_work_remaining: 가중 이상선
+  label_agile_status_colors: 상태별 색상
+  label_agile_charts_burnup: 일감 누적 차트 (Burnup)
+  label_agile_charts_number_of_days: 일수
+  label_agile_too_many_items: 표시 가능한 최대 항목 수(%{max})를 초과하여 차트를 생성할 수 없습니다.
+  label_agile_time_reports_items_limit: 시간 기반 차트의 일감 표시 한도
+  label_agile_total_work_remaining: 총 잔여 작업량
+  label_agile_default_chart: 기본 차트
 
-  #1.1.1
-  label_agile_charts_average_velocity: "평균 속도"
-  label_agile_charts_average_number_of_issues: "평균 일감 수"
-  label_agile_charts_average_number_of_hours: "평균 시간 수"
+  # 1.1.1
+  label_agile_charts_average_velocity: 평균 속도
+  label_agile_charts_average_number_of_issues: 평균 일감 수
+  label_agile_charts_average_number_of_hours: 평균 작업 시간
 
-  #1.2.0
-  label_agile_color: "색상"
-  permission_manage_agile_verions: "버전 계획 관리"
-  label_agile_version_planning: "버전 계획"
-  error_agile_version_transition: "일감 버전을 변경할 수 없습니다."
-  label_agile_tracker_colors: "일감 유형 색상"
-  label_agile_issue_priority_colors: "일감 우선 순위 색상"
-  label_agile_color_based_on: "색상의"
-  label_agile_color_no_colors: "색상 없음"
-  label_agile_manage_colors: "색상 관리"
-  label_agile_fullscreen: "전체 화면"
-  label_agile_no_version_issues: "버전없는 일감들"
-  label_agile_charts_work_burnup: "작업 Burn Up"
-  label_agile_completed: "완료됨"
-  label_agile_exclude_weekends: "이상적인 노력에서 주말 제외"
-  label_agile_board_truncated: "보드가 표시 (% {max}) 될 수 있는 항목의 최대 수를 초과 하므로 잘렸습니다."
-  label_agile_board_items_limit: "애자일 보드 항목 제한"
-  label_agile_swimlanes: "Swim lanes"
-  label_agile_minimize_closed: "완료된 일감 최소화"
-  label_agile_fields: "카드 필드"
+  # 1.2.0
+  label_agile_color: 색상
+  permission_manage_agile_verions: 버전 계획 관리
+  label_agile_version_planning: 버전 계획
+  error_agile_version_transition: 일감 버전을 변경할 수 없습니다
+  label_agile_tracker_colors: 추적기 색상
+  label_agile_issue_priority_colors: 일감 우선순위 색상
+  label_agile_color_based_on: 색상 기준
+  label_agile_color_no_colors: 색상 없음
+  label_agile_manage_colors: 색상 관리
+  label_agile_fullscreen: 전체 화면
+  label_agile_no_version_issues: 버전이 지정되지 않은 일감
+  label_agile_charts_work_burnup_hours: 작업 시간 누적 차트
+  label_agile_charts_work_burnup_sp: 스토리 포인트 누적 차트
+  label_agile_completed: 완료됨
+  label_agile_exclude_weekends: 이상선에서 주말 제외
+  label_agile_board_truncated: 표시 가능한 최대 항목 수(%{max})를 초과하여 보드가 잘렸습니다.
+  label_agile_board_items_limit: 보드 표시 항목 한도
+  label_agile_swimlanes: 스윔레인
+  label_agile_minimize_closed: 닫힌 일감 최소화
+  label_agile_fields: 카드 표시 필드
+  label_agile_default_board: 기본 보드
+
+  # 1.3.6
+  text_agile_move_not_possible: 해당 이동은 불가능합니다
+
+  # 1.3.8
+  label_agile_parent_issue_tracker_id: 상위 추적기
+  label_agile_sub_issues: 하위 일감
+  label_agile_color_green: 녹색
+  label_agile_color_blue: 파란색
+  label_agile_color_turquoise: 청록색
+  label_agile_color_lightgreen: 연두색
+  label_agile_color_yellow: 노란색
+  label_agile_color_orange: 주황색
+  label_agile_color_red: 빨간색
+  label_agile_color_purple: 보라색
+  label_agile_color_gray: 회색
+  label_agile_has_sub_issues: 하위 일감 있음
+  label_agile_light_free_version: 애자일 라이트 무료 버전
+  label_agile_link_to_pro: PRO 버전으로 업그레이드
+  label_agile_link_to_pro_demo: PRO 버전 라이브 데모
+  label_agile_link_to_more_plugins: RedmineUP의 추가 플러그인 보기
+  label_agile_button_agree: 동의
+  label_agile_license: RedmineUP 라이선스
+  label_agile_saving_boards: 보드 저장 중...
+  label_agile_horizontal_swim_lines: 가로 스윔레인
+  label_agile_board_sub_columns: 보드 하위 컬럼
+  label_agile_additional_agile_charts: 추가 애자일 차트
+  label_agile_coloured_issue_cards: 색상 구분된 일감 카드
+  label_agile_4_more_features: 추가 기능 4개...
+  label_agile_upgrade_to_pro: 이 기능을 사용하려면 PRO 버전으로 업그레이드하세요
+
+  label_agile_day_in_state: 상태 유지 일수
+
+  # 1.3.10
+  label_agile_hide_closed_issues_data: 닫힌 일감 데이터 숨기기
+  project_module_agile: 애자일
+
+  # 1.3.13
+  label_agile_last_comment: 최근 댓글
+
+  # 1.4.0
+  label_agile_esitmate_units: 예상 단위
+  label_agile_trackers_for_sp: 스토리 포인트 추적기
+  label_agile_story_points: 스토리 포인트
+  field_story_points: 스토리 포인트
+  label_agile_charts_number_of_story_points: 스토리 포인트 수
+  label_agile_board_columns: 보드 컬럼
+  lable_agile_wip_limit_exceeded: 작업 진행 한도 초과
+  label_agile_wip_limit: 작업 진행(WIP) 한도
+  label_agile_add_new_issue: + 새 일감 추가
+  label_agile_allow_create_cards: 카드 생성 허용
+  label_agile_auto_assign_on_move: 이동 시 자동 배정
+  text_agile_create_issue_error: 일감을 생성하는 중 오류가 발생했습니다
+  label_agile_inline_comment: 인라인 댓글
+  label_agile_hours: 시간
+  field_color: 색상
+
+  field_duration: 기간
+
+  field_closed_on_trendline: 닫힘 추세선
+  field_created_on_trendline: 생성 추세선
+
+  label_agile_sp_values: 스토리 포인트 값
+
+  label_agile_interval_size: 간격 단위
+  label_agile_day: 일 단위
+  label_agile_week: 주 단위
+  label_agile_month: 월 단위
+  label_agile_quarter: 분기 단위
+  label_agile_year: 연 단위
+  label_cards_search: 제목으로 검색
+
+  field_agile_sprint: 스프린트
+  field_end_date: 종료일
+  label_agile_sprints_on: 기본적으로 스프린트 활성화
+  label_agile_sprint: 스프린트
+  label_agile_sprint_plural: 스프린트 목록
+  label_agile_sprint_name: 이름
+  label_agile_sprint_description: 설명
+  label_agile_sprint_status: 상태
+  label_agile_sprint_sharing: 공유 범위
+  label_agile_sprint_start_date: 시작일
+  label_agile_sprint_end_date: 종료일
+  label_agile_sprint_new: 새 스프린트
+  label_agile_sprint_status_open: 열림
+  label_agile_sprint_status_active: 진행 중
+  label_agile_sprint_status_closed: 종료됨
+  label_agile_sprint_duration: 기간
+  label_agile_sprint_duration_select: <<기간 선택>>
+  label_agile_sprint_duration_week_1: 1주
+  label_agile_sprint_duration_week_2: 2주
+  label_agile_sprint_duration_week_3: 3주
+  label_agile_sprint_duration_week_4: 4주
+  label_agile_sprint_errors_crossed: 스프린트 일정이 기존 스프린트와 겹칩니다
+  label_agile_sprint_errors_end_more_start: 종료일은 시작일보다 이후여야 합니다
+  label_agile_sprint_errors_open_issues: 열린 일감이 있는 스프린트는 종료할 수 없습니다
+  label_agile_sprint_default_chart: 차트
+  label_agile_sprint_chart_units: 예상 단위
+  label_agile_chart_for_sprint: "스프린트: %{sprint}용 차트"
+
+  label_agile_charts: 차트
+  label_agile_chart_burndown: 소멸 차트 (Burndown)
+  label_agile_chart_burnup: 누적 차트 (Burnup)
+  label_agile_chart_units: 단위
+
+  label_agile_planning_board_more: 더 불러오기...
+  label_agile_version_query_new: 새 애자일 버전 쿼리
+  label_agile_version_my_boards: 내 애자일 버전 보드
+  label_agile_version_board_plural: 애자일 버전 보드
+  label_agile_version_board_edit: 애자일 버전 보드 편집
+
+  label_agile_edit_issue: 일감 편집
+
+  label_agile_board_type: 보드 유형
+  label_agile_board_type_kanban: 칸반 보드
+  label_agile_board_type_scrum: 스크럼 보드
+  label_agile_board_totals: 합계
+  label_agile_board_totals_story_points: 스토리 포인트
+  label_agile_board_totals_hours: 작업 시간
+  label_agile_board_totals_spent_time: 소요 시간
+  label_agile_board_totals_percent_done: 진척률
+  label_agile_board_totals_velocity: 속도
+  label_agile_board_totals_interval: 기간
+  label_agile_board_totals_remaining: 잔여
+  label_agile_board_totals_description: 스프린트 설명
+
+  label_agile_sprint_list_active: 진행 중인 스프린트
+  label_agile_sprint_list_future: 예정된 스프린트
+  label_agile_sprint_list_old: 종료된 스프린트
+  label_agile_sprint_assigned_sprint: 할당된 스프린트
+
+  label_agile_mixed_trackers: 혼합 추적기
+  label_agile_moving_average: 이동 평균
+
+  label_agile_board_backlog: 백로그
+  label_agile_board_backlog_column: 백로그 컬럼
+  label_agile_board_search_backlog_issues: 백로그 일감 검색
+  label_agile_version_plural: 버전
+  label_agile_sprint_add: 스프린트 추가
+  label_agile_version_add: 버전 추가
+
+  label_agile_sprint_query_new: 새 스프린트 쿼리
+  label_agile_sprint_my_boards: 내 스프린트 보드
+  label_agile_sprint_board_plural: 스프린트 보드
+  label_agile_sprint_board_edit: 스프린트 보드 편집
+  field_sprint: 스프린트
+  label_agile_no_sprint_issues: 스프린트가 지정되지 않은 일감
+  field_closed_sprints: 종료된 스프린트
+  field_closed_versions: 종료된 버전
+  label_allow_ovelapping_sprints: 스프린트 중복 허용
+
+  label_agile_sprint_sharing_none: 공유 안 함
+  label_agile_sprint_sharing_descendants: 하위 프로젝트와 공유
+  label_agile_sprint_sharing_hierarchy: 프로젝트 계층과 공유
+  label_agile_sprint_sharing_tree: 프로젝트 트리 전체와 공유
+  label_agile_sprint_sharing_system: 모든 프로젝트와 공유
+
+  label_agile_action_not_available: 사용할 수 없는 작업입니다
+  label_agile_general: 일반
+  label_agile_hidden: 숨김
+
+  label_chart_future_data: 차트에 향후 데이터 표시
+  label_agile_charts_work_partially_closed: 부분 완료된 항목 포함
+
+  label_use_web_sockets: 실시간 애자일 보드

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -19,53 +19,51 @@
 
 module RedmineAgile
   module Patches
-
     module IssuePatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
+      def self.prepended(base)
         base.class_eval do
           has_one :agile_data, :dependent => :destroy
           delegate :position, :to => :agile_data, :allow_nil => true
           scope :sorted_by_rank, lambda { eager_load(:agile_data).
                                           order(Arel.sql("COALESCE(#{AgileData.table_name}.position, 999999  )")) }
-          safe_attributes 'agile_data_attributes', :if => lambda { |issue, user| issue.new_record? || user.allowed_to?(:edit_issues, issue.project) }
+          safe_attributes 'agile_data_attributes', if: lambda { |issue, user| issue.new_record? || user.allowed_to?(:edit_issues, issue.project) }
           accepts_nested_attributes_for :agile_data, :allow_destroy => true
-
-          alias_method :agile_data_without_default, :agile_data
-          alias_method :agile_data, :agile_data_with_default
         end
       end
 
-      module InstanceMethods
-        def agile_data_with_default
-          agile_data_without_default || build_agile_data
-        end
+      def agile_data
+        super || build_agile_data
+      end
 
-        def day_in_state
-          change_time = journals.joins(:details).where(:journals => { :journalized_id => id, :journalized_type => 'Issue' },
-                                                       :journal_details => { :prop_key => 'status_id' }).order('created_on DESC').first
-          change_time.created_on
-        rescue
-          created_on
-        end
+      def day_in_state
+        change_time = journals.joins(:details).where(:journals => { :journalized_id => id, :journalized_type => 'Issue' },
+                                                     :journal_details => { :prop_key => 'status_id' }).order('created_on DESC').first
+        change_time.created_on
+      rescue
+        created_on
+      end
 
-        def last_comment
-          journals.where("notes <> ''").order("#{Journal.table_name}.id ASC").last
-        end
+      def last_comment
+        journals.where("notes <> ''").order("#{Journal.table_name}.id ASC").last
+      end
 
-        def story_points
-          @story_points ||= agile_data.story_points
-        end
+      def story_points
+        @story_points ||= agile_data.story_points
+      end
 
-        def sub_issues
-          descendants
+      def total_story_points
+        if leaf? && story_points
+          story_points
+        else
+          @total_story_points ||= self_and_descendants.visible.sum{ |issue| issue.story_points.to_i }
         end
+      end
+
+      def sub_issues
+        descendants
       end
     end
-
   end
 end
 
-unless Issue.included_modules.include?(RedmineAgile::Patches::IssuePatch)
-  Issue.send(:include, RedmineAgile::Patches::IssuePatch)
-end
+Issue.prepend(RedmineAgile::Patches::IssuePatch)

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -23,6 +23,8 @@ module RedmineAgile
       include Redmine::I18n
       include Redmine::Utils::DateCalculation
 
+      class InvalidPeriodError < StandardError; end
+
       DAY_INTERVAL     = 'day'.freeze
       WEEK_INTERVAL    = 'week'.freeze
       MONTH_INTERVAL   = 'month'.freeze
@@ -36,8 +38,6 @@ module RedmineAgile
       def initialize(data_scope, options = {})
         @options = options
         @data_scope = data_scope
-        @data_from ||= options[:data_from]
-        @data_to ||= options[:data_to]
         @interval_size = options[:interval_size] || DAY_INTERVAL
         initialize_chart_periods
         @step_x_labels = @period_count > 18 ? @period_count / 12 + 1 : 1
@@ -159,7 +159,8 @@ module RedmineAgile
       end
 
       def initialize_chart_periods
-        raise Exception "Dates can't be blank" if [@date_to, @date_from].any?(&:blank?)
+        raise InvalidPeriodError if [@date_to, @date_from].any?(&:blank?)
+        raise InvalidPeriodError if @date_from.to_date > @date_to.to_date
         period_count
         scale_division
       end

@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -142,17 +142,20 @@ class AgileChartsControllerTest < ActionController::TestCase
   end
 
   def test_issues_burndown_chart_when_first_issue_later_then_due_date
-    new_version = Version.create!(name: 'Some new vesion', effective_date: (Date.today - 10.days), project_id: @project.id)
+    new_version = Version.create!(name: 'Some new vesion', effective_date: Date.today, project_id: @project.id)
     issue = Issue.create!(
       project_id: @project.id,
       tracker_id: 1,
       subject: 'test_issues_burndown_chart_when_first_issue_later_then_due_date',
       author_id: 2,
-      start_date: Date.today
+      start_date: Date.today + 20
     )
     new_version.fixed_issues << issue.reload
+    Issue.where(id: issue.id).update_all(created_on: Date.today + 20, updated_on: Date.today - 5)
 
-    should_get_render_chart chart: RedmineAgile::Charts::Helper::BURNDOWN_CHART, project_id: @project.identifier, version_id: new_version.id
+    compatible_xhr_request :get, :render_chart, chart: RedmineAgile::Charts::Helper::BURNDOWN_CHART,
+                                                project_id: @project.identifier, version_id: new_version.id
+    assert_response :not_found
   end
 
   def test_get_show_chart_with_open_target_version

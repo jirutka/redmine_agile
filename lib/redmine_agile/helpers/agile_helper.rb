@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ module RedmineAgile
 
       def retrieve_agile_query
         if !params[:query_id].blank?
-          cond = "project_id IS NULL"
+          cond = +"project_id IS NULL"
           cond << " OR project_id = #{@project.id}" if @project
           @query = AgileQuery.where(cond).find(params[:query_id])
           raise ::Unauthorized unless @query.visible?
@@ -126,6 +126,18 @@ module RedmineAgile
         link_to l("label_agile_charts_#{chart_name}"), '#',
                 onclick: "showModal('upgrade-to-pro', '557px');",
                 class: ('selected' if query.is_a?(AgileChartsQuery) && query.new_record? && current_chart == chart_name)
+      end
+
+      def issue_story_points_details(issue)
+        if issue.total_story_points.present?
+          if issue.total_story_points == issue.story_points
+            issue.story_points
+          else
+            s = issue.story_points.present? ? "#{issue.story_points}" : ""
+            s += " (#{l(:label_total)}: #{issue.total_story_points})"
+            s.html_safe
+          end
+        end
       end
 
       private

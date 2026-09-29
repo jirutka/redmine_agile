@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -20,20 +20,14 @@
 module RedmineAgile
   module Patches
     module QueriesControllerPatch
-      def self.prepended(base)
-        base.prepend(InstanceMethods)
-      end
-
-      module InstanceMethods
-        def query_class
-          case params[:type]
-          when 'AgileChartsQuery'
-            AgileChartsQuery
-          when 'AgileVersionsQuery'
-            AgileVersionsQuery
-          else
-            super
-          end
+      def query_class
+        case params[:type]
+        when 'AgileChartsQuery'
+          AgileChartsQuery
+        when 'AgileVersionsQuery'
+          AgileVersionsQuery
+        else
+          super
         end
       end
     end

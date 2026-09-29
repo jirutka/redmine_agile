@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -46,7 +46,8 @@ class Redmine::ApiTest::AgileDataTest < Redmine::ApiTest::Base
            :journal_details,
            :queries
 
-  RedmineAgile::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_agile).directory + '/test/fixtures/', [:agile_data])
+  load_plugin_fixtures :redmine_agile,
+                       :agile_data
 
   def setup
     Setting.rest_api_enabled = '1'

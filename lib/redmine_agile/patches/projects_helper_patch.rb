@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -22,19 +22,8 @@ require_dependency 'queries_helper'
 module RedmineAgile
   module Patches
     module ProjectsHelperPatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-
-        base.class_eval do
-        end
-      end
-
-      module InstanceMethods
-      end
     end
   end
 end
 
-unless ProjectsHelper.included_modules.include?(RedmineAgile::Patches::ProjectsHelperPatch)
-  ProjectsHelper.send(:include, RedmineAgile::Patches::ProjectsHelperPatch)
-end
+ProjectsHelper.prepend(RedmineAgile::Patches::ProjectsHelperPatch)

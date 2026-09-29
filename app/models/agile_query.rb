@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -328,7 +328,7 @@ class AgileQuery < Query
     # Admin can edit them all and regular users can edit their private queries
     return true if user.admin? || (is_private? && user_id == user.id)
     # Members can not edit public queries that are for all project (only admin is allowed to)
-    is_public? && !@is_for_all && user.allowed_to?(:manage_public_agile_queries, project, global: true)
+    is_public? && !is_global? && user.allowed_to?(:manage_public_agile_queries, project, global: true)
   end
 
   def default_columns_names
@@ -471,7 +471,9 @@ class AgileQuery < Query
   end
 
   IssueRelation::TYPES.keys.each do |relation_type|
-    alias_method "sql_for_#{relation_type}_field".to_sym, :sql_for_relations
+    define_method("sql_for_#{relation_type}_field") do |field, operator, value, options = {}|
+      sql_for_relations(field, operator, value, options)
+    end
   end
 
   def condition_for_status

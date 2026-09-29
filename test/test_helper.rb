@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -343,10 +343,6 @@ module RedmineAgile
 end
 
 class RedmineAgile::TestCase
-  def self.create_fixtures(fixtures_directory, table_names, class_names = {})
-    ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
-  end
-
   def self.prepare
     Role.find(1, 2, 3, 4).each do |r|
       r.permissions << :manage_public_agile_queries

@@ -239,3 +239,4 @@ en:
   label_agile_charts_work_partially_closed: Partially completed
 
   label_use_web_sockets: Real-time agile boards
+  label_agile_status_deleted: "Deleted"

@@ -1,7 +1,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -84,7 +84,11 @@ class AgileChartsController < ApplicationController
 
   def render_data(options = {})
     agile_chart = RedmineAgile::Charts::Helper::AGILE_CHARTS[@chart]
-    data = agile_chart[:class].data(@issues, options) if agile_chart
+    begin
+      data = agile_chart[:class].data(@issues, options) if agile_chart
+    rescue RedmineAgile::Charts::AgileChart::InvalidPeriodError
+      return render_404
+    end
 
     if data
       data[:chart] = @chart

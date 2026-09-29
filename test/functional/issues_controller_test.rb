@@ -3,7 +3,7 @@
 # This file is a part of Redmin Agile (redmine_agile) plugin,
 # Agile board plugin for redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_agile is free software: you can redistribute it and/or modify
@@ -106,6 +106,17 @@ class IssuesControllerTest < ActionController::TestCase
       compatible_request :get, :show, :id => 1
       assert_response :success
       assert_select '#issue-form .attributes', :text => /Story points/, :count => 1
+    end
+  end
+
+  def test_show_issue_with_total_story_points_with_subissues
+    Issue.where(id: [2, 3, 4]).each { |issue| issue.update!(project_id: 1, parent_issue_id: 1) }
+
+    with_agile_settings 'estimate_units' => 'story_points', 'story_points_on' => '1' do
+      compatible_request :get, :show, id: 1
+      assert_response :success
+      assert_select '#issue-form .attributes', text: /Story points/, count: 1
+      assert_select 'div.issue.details .attributes', text: /Story points:1 \(Total: 3\)/, count: 1
     end
   end
 
